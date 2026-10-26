@@ -1,76 +1,23 @@
-// Сервер-ретранслятор для дуэли 1x1: раздаёт игру и пересылает сообщения между двумя игроками в комнате.
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const { WebSocketServer } = require('ws');
-
-const PORT = process.env.PORT || 3000;
-const HTML = path.join(__dirname, 'index.html');
-
-const server = http.createServer((req, res) => {
-  if (req.url === '/health') { res.writeHead(200); return res.end('ok'); }
-  fs.readFile(HTML, (err, data) => {
-    if (err) { res.writeHead(500); return res.end('index.html not found'); }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-    res.end(data);
-  });
-});
-
-const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
-const rooms = new Map(); // code -> { host, guest }
-
-function newCode() {
-  for (let i = 0; i < 50; i++) {
-    const c = String(1000 + Math.floor(Math.random() * 9000));
-    if (!rooms.has(c)) return c;
-  }
-  return null;
-}
-const send = (ws, o) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); };
-
-wss.on('connection', (ws) => {
-  ws.alive = true;
-  ws.on('pong', () => { ws.alive = true; });
-  ws.room = null;
-  ws.on('message', (raw, isBinary) => {
-    if (isBinary) return;
-    const text = raw.toString();
-    let m; try { m = JSON.parse(text); } catch { return; }
-    if (m.t === 'host' && !ws.room) {
-      const code = newCode();
-      if (!code) return send(ws, { t: 'err', msg: 'Нет свободных комнат' });
-      rooms.set(code, { host: ws, guest: null });
-      ws.room = code; ws.role = 'host';
-      return send(ws, { t: 'room', code });
-    }
-    if (m.t === 'join' && !ws.room) {
-      const r = rooms.get(String(m.code || '').trim());
-      if (!r) return send(ws, { t: 'err', msg: 'Комната не найдена' });
-      if (r.guest) return send(ws, { t: 'err', msg: 'Комната уже занята' });
-      r.guest = ws; ws.room = String(m.code).trim(); ws.role = 'guest';
-      send(r.host, { t: 'ready' }); send(ws, { t: 'ready' });
-      return;
-    }
-    if (!ws.room) return;
-    const r = rooms.get(ws.room); if (!r) return;
-    const peer = ws.role === 'host' ? r.guest : r.host;
-    if (peer && peer.readyState === 1) peer.send(text);
-  });
-  ws.on('close', () => {
-    if (!ws.room) return;
-    const r = rooms.get(ws.room); if (!r) return;
-    const peer = ws.role === 'host' ? r.guest : r.host;
-    send(peer, { t: 'left' });
-    rooms.delete(ws.room);
-    if (peer) peer.room = null;
-  });
-});
-
-setInterval(() => {
-  wss.clients.forEach((ws) => {
-    if (!ws.alive) return ws.terminate();
-    ws.alive = false; ws.ping();
-  });
-}, 20000);
-
-server.listen(PORT, () => console.log('listening on ' + PORT));
+// Сервер игры: раздаёт index.html и пересылает сообщения между игроками в комнате (до 4 человек).
+const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
+const PORT=process.env.PORT||3000,MAX=4,rooms=new Map();
+const server=http.createServer((q,r)=>{fs.readFile(path.join(__dirname,'index.html'),(e,d)=>{if(e){r.writeHead(500);return r.end('index.html not found')}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});r.end(d)})});
+const wss=new WebSocketServer({server,maxPayload:65536});
+const send=(ws,o)=>{if(ws.readyState===1)ws.send(JSON.stringify(o))},mem=R=>R.p.filter(Boolean);
+const lobby=R=>{const n=mem(R).length;mem(R).forEach(w=>send(w,{t:'lobby',n}))};
+wss.on('connection',ws=>{ws.alive=true;ws.on('pong',()=>ws.alive=true);
+ ws.on('message',raw=>{let m;try{m=JSON.parse(raw)}catch(e){return}
+  if(!ws.R){
+   if(m.t==='host'){let c;do{c=String(1000+Math.floor(Math.random()*9000))}while(rooms.has(c));const R={code:c,p:[ws],started:false};rooms.set(c,R);ws.R=R;ws.slot=0;send(ws,{t:'room',code:c,slot:0,n:1})}
+   else if(m.t==='join'){const R=rooms.get(String(m.code));if(!R)return send(ws,{t:'err',msg:'Комната не найдена'});if(R.started)return send(ws,{t:'err',msg:'Бой уже идёт'});let s=R.p.findIndex(x=>!x);if(s<0)s=R.p.length;if(s>=MAX)return send(ws,{t:'err',msg:'Комната заполнена (4/4)'});R.p[s]=ws;ws.R=R;ws.slot=s;send(ws,{t:'joined',slot:s,n:mem(R).length});lobby(R)}
+   return}
+  const R=ws.R;
+  if(m.t==='start'){if(ws.slot===0&&!R.started&&mem(R).length>1){R.started=true;const ids=R.p.map((w,i)=>w?i:-1).filter(i=>i>=0);R.p.forEach((w,i)=>w&&send(w,{t:'ready',n:ids.length,slot:i,ids}))}return}
+  if(!R.started)return;m.f=ws.slot;const s=JSON.stringify(m);R.p.forEach(w=>{if(w&&w!==ws&&w.readyState===1)w.send(s)})});
+ ws.on('close',()=>{const R=ws.R;if(!R)return;R.p[ws.slot]=null;const rest=mem(R);
+  if(!rest.length){rooms.delete(R.code);return}
+  if(R.started)rest.forEach(w=>send(w,{t:'left',f:ws.slot}));
+  else if(ws.slot===0){rest.forEach(w=>{send(w,{t:'err',msg:'Хост вышел'});w.R=null});rooms.delete(R.code)}
+  else lobby(R)})});
+setInterval(()=>wss.clients.forEach(w=>{if(!w.alive)return w.terminate();w.alive=false;w.ping()}),25000);
+server.listen(PORT,'0.0.0.0',()=>console.log('listening',PORT));
