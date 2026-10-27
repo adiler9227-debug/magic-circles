@@ -1,7 +1,8 @@
 // Сервер игры: раздаёт index.html, ведёт список «кто онлайн» и комнаты (до 4 игроков), пересылает сообщения в бою.
 const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
 const PORT=process.env.PORT||3000,MAX=4,rooms=new Map(),all=new Set();let uid=0,pn=0;
-const server=http.createServer((q,r)=>{fs.readFile(path.join(__dirname,'index.html'),(e,d)=>{if(e){r.writeHead(500);return r.end('index.html not found')}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});r.end(d)})});
+const FILES={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/manifest.json':['manifest.json','application/manifest+json'],'/sw.js':['sw.js','text/javascript'],'/icon-192.png':['icon-192.png','image/png'],'/icon-512.png':['icon-512.png','image/png']};
+const server=http.createServer((q,r)=>{const f=FILES[(q.url||'/').split('?')[0]];if(!f){r.writeHead(404);return r.end('not found')}fs.readFile(path.join(__dirname,f[0]),(e,d)=>{if(e){r.writeHead(500);return r.end(f[0]+' not found')}r.writeHead(200,{'Content-Type':f[1],'Cache-Control':'no-cache'});r.end(d)})});
 const wss=new WebSocketServer({server,maxPayload:65536});
 const send=(ws,o)=>{if(ws.readyState===1)ws.send(JSON.stringify(o))},mem=R=>R.p.filter(Boolean);
 const st=w=>!w.R?'lobby':w.R.started?'battle':'room';
