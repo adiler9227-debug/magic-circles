@@ -9,9 +9,9 @@ const st=w=>!w.R?'lobby':w.R.started?'battle':'room';
 // список онлайн + открытые комнаты — всем в лобби
 function bcast(){
  const players=[...all].map(w=>({id:w.id,name:w.name,st:st(w)}));
- const list=[...rooms.values()].map(R=>({code:R.code,host:R.p[0]?R.p[0].name:'?',n:mem(R).length,started:R.started}));
+ const list=[...rooms.values()].map(R=>({code:R.code,host:R.p[0]?R.p[0].name:'?',n:mem(R).length,started:R.started,pvp:R.pvp}));
  all.forEach(w=>send(w,{t:'list',me:w.id,players,rooms:list}))}
-function roomInfo(R){const names=R.p.map(w=>w?w.name:null);mem(R).forEach(w=>send(w,{t:'lobby',n:mem(R).length,names}))}
+function roomInfo(R){const names=R.p.map(w=>w?w.name:null);mem(R).forEach(w=>send(w,{t:'lobby',n:mem(R).length,names,pvp:R.pvp}))}
 function leave(ws){const R=ws.R;if(!R)return;ws.R=null;R.p[ws.slot]=null;const rest=mem(R);
  if(!rest.length){rooms.delete(R.code);return}
  if(R.started)rest.forEach(w=>send(w,{t:'left',f:ws.slot}));
@@ -23,12 +23,13 @@ wss.on('connection',ws=>{ws.alive=true;ws.id=++uid;ws.name='Игрок '+(++pn);
  ws.on('message',raw=>{let m;try{m=JSON.parse(raw)}catch(e){return}
   if(m.t==='name'){ws.name=String(m.name||'').trim().slice(0,14)||ws.name;if(ws.R)roomInfo(ws.R);bcast();return}
   if(!ws.R||m.t==='host'||m.t==='join'){
-   if(m.t==='host'&&!ws.R){let c;do{c=String(1000+Math.floor(Math.random()*9000))}while(rooms.has(c));const R={code:c,p:[ws],started:false};rooms.set(c,R);ws.R=R;ws.slot=0;send(ws,{t:'room',code:c,slot:0,n:1});roomInfo(R);bcast()}
+   if(m.t==='host'&&!ws.R){let c;do{c=String(1000+Math.floor(Math.random()*9000))}while(rooms.has(c));const R={code:c,p:[ws],started:false,pvp:0};rooms.set(c,R);ws.R=R;ws.slot=0;send(ws,{t:'room',code:c,slot:0,n:1});roomInfo(R);bcast()}
    else if(m.t==='join'&&!ws.R){const R=rooms.get(String(m.code));if(!R){send(ws,{t:'err',msg:'Комната уже закрыта'});return bcast()}if(R.started)return send(ws,{t:'err',msg:'Бой уже идёт'});let s=R.p.findIndex(x=>!x);if(s<0)s=R.p.length;if(s>=MAX)return send(ws,{t:'err',msg:'Комната заполнена (4/4)'});R.p[s]=ws;ws.R=R;ws.slot=s;send(ws,{t:'joined',slot:s,n:mem(R).length});roomInfo(R);bcast()}
    return}
   const R=ws.R;
   if(m.t==='leave'){leave(ws);send(ws,{t:'closed',msg:''});bcast();return}
-  if(m.t==='start'){if(ws.slot===0&&!R.started&&mem(R).length>1){R.started=true;const ids=R.p.map((w,i)=>w?i:-1).filter(i=>i>=0);R.p.forEach((w,i)=>w&&send(w,{t:'ready',n:ids.length,slot:i,ids,names:R.p.map(x=>x?x.name:null)}));bcast()}return}
+  if(m.t==='mode'){if(ws.slot===0&&!R.started){R.pvp=m.pvp?1:0;roomInfo(R);bcast()}return}
+  if(m.t==='start'){if(ws.slot===0&&!R.started&&mem(R).length>1){R.started=true;const ids=R.p.map((w,i)=>w?i:-1).filter(i=>i>=0);R.p.forEach((w,i)=>w&&send(w,{t:'ready',n:ids.length,slot:i,ids,pvp:R.pvp,names:R.p.map(x=>x?x.name:null)}));bcast()}return}
   if(!R.started)return;m.f=ws.slot;const s=JSON.stringify(m);R.p.forEach(w=>{if(w&&w!==ws&&w.readyState===1)w.send(s)})});
  ws.on('close',()=>{all.delete(ws);leave(ws);bcast()})});
 setInterval(()=>wss.clients.forEach(w=>{if(!w.alive)return w.terminate();w.alive=false;w.ping()}),25000);
