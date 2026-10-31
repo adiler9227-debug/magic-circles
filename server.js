@@ -2,7 +2,16 @@
 const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
 const PORT=process.env.PORT||3000,MAX=4,rooms=new Map(),all=new Set();let uid=0,pn=0;
 const FILES={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/manifest.json':['manifest.json','application/manifest+json'],'/sw.js':['sw.js','text/javascript'],'/icon-192.png':['icon-192.png','image/png'],'/icon-512.png':['icon-512.png','image/png']};
-const server=http.createServer((q,r)=>{const f=FILES[(q.url||'/').split('?')[0]];if(!f){r.writeHead(404);return r.end('not found')}fs.readFile(path.join(__dirname,f[0]),(e,d)=>{if(e){r.writeHead(500);return r.end(f[0]+' not found')}r.writeHead(200,{'Content-Type':f[1],'Cache-Control':'no-cache'});r.end(d)})});
+// файлы отдаются сжатыми (gzip) и с ETag: повторный заход — почти мгновенно (ответ 304)
+const zlib=require('zlib'),CACHE={};
+function getFile(name,cb){const fp=path.join(__dirname,name);fs.stat(fp,(e,st)=>{if(e)return cb(e);const c=CACHE[name];if(c&&c.m===st.mtimeMs&&c.s===st.size)return cb(null,c);
+ fs.readFile(fp,(e2,d)=>{if(e2)return cb(e2);zlib.gzip(d,{level:9},(e3,gz)=>{CACHE[name]={m:st.mtimeMs,s:st.size,d,gz:e3?null:gz,etag:'"'+st.size.toString(36)+'-'+Math.floor(st.mtimeMs).toString(36)+'"'};cb(null,CACHE[name])})})})}
+const server=http.createServer((q,r)=>{const f=FILES[(q.url||'/').split('?')[0]];if(!f){r.writeHead(404);return r.end('not found')}
+ getFile(f[0],(e,c)=>{if(e){r.writeHead(500);return r.end(f[0]+' not found')}
+  if(q.headers['if-none-match']===c.etag){r.writeHead(304,{ETag:c.etag,'Cache-Control':'no-cache'});return r.end()}
+  const gz=c.gz&&/\bgzip\b/.test(q.headers['accept-encoding']||''),body=gz?c.gz:c.d,h={'Content-Type':f[1],'Cache-Control':'no-cache',ETag:c.etag,'Content-Length':body.length,Vary:'Accept-Encoding'};if(gz)h['Content-Encoding']='gzip';
+  r.writeHead(200,h);r.end(body)})});
+['index.html','sw.js','manifest.json'].forEach(n=>getFile(n,()=>{}));
 const wss=new WebSocketServer({server,maxPayload:65536});
 const send=(ws,o)=>{if(ws.readyState===1)ws.send(JSON.stringify(o))},mem=R=>R.p.filter(Boolean);
 const freeC=(R,c,ws)=>{c=(c|0);if(c<0||c>4)c=0;const used=new Set(mem(R).filter(w=>w!==ws).map(w=>w.cls));if(!used.has(c))return c;for(let k=0;k<5;k++)if(!used.has(k))return k;return c};
