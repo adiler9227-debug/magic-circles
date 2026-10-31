@@ -1584,8 +1584,8 @@ function worldCut(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g
  const cand=[];const coopM=typeof COOPM==='function'?COOPM():mode==='duel';
  for(const q of players)if(q!==o&&q.dead<=0&&q.g.visible&&!coopM)cand.push({x:q.g.position.x,z:q.g.position.z,p:1});
  const en=[];forE((i,x,z)=>en.push({x,z,d:Math.hypot(x-O.x,z-O.z)+(isB(i)?-1e4:0)}));en.sort((a,b)=>a.d-b.d);en.slice(0,9).forEach(e=>cand.push(e));
- const chain=[];let cur=O,left=cand.slice();while(left.length&&chain.length<10){let bi=0,bd=1e9;left.forEach((c,i)=>{const d=Math.hypot(c.x-cur.x,c.z-cur.z);if(d<bd){bd=d;bi=i}});cur=left.splice(bi,1)[0];chain.push(cur)}
- if(!chain.length)for(let k=0;k<4;k++){const a=Math.atan2(F.x,F.z)+(k-1.5)*.5;chain.push({x:O.x+Math.sin(a)*(30+k*12),z:O.z+Math.cos(a)*(30+k*12)})}
+ const chain=[];let cur=O,left=cand.slice();while(left.length&&chain.length<1){let bi=0,bd=1e9;left.forEach((c,i)=>{const d=Math.hypot(c.x-cur.x,c.z-cur.z);if(d<bd){bd=d;bi=i}});cur=left.splice(bi,1)[0];chain.push(cur)}
+ if(!chain.length)chain.push({x:O.x+F.x*30,z:O.z+F.z*30});
  // линии: от мага к первой цели, потом от цели к цели; каждая продлена через всю карту
  const lines=[];let pv=O;chain.forEach(c=>{let dx=c.x-pv.x,dz=c.z-pv.z,l=Math.hypot(dx,dz);if(l<3){const a=rnd()*PI*2;dx=Math.cos(a);dz=Math.sin(a);l=1}lines.push({P:{x:(c.x+pv.x)/2,z:(c.z+pv.z)/2},D:{x:dx/l,z:dz/l},a:pv,b:c});pv=c});
  const B1=new T3.BoxGeometry(1,1,1),own=[],marks=[];
@@ -1620,9 +1620,9 @@ function worldCut(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g
   return q<WT.after},()=>{wcCap(0);wcFil('');BLK.CAM.z=1;BLK.CAM.y=0;own.forEach(m=>{S.remove(m);m.material.dispose()});B1.dispose();if(o===ME&&ME.hold<=WT.stop)ME.hold=0})}
 
 // ===== Ниндзя 9 · Шинра Тенсей: взлёт, фразы Пэйна, на «Шинра Тенсей» волна стирает всё вокруг =====
-const ST_={boom:14.5,wave:2.8,fall:1.6,R:130,caps:[[1.0,'痛みを感じろ','Почувствуй боль'],[4.2,'痛みを考えろ','Осознай боль'],[6.0,'痛みを受け取れ','Прими боль'],[7.6,'痛みを知れ','Познай боль'],[9.0,'ここより世界に痛みを','Отсюда — миру боль'],[12.6,'神羅天征','ШИНРА ТЕНСЕЙ']]};
+const ST_={boom:14.5,wave:3.6,fall:1.6,R:390,caps:[[1.0,'痛みを感じろ','Почувствуй боль'],[4.2,'痛みを考えろ','Осознай боль'],[6.0,'痛みを受け取れ','Прими боль'],[7.6,'痛みを知れ','Познай боль'],[9.0,'ここより世界に痛みを','Отсюда — миру боль'],[12.6,'神羅天征','ШИНРА ТЕНСЕЙ']]};
 function shinra(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g.position.x,z:g.position.z},tn0=performance.now()/1000,T0=ST_.boom,TE=T0+ST_.wave+ST_.fall;
- o.wcI=tn0+TE;if(o===ME)ME.hold=TE;M&&M.cast&&M.cast();
+ o.wcI=tn0+TE;BLK.setFrz(T0);ME.hold=Math.max(ME.hold||0,T0);if(o===ME)ME.hold=TE;M&&M.cast&&M.cast();
  const usnd=typeof SND!=='undefined'&&SND.shinra&&typeof play==='function'?play('shinra',1.4*v):false;if(!usnd){tone(100,300,T0,'sine',.1*v,0,3);tone(55,30,3,'sine',.9*v,T0)}
  const aura=new T3.Mesh(SPH,glmF(0xbfe8ff,0)),sph=new T3.Mesh(SPH,glmF(0xffffff,0)),sph2=new T3.Mesh(SPH,glmF(0x9fd0ff,0)),dust=new T3.Mesh(new T3.CylinderGeometry(1,1,1,64,1,true).translate(0,.5,0),glmF(0xb09070,0)),
   crater=new T3.Mesh(new T3.CircleGeometry(1,64),new T3.MeshBasicMaterial({color:0x1a1410,transparent:true,opacity:0,depthWrite:false,fog:false})),rim=new T3.Mesh(RNG,glmF(0xffffff,0));
@@ -1632,7 +1632,7 @@ function shinra(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g.position.
   if(a)ce.innerHTML=a+'<div style="font:800 clamp(13px,3.2vw,26px) system-ui;letter-spacing:.3em;margin-top:8px;color:#000;-webkit-text-stroke:1px #fff;text-shadow:0 0 8px #fff,0 0 20px #fff">'+r+'</div>';ce.style.opacity=on?1:0;ce.style.transform=on?'scale(1.05)':'scale(.9)'};
  fx.push(dt=>{t+=dt;const C=BLK.CAM,k=Math.min(1,dt*2.2),T=TM(),gp=g.position;
   // камера отъезжает, фразы сменяются
-  if(t<TE-.8){C.z+=(4-C.z)*k;C.y+=(45-C.y)*k}else{C.z+=(1-C.z)*k*1.6;C.y+=(0-C.y)*k*1.6}
+  if(t<TE-.8){const far=t>T0?1:0;C.z+=((4+far*4)-C.z)*k;C.y+=((45+far*60)-C.y)*k}else{C.z+=(1-C.z)*k*1.6;C.y+=(0-C.y)*k*1.6}
   ST_.caps.forEach((c,i)=>{if(t>=c[0]&&cs<i){cs=i;cap(1,c[1],c[2])}});if(t>T0+1.4)cap(0);
   // взлёт и аура
   const up=t<T0?H*Math.min(1,t/5):t<T0+ST_.wave?H:H*Math.max(0,1-(t-T0-ST_.wave)/ST_.fall);gp.y=up;if(o!==ME){o.g.position.y=up}
@@ -1640,11 +1640,11 @@ function shinra(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g.position.
   if(t<T0){for(let n=0;n<8;n++){const a=rnd()*PI*2,r=8+rnd()*12;emit(gp.x+Math.cos(a)*r,up+(rnd()-.5)*10,gp.z+Math.sin(a)*r,-Math.cos(a)*r*1.3,0,-Math.sin(a)*r*1.3,.6,n&1?0xbfe8ff:0xffffff,1.8,0)}
    if(rnd()<.3)cubes(O.x+(rnd()-.5)*30,.3,O.z+(rnd()-.5)*30,1,[0x6b6490,0x8a8a8a],3,.4,1.2);lite(gp.x,up,gp.z,0xbfe8ff,1+t*.4);C.sh=Math.max(C.sh,t/T0*.6);return true}
   // взрыв «Шинра Тенсей»
-  if(!b){b=1;flash(1*v);sBoomB(1.8*v);C.sh=5;for(let k2=0;k2<4;k2++)shock(O.x,O.z,k2&1?0xffffff:0x9fd0ff,ST_.R*(.6+k2*.3),1+k2*.3)}
+  if(!b){b=1;flash(1*v);sBoomB(1.8*v);C.sh=5;for(let k2=0;k2<4;k2++)shock(O.x,O.z,k2&1?0xffffff:0x9fd0ff,ST_.R*(.6+k2*.3),1.4+k2*.4)}
   const q=Math.min(1,(t-T0)/ST_.wave),e=1-Math.pow(1-q,3),R=4+ST_.R*e;
   sph.position.set(O.x,H*.4,O.z);sph.scale.set(R,R*.7,R);sph.material.opacity=.55*(1-q);sph2.position.copy(sph.position);sph2.scale.set(R*1.06,R*.75,R*1.06);sph2.material.opacity=.3*(1-q);
-  dust.scale.set(R,14*(1-q*.4),R);dust.material.opacity=.6*(1-q);crater.scale.setScalar(R*.55);crater.material.opacity=.85*Math.min(1,q*3);rim.scale.setScalar(R*.55+2);rim.material.opacity=.8*(1-q);lite(O.x,20,O.z,0xffffff,4*(1-q));
-  for(let n=0;n<40;n++){const a=rnd()*PI*2;emit(O.x+Math.cos(a)*R,1+rnd()*8,O.z+Math.sin(a)*R,Math.cos(a)*30,8+rnd()*14,Math.sin(a)*30,.8,n%3?0xb09070:0xffffff,3,-8)}
+  dust.scale.set(R,30*(1-q*.4),R);dust.material.opacity=.6*(1-q);crater.scale.setScalar(R*.55);crater.material.opacity=.85*Math.min(1,q*3);rim.scale.setScalar(R*.55+2);rim.material.opacity=.8*(1-q);lite(O.x,20,O.z,0xffffff,4*(1-q));
+  for(let n=0;n<70;n++){const a=rnd()*PI*2;emit(O.x+Math.cos(a)*R,1+rnd()*20,O.z+Math.sin(a)*R,Math.cos(a)*40,8+rnd()*20,Math.sin(a)*40,.9,n%3?0xb09070:0xffffff,4.5,-8)}
   if(rnd()<.9)for(let n=0;n<3;n++){const a=rnd()*PI*2;cubes(O.x+Math.cos(a)*R,.5,O.z+Math.sin(a)*R,2,[0x6b6490,0x8a8a8a,0x5a5690,0x333333],16,.6,1.6,Math.cos(a)*25,Math.sin(a)*25)}
   if(q<1){forE((i,x,z)=>{if(hit.has(i))return;const d=Math.hypot(x-O.x,z-O.z);if(d<R){hit.add(i);if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q2=>Math.hypot(q2.x-O.x,q2.z-O.z)<R,8,O.x,O.z,.05)}
   return t<TE},()=>{cap(0);if(ce)ce.remove();g.position.y=0;BLK.CAM.z=1;BLK.CAM.y=0;[aura,sph,sph2,dust,crater,rim].forEach(m=>{S.remove(m);m.material.dispose()});dust.geometry.dispose();crater.geometry.dispose();if(o===ME)ME.hold=0})}
