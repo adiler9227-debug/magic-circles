@@ -53,7 +53,7 @@ body.cls1 #bar button[data-i="10"]{order:-3}
 #hpw{position:relative;width:230px;height:18px;background:#2a1030;border:1px solid #8a60ff;border-radius:4px;overflow:hidden;margin:4px 0}#hpb{height:100%;background:#3ddc6a;width:100%}#hpt{position:absolute;inset:0;text-align:center;font-size:12px;line-height:18px;font-weight:700}#dead{position:fixed;inset:0;display:none;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#ff5060;background:rgba(40,0,10,.45);pointer-events:none;text-shadow:0 0 12px #000}
 body.cls3 #bar button[data-i="7"],body.cls3 #bar button[data-i="8"],body.cls4 #bar button[data-i="7"],body.cls4 #bar button[data-i="8"]{display:none}body.cls4 #bar button[data-i="6"]{border-color:#ff60ff;box-shadow:0 0 12px #a040ff}
 #tb #kb{display:none}body.cls3 #tb #kb{display:flex}
-body.cls2 #bar button:not([data-i="0"]):not([data-i="1"]):not([data-i="2"]):not([data-i="3"]):not([data-i="4"]):not([data-i="5"]):not([data-i="6"]):not([data-i="7"]):not([data-i="9"]):not([data-i="10"]){display:none}
+body.cls2 #bar button:not([data-i="0"]):not([data-i="1"]):not([data-i="2"]):not([data-i="3"]):not([data-i="4"]):not([data-i="5"]):not([data-i="6"]):not([data-i="7"]):not([data-i="8"]):not([data-i="9"]):not([data-i="10"]){display:none}
 </style></head><body>
 <div id="hud"><div id="md"></div><div id="fps"></div><div id="kills"></div><div id="hpw"><div id="hpb"></div><span id="hpt"></span></div><div id="lv"></div><div id="st" style="color:#7cff9a;font-weight:700"></div></div>
 <div id="tb"><button id="rb" title="Сброс: враги, откаты, манекен">↻</button><button id="lb" title="Поднять кнопки выше/ниже">⇧</button><button id="sb" title="Скрыть/показать заклинания">✦</button><button id="fb" title="Полный экран">⛶</button><button id="kb" title="Скин Коробаса (T)">🎨</button><button id="mb" title="Меню (M)">☰</button></div>
@@ -1616,10 +1616,40 @@ function worldCut(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g
   tk+=dt;if(tk>.35&&q<WT.after-.6){tk=0;forE((i,x,z)=>{if(lines.some(ln=>onLine(ln,x,z,isB(i)?10:7))){if(isB(i))eH(i,dm_*2);else fKill(i)}})}
   return q<WT.after},()=>{wcCap(0);wcFil('');BLK.CAM.z=1;BLK.CAM.y=0;own.forEach(m=>{S.remove(m);m.material.dispose()});B1.dispose();if(o===ME&&ME.hold<=WT.stop)ME.hold=0})}
 
-return{rasengan,odama,planet,chidori,palm,lotus,rings,devour,worldCut}})();
+// ===== Ниндзя 9 · Шинра Тенсей: взлёт, фразы Пэйна, на «Шинра Тенсей» волна стирает всё вокруг =====
+const ST_={boom:5.0,wave:2.2,fall:1.5,R:130,caps:[[.2,'痛みを感じろ','Почувствуй боль'],[1.1,'痛みを考えろ','Осознай боль'],[2.0,'痛みを受け取れ','Прими боль'],[2.9,'痛みを知れ','Познай боль'],[3.8,'ここより世界に痛みを','Отсюда — миру боль'],[4.85,'神羅天征','ШИНРА ТЕНСЕЙ']]};
+function shinra(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g.position.x,z:g.position.z},tn0=performance.now()/1000,T0=ST_.boom,TE=T0+ST_.wave+ST_.fall;
+ o.wcI=tn0+TE;if(o===ME)ME.hold=TE;M&&M.cast&&M.cast();
+ const usnd=typeof SND!=='undefined'&&SND.shinra&&typeof play==='function'?play('shinra',1.4*v):false;if(!usnd){tone(100,300,T0,'sine',.1*v,0,3);tone(55,30,3,'sine',.9*v,T0)}
+ const aura=new T3.Mesh(SPH,glmF(0xbfe8ff,0)),sph=new T3.Mesh(SPH,glmF(0xffffff,0)),sph2=new T3.Mesh(SPH,glmF(0x9fd0ff,0)),dust=new T3.Mesh(new T3.CylinderGeometry(1,1,1,64,1,true).translate(0,.5,0),glmF(0xb09070,0)),
+  crater=new T3.Mesh(new T3.CircleGeometry(1,64),new T3.MeshBasicMaterial({color:0x1a1410,transparent:true,opacity:0,depthWrite:false,fog:false})),rim=new T3.Mesh(RNG,glmF(0xffffff,0));
+ crater.rotation.x=rim.rotation.x=-PI/2;crater.position.set(O.x,.08,O.z);rim.position.set(O.x,.2,O.z);[aura,sph,sph2,dust,crater,rim].forEach(m=>S.add(m));dust.position.set(O.x,0,O.z);
+ let t=0,b=0,hit=new Set(),cs=-1,ce=null;const H=18;
+ const cap=(on,a,r)=>{if(!ce){ce=document.createElement('div');ce.style.cssText='position:fixed;left:0;right:0;top:20%;text-align:center;font:900 clamp(34px,9vw,96px) "Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif;color:#fff;text-shadow:0 0 12px #9cf,0 0 34px #48f,0 0 70px #fff;pointer-events:none;z-index:30;opacity:0;transition:opacity .2s,transform .9s ease-out';document.body.appendChild(ce)}
+  if(a)ce.innerHTML=a+'<div style="font:700 clamp(13px,3.2vw,26px) system-ui;letter-spacing:.25em;margin-top:6px;color:#dff">'+r+'</div>';ce.style.opacity=on?1:0;ce.style.transform=on?'scale(1.05)':'scale(.9)'};
+ fx.push(dt=>{t+=dt;const C=BLK.CAM,k=Math.min(1,dt*2.2),T=TM(),gp=g.position;
+  // камера отъезжает, фразы сменяются
+  if(t<TE-.8){C.z+=(4-C.z)*k;C.y+=(45-C.y)*k}else{C.z+=(1-C.z)*k*1.6;C.y+=(0-C.y)*k*1.6}
+  ST_.caps.forEach((c,i)=>{if(t>=c[0]&&cs<i){cs=i;cap(1,c[1],c[2])}});if(t>T0+1.4)cap(0);
+  // взлёт и аура
+  const up=t<T0?H*Math.min(1,t/2.5):t<T0+ST_.wave?H:H*Math.max(0,1-(t-T0-ST_.wave)/ST_.fall);gp.y=up;if(o!==ME){o.g.position.y=up}
+  aura.position.set(gp.x,up+3,gp.z);aura.scale.setScalar((t<T0?2+t*.7:6)*(1+.06*Math.sin(T*18)));aura.material.opacity=t<T0?.35*Math.min(1,t):Math.max(0,.35-(t-T0)*.4);
+  if(t<T0){for(let n=0;n<8;n++){const a=rnd()*PI*2,r=8+rnd()*12;emit(gp.x+Math.cos(a)*r,up+(rnd()-.5)*10,gp.z+Math.sin(a)*r,-Math.cos(a)*r*1.3,0,-Math.sin(a)*r*1.3,.6,n&1?0xbfe8ff:0xffffff,1.8,0)}
+   if(rnd()<.3)cubes(O.x+(rnd()-.5)*30,.3,O.z+(rnd()-.5)*30,1,[0x6b6490,0x8a8a8a],3,.4,1.2);lite(gp.x,up,gp.z,0xbfe8ff,1+t*.4);C.sh=Math.max(C.sh,t/T0*.6);return true}
+  // взрыв «Шинра Тенсей»
+  if(!b){b=1;flash(1*v);sBoomB(1.8*v);C.sh=5;for(let k2=0;k2<4;k2++)shock(O.x,O.z,k2&1?0xffffff:0x9fd0ff,ST_.R*(.6+k2*.3),1+k2*.3)}
+  const q=Math.min(1,(t-T0)/ST_.wave),e=1-Math.pow(1-q,3),R=4+ST_.R*e;
+  sph.position.set(O.x,H*.4,O.z);sph.scale.set(R,R*.7,R);sph.material.opacity=.55*(1-q);sph2.position.copy(sph.position);sph2.scale.set(R*1.06,R*.75,R*1.06);sph2.material.opacity=.3*(1-q);
+  dust.scale.set(R,14*(1-q*.4),R);dust.material.opacity=.6*(1-q);crater.scale.setScalar(R*.55);crater.material.opacity=.85*Math.min(1,q*3);rim.scale.setScalar(R*.55+2);rim.material.opacity=.8*(1-q);lite(O.x,20,O.z,0xffffff,4*(1-q));
+  for(let n=0;n<40;n++){const a=rnd()*PI*2;emit(O.x+Math.cos(a)*R,1+rnd()*8,O.z+Math.sin(a)*R,Math.cos(a)*30,8+rnd()*14,Math.sin(a)*30,.8,n%3?0xb09070:0xffffff,3,-8)}
+  if(rnd()<.9)for(let n=0;n<3;n++){const a=rnd()*PI*2;cubes(O.x+Math.cos(a)*R,.5,O.z+Math.sin(a)*R,2,[0x6b6490,0x8a8a8a,0x5a5690,0x333333],16,.6,1.6,Math.cos(a)*25,Math.sin(a)*25)}
+  if(q<1){forE((i,x,z)=>{if(hit.has(i))return;const d=Math.hypot(x-O.x,z-O.z);if(d<R){hit.add(i);if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q2=>Math.hypot(q2.x-O.x,q2.z-O.z)<R,8,O.x,O.z,.05)}
+  return t<TE},()=>{cap(0);if(ce)ce.remove();g.position.y=0;BLK.CAM.z=1;BLK.CAM.y=0;[aura,sph,sph2,dust,crater,rim].forEach(m=>{S.remove(m);m.material.dispose()});dust.geometry.dispose();crater.geometry.dispose();if(o===ME)ME.hold=0})}
+
+return{rasengan,odama,planet,chidori,palm,lotus,rings,devour,worldCut,shinra}})();
 {const G=CLS[0];G.sp=G.sp.slice();G.sp[6]=NSK.worldCut;G.ic=G.ic.slice();G.tx=G.tx.slice();G.nm=G.nm.slice();G.cdm=G.cdm.slice();G.dur=G.dur.slice();G.ic[6]='🈹';G.tx[6]='7 · Мировой разрез';G.nm[6]='🈹 Мировой разрез';G.cdm[6]=30;G.dur[6]=6.3;
  spells=G.sp;cdm=G.cdm;TDUR=G.dur;btn.forEach((b,i)=>{b.querySelector('.ic').textContent=G.ic[i];b.querySelector('.tx').textContent=G.tx[i]})}
-{const N=CLS[2];N.sp=N.sp.slice();N.sp[1]=NSK.rasengan;N.sp[2]=NSK.odama;N.sp[3]=NSK.planet;N.sp[6]=NSK.chidori;
+{const N=CLS[2];N.sp=N.sp.slice();N.sp[8]=NSK.shinra;N.ic[8]='🌀';N.nu[8]='9';N.tx[8]='9 · Шинра Тенсей';N.nm[8]='🌀 Шинра Тенсей';N.cdm[8]=60;N.dur[8]=8.7;N.sp[1]=NSK.rasengan;N.sp[2]=NSK.odama;N.sp[3]=NSK.planet;N.sp[6]=NSK.chidori;
  [[1,'🔵','Расенган',3,1.2],[2,'🌕','Одама Расенган',9,2.2],[3,'🪐','Планетарный Расенган',16,4.3],[6,'⚡','Чидори',6,.8]].forEach(([i,ic,nm,cd,du])=>{N.ic[i]=ic;N.tx[i]=(i+1)+' · '+nm;N.nm[i]=ic+' '+nm;N.cdm[i]=cd;N.dur[i]=du});
  const W=CLS[1];W.sp=W.sp.slice();W.ic=W.ic.slice();W.tx=W.tx.slice();W.nm=W.nm.slice();W.cdm=W.cdm.slice();W.dur=W.dur.slice();
  [[4,NSK.palm,'🙏','Ладонь Будды',20,3],[5,NSK.lotus,'🪷','Огненный Лотос',18,6],[6,NSK.rings,'💫','Кольца Души',22,4.2],[7,NSK.devour,'🌌','Удар Млечного Пути',24,3.2]].forEach(([i,f,ic,nm,cd,du])=>{W.sp[i]=f;W.ic[i]=ic;W.tx[i]=(i+1)+' · '+nm;W.nm[i]=ic+' '+nm;W.cdm[i]=cd;W.dur[i]=du})}
@@ -1637,7 +1667,7 @@ const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
 function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:o.cl===3?.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
-function cast(i){if(!started||ME.dead>0)return;if(cls===2&&i===8)return;if(cls===3&&i>6&&i<9)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
+function cast(i){if(!started||ME.dead>0)return;if(cls===3&&i>6&&i<9)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
  netSend({t:'c',c:cls,k:korSk,i,x:P.position.x,z:P.position.z,y:yaw});doCast(ME,i)}
 const ICE={iceServers:[]},$=id=>document.getElementById(id),nst=t=>{const e=$('nst');if(e)e.textContent=t},shw=(id,v)=>$(id).style.display=v?'block':'none';
 // ===== КООП: босс (один на всех, ведёт игрок с наименьшим номером), раунд 3 мин =====
