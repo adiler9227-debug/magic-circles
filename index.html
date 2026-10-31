@@ -1408,7 +1408,7 @@ function atomic(){const o=CS(),g=CP(),C0={x:g.position.x,z:g.position.z},dm_=DMG
   CAM.z=q<.7?1.5+2.6*Math.min(1,q*5):1+3.1*(1-q)/.3;CAM.y=q<.7?5+28*Math.min(1,q*5):33*(1-q)/.3;
   return q<1},()=>{cfil('');cap(0);if(core)core.userData.kill();CAM.z=1;CAM.y=0;CAM.sh=0;FRZ=0;own.forEach(m=>{S.remove(m);if(m.material)m.material.dispose();if(m.geometry!==SPH&&m.geometry!==RNG)m.geometry.dispose()});if(M&&M.sg)M.sg.scale.set(3.4*PX,2.4*PX,12*PX)})}
 const IC=['🗡️','🦶','🔵','🔴','🟣','🧨'],NM=['Аметистовый клинок','Пинок-рывок','Синий: притяжение','Красный: отталкивание','Фиолетовый: стирание','ТНТ-дождь'];
-return{model,sp:[blade,kick,blue,red,purple,tnt],ult:atomic,UT,CAM,frz:()=>FRZ,wall:wallB,dome:ringB,IC,NM,cdm:[.6,3,15,12,25,10],dur:[.35,.5,12.4,8.9,21.6,2],cubes}})();
+return{H:{kfx,ringH,eH,eUp,forE,stn,plT,orb,swirl,bolt,cubes,fKill,kv,MO,DMG,face,isB,glm,sBoomB,cone,SPH,RNG,CUBE},model,sp:[blade,kick,blue,red,purple,tnt],ult:atomic,UT,CAM,frz:()=>FRZ,wall:wallB,dome:ringB,IC,NM,cdm:[.6,3,15,12,25,10],dur:[.35,.5,12.4,8.9,21.6,2],cubes}})();
 
 const BLKM=BLK.model();
 // ===== КЛАССЫ, 1×1 ОНЛАЙН (WebRTC без серверов) =====
@@ -1441,6 +1441,110 @@ function nSlam(){const o=CS(),f=fwd(),p=CP().position,tx=p.x+f.x*22,tz=p.z+f.z*2
 CLS.push({sp:[rasen,rifle('mosin'),rifle('kar'),rifle('m14'),nKunai,nVortex,nDash,nSlam,()=>{},wallSh,domeSh],cdm:[15,1.4,1,.16,3,8,6,12,0,6,5.2],dur:[5,1.4,1,.16,1.2,2.2,.4,1.6,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<8?['🌀','🔫','🎯','⚡','🥷','🌪️','🌩️','🌑'][i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<8?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<8?['1 · Расенсюрикен','2 · Мосин 91/30','3 · Kar98k','4 · M14','5 · Теневые кунаи','6 · Вихрь теней','7 · Рывок-молния','8 · Удар Пустоты'][i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<8?['🌀 Расенсюрикен','🔫 Мосин 91/30','🎯 Kar98k','⚡ M14','🥷 Теневые кунаи','🌪️ Вихрь теней','🌩️ Рывок-молния','🌑 Удар Пустоты'][i]:i>8?x:'')});
 CLS.push({sp:[...KOR.sp,()=>{},()=>{},wallSh,domeSh],cdm:[...KOR.cdm,0,0,6,5.2],dur:[...KOR.dur,0,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<7?KOR.IC[i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<7?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+KOR.NM[i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<7?KOR.IC[i]+' '+KOR.NM[i]:i>8?x:'')});
 CLS.push({sp:[...BLK.sp,BLK.ult,()=>{},()=>{},BLK.wall,BLK.dome],cdm:[...BLK.cdm,180,0,0,7,6],dur:[...BLK.dur,12,0,0,7,4],ic:CLS[0].ic.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]:i>8?['🧱','🏰'][i-9]:''),nu:CLS[0].nu.map((x,i)=>i<7?(i==6?'7/R':String(i+1)):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+[...BLK.NM,'АТОМНЫЙ'][i]:i==9?'Q · Блок-стена':i==10?'E · Блок-крепость':''),nm:CLS[0].nm.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]+' '+[...BLK.NM,'АТОМНЫЙ (ульта)'][i]:i==9?'🧱 Блок-стена':i==10?'🏰 Блок-крепость':'')});
+// ===== НОВЫЕ ТЕХНИКИ: Ниндзя (Расенган ×3, Чидори) и Мечник (Ладонь Будды, Огненный Лотос, Кольца Души, Пожиратель Звёзд) =====
+const NSK=(function(){
+const T3=THREE,V3=T3.Vector3,PI=Math.PI,{kfx,ringH,eH,eUp,forE,stn,plT,orb,swirl,bolt,cubes,fKill,kv,MO,DMG,face,isB,glm,sBoomB,SPH,RNG,CUBE}=BLK.H,TM=()=>performance.now()/1000;
+const np=(n,v)=>{try{if(typeof nplay==='function')nplay(n,v)}catch(e){}},near=(x,z,r)=>{let b=-1,bd=r;forE((i,qx,qz)=>{const d=Math.hypot(qx-x,qz-z);if(d<bd){bd=d;b=i}});return b};
+const hnd=o=>{const M=MO(o);if(M&&M.hand)return M.hand();const p=o.g.position,F=fwd();return new V3(p.x+F.x*1.5,3,p.z+F.z*1.5)};
+const blast=(X,Y,Z,R,dm_,c1,c2,up)=>{shock(X,Z,c1,R*1.5,.5);shock(X,Z,c2,R,.35);lite(X,Y,Z,c1,3);forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<R){if(isB(i))eH(i,dm_*3);else if(!(up&&eUp(i,X,Z,up)))eH(i,dm_*2.5)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<R,2,X,Z);
+ for(let n=0;n<70;n++){const a=rnd()*PI*2,e=rnd()-.3;emit(X,Y,Z,Math.cos(a)*R*2.2,e*R*1.6,Math.sin(a)*R*2.2,.7,n&1?c1:c2,2,-4)}};
+const spiralFX=(p,R,c1,c2,n)=>{for(let k=0;k<n;k++){const a=rnd()*PI*2,r=R*(.6+rnd()*.5),h=(rnd()-.5)*R;emit(p.x+Math.cos(a)*r,p.y+h,p.z+Math.sin(a)*r,-Math.sin(a)*R*9,0,Math.cos(a)*R*9,.15,k&1?c1:c2,1.3,0)}};
+// ---------- НИНДЗЯ ----------
+// 2 · Расенган: копится в руке, рывок вперёд и удар
+function rasengan(){const o=CS(),g=CP(),M=MO(o),dm_=DMG(),v=kv(o),ob=orb(0x66ccff,0x2a8cff,.55);let t=0,hit=0,F=fwd();if(o===ME)ME.hold=.9;np('rzc',.6);tone(300,900,.5,'sine',.1*v,0,30);
+ fx.push(dt=>{t+=dt;const T=TM(),h=hnd(o);if(t<.5){F=fwd();face(o,F);if(M)M.chg=t/.5;ob.position.copy(h);ob.userData.set(.4+t*1.4,dt,T);spiralFX(h,.9,0x9fe6ff,0xffffff,4);lite(h.x,h.y,h.z,0x66ccff,1.5);return true}
+  if(t<.8&&!hit){const p=g.position,s=50*dt;p.x+=F.x*s;p.z+=F.z*s;if(o!==ME){o.tx=p.x;o.tz=p.z}face(o,F);ob.position.copy(hnd(o));ob.userData.set(1.1,dt,T);spiralFX(ob.position,.9,0x9fe6ff,0xffffff,5);
+   for(let k=0;k<3;k++)emit(p.x,2,p.z,-F.x*12,rnd()*2,-F.z*12,.35,0x9fe6ff,1.2,0);if(near(p.x+F.x*2,p.z+F.z*2,3)>=0)hit=1;return true}
+  const X=ob.position.x,Z=ob.position.z;if(M){M.chg=0;M.thr&&M.thr()}np('rzb',.6);sBoomB(.7*v);flash(.25*v);blast(X,ob.position.y,Z,8,dm_*1.2,0x66ccff,0xffffff,1.6);
+  for(let k=0;k<3;k++)ringH(X,2,Z,6+k*3,0x9fe6ff,.4,k*.06,1,F);cubes(X,.5,Z,12,[0x66ccff,0x6b6490,0x8a8a8a],9,.4,1,F.x*8,F.z*8);return false},()=>{ob.userData.kill();if(M)M.chg=0;if(o===ME)ME.hold=0})}
+// 3 · Одама Расенган: огромный шар, катится вперёд и взрывается
+function odama(){const o=CS(),M=MO(o),dm_=DMG(),v=kv(o),ob=orb(0x66ccff,0x2a8cff,1);let t=0,ph=0,X=0,Y=0,Z=0,tr=0,F=fwd();if(o===ME)ME.hold=1.1;np('rzc',.8);tone(150,600,1,'sine',.14*v,0,20);
+ fx.push(dt=>{t+=dt;const T=TM();if(ph===0){F=fwd();face(o,F);const h=hnd(o),k=Math.min(1,t/1);if(M)M.chg=k;ob.position.set(h.x,h.y+1+2.2*k,h.z);ob.userData.set(.3+1.9*k,dt,T);spiralFX(ob.position,2.2*k+.5,0x9fe6ff,0xffffff,8);lite(h.x,h.y+2,h.z,0x66ccff,1+2*k);
+   if(t>=1){ph=1;X=ob.position.x;Y=ob.position.y;Z=ob.position.z;if(M){M.chg=0;M.thr&&M.thr()}nz2(.6,.4*v,400,4000,'bandpass')}return true}
+  const s=36*dt;X+=F.x*s;Z+=F.z*s;tr+=s;Y+=(2.6-Y)*Math.min(1,dt*6);ob.position.set(X,Y,Z);ob.userData.set(2.2,dt,T);spiralFX(ob.position,2.6,0x9fe6ff,0xffffff,12);lite(X,Y,Z,0x66ccff,2.5);
+  if(rnd()<.6)cubes(X,.3,Z,2,[0x6b6490,0x8a8a8a,0x5a5690],9,.4,.8);forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<4.5){if(isB(i))eH(i,dm_*.15);else if(!eUp(i,X,Z,1.4))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<4.5,1.5,X,Z);
+  if(tr<30)return true;np('rzb',1);sBoomB(1.1*v);flash(.5*v);blast(X,Y,Z,14,dm_*1.6,0x66ccff,0xffffff,2);pillar(X,Z,0x9fe6ff,30,4,.6);cubes(X,.5,Z,30,[0x66ccff,0x6b6490,0x8a8a8a],14,.5,1.4);return false},
+  ()=>{ob.userData.kill();if(M)M.chg=0;if(o===ME)ME.hold=0})}
+// 4 · Планетарный Расенган: большой шар и 3 малых на орбите, медленно летит и перемалывает всех
+function planet(){const o=CS(),M=MO(o),dm_=DMG(),v=kv(o),C=orb(0x66ccff,0x2a8cff,1),S3=[0,1,2].map(()=>orb(0x9fe6ff,0x2a8cff,.6)),rg=new T3.Mesh(RNG,glm(0x9fe6ff,.5));S.add(rg);let t=0,ph=0,X=0,Y=0,Z=0,F=fwd();if(o===ME)ME.hold=1.6;
+ np('rzc',1);tone(120,700,1.6,'sine',.16*v,0,24);
+ const place=(T,k,R)=>{C.position.set(X,Y,Z);C.userData.set(2*k,0,T);S3.forEach((s,i)=>{const a=T*5+i*PI*2/3;s.position.set(X+Math.cos(a)*R*k,Y+Math.sin(a*1.3)*.6,Z+Math.sin(a)*R*k);s.userData.set(k,0,T);spiralFX(s.position,1.2,0x9fe6ff,0xffffff,3)});
+  rg.position.set(X,Y,Z);rg.scale.setScalar(R*k);rg.rotation.set(PI/2+Math.sin(T)*.2,0,T)};
+ fx.push(dt=>{t+=dt;const T=TM();if(ph===0){F=fwd();face(o,F);const h=hnd(o),k=Math.min(1,t/1.6);if(M)M.chg=k;X=h.x;Y=h.y+3+3*k;Z=h.z;place(T,k,6);lite(X,Y,Z,0x66ccff,1+3*k);
+   for(let n=0;n<6;n++){const a=rnd()*PI*2,r=12;emit(X+Math.cos(a)*r,Y+(rnd()-.5)*6,Z+Math.sin(a)*r,-Math.cos(a)*r*1.8,0,-Math.sin(a)*r*1.8,.5,0x9fe6ff,1.4,0)}
+   if(t>=1.6){ph=1;if(M){M.chg=0;M.thr&&M.thr()}flash(.3*v);nz2(1,.4*v,300,3000,'bandpass')}return true}
+  const q=t-1.6,s=20*dt;X+=F.x*s;Z+=F.z*s;Y+=(4-Y)*Math.min(1,dt*3);place(T,1,6);lite(X,Y,Z,0x66ccff,3);if(rnd()<.8)cubes(X+(rnd()-.5)*10,.3,Z+(rnd()-.5)*10,2,[0x6b6490,0x8a8a8a],10,.4,.8);
+  forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<9){if(isB(i))eH(i,dm_*.12);else if(!eUp(i,X,Z,1.2))eH(i,dm_*2)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<8,1.5,X,Z);
+  if(q<2.6)return true;np('rzb',1.2);sBoomB(1.4*v);flash(.7*v);blast(X,Y,Z,20,dm_*2,0x66ccff,0xffffff,2.4);for(let k=0;k<3;k++)shock(X,Z,0x9fe6ff,30+k*12,.6+k*.2);pillar(X,Z,0x9fe6ff,45,6,.8);cubes(X,.5,Z,45,[0x66ccff,0x6b6490,0x8a8a8a,0x333333],16,.55,1.6);return false},
+  ()=>{C.userData.kill();S3.forEach(s=>s.userData.kill());S.remove(rg);rg.material.dispose();if(M)M.chg=0;if(o===ME)ME.hold=0})}
+// 7 · Чидори: молния в руке, рывок-удар, всё на пути получает разряд
+function chidori(){const o=CS(),g=CP(),M=MO(o),dm_=DMG(),v=kv(o);let t=0,F=fwd(),a=null,done=0;if(o===ME)ME.hold=.75;
+ for(let k=0;k<10;k++)nz2(.05,.18*v,9000,5000,'highpass',k*.03);
+ fx.push(dt=>{t+=dt;const h=hnd(o);if(t<.3){F=fwd();face(o,F);if(M)M.chg=t/.3;for(let k=0;k<3;k++)bolt(h,new V3(h.x+(rnd()-.5)*3,h.y+(rnd()-.5)*3,h.z+(rnd()-.5)*3),rnd()<.5?0x9fe6ff:0xffffff,.06,.4);lite(h.x,h.y,h.z,0x9fe6ff,2);return true}
+  const p=g.position;if(!a){a=p.clone();tone(1200,200,.3,'sawtooth',.15*v)}if(t<.6){const s=70*dt;p.x+=F.x*s;p.z+=F.z*s;if(o!==ME){o.tx=p.x;o.tz=p.z}face(o,F);
+   bolt(new V3(p.x-F.x*3,2.5,p.z-F.z*3),new V3(p.x,2.5,p.z),0x9fe6ff,.25,.8);bolt(h,new V3(h.x+F.x*3,h.y,h.z+F.z*3),0xffffff,.08,.5);
+   forE((i,x,z)=>{if(Math.hypot(x-p.x,z-p.z)<3.2){eH(i,dm_*2.2);stn(i,1);bolt(new V3(p.x,3,p.z),new V3(x,2,z),0xffffff,.15,.6)}});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<3,1.6,p.x,p.z);return true}
+  if(!done){done=1;if(M)M.chg=0;sBoomB(.5*v);flash(.2*v);shock(p.x,p.z,0x9fe6ff,10,.3);for(let k=0;k<8;k++){const an=rnd()*PI*2;bolt(new V3(p.x,3,p.z),new V3(p.x+Math.cos(an)*8,rnd()*4,p.z+Math.sin(an)*8),0x9fe6ff,.2,1.2)}
+   forE((i,x,z)=>{if(Math.hypot(x-p.x,z-p.z)<7)eH(i,dm_*1.5)})}return false},()=>{if(M)M.chg=0;if(o===ME)ME.hold=0})}
+// ---------- МЕЧНИК ----------
+// 5 · Ладонь Будды: с неба падает гигантская золотая ладонь
+const GM=()=>new T3.MeshStandardMaterial({color:0xffc84a,emissive:0x8a5a00,metalness:.6,roughness:.35,transparent:true,opacity:1});
+function palm(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),X=p.x+F.x*18,Z=p.z+F.z*18,g=new T3.Group(),m=GM(),gl_=glm(0xffd060,.35);MO(o).cast&&MO(o).cast();face(o,F);
+ const bx=(w,h,d,x,y,z,rx)=>{const b=new T3.Mesh(CUBE,m);b.scale.set(w,h,d);b.position.set(x,y,z);b.rotation.x=rx||0;g.add(b);return b};
+ bx(11,1.6,12,0,0,0);[-4,-2,0,2].forEach((x,i)=>bx(1.7,1.4,[7,8,8.5,7.5][i],x,0,-6-[7,8,8.5,7.5][i]/2+.5));bx(1.9,1.4,5.5,5.6,0,-1.5).rotation.y=-.6;const aura=new T3.Mesh(SPH,gl_);aura.scale.set(9,2.5,14);g.add(aura);
+ g.rotation.y=Math.atan2(F.x,F.z)+PI;g.position.set(X,60,Z);S.add(g);const ring=new T3.Mesh(RNG,glm(0xffd060,.9));ring.rotation.x=-PI/2;ring.position.set(X,.2,Z);S.add(ring);
+ tone(60,200,1.1,'sine',.18*v,0,6);for(let k=0;k<5;k++)tone(440*[1,1.25,1.5,2,2.5][k],440*[1,1.25,1.5,2,2.5][k],2,'sine',.05*v,k*.08);let t=0,hit=0;
+ fx.push(dt=>{t+=dt;ring.scale.setScalar(14*Math.min(1,t*2));ring.rotation.z+=dt;ring.material.opacity=.9*(1-Math.max(0,t-1.2));lite(X,10,Z,0xffd060,2);
+  if(t<1){const y=60-58*Math.pow(t,2.2);g.position.y=Math.max(1,y);for(let n=0;n<6;n++)emit(X+(rnd()-.5)*12,g.position.y+2,Z+(rnd()-.5)*14,0,12,0,.5,0xffd060,1.6,0);return true}
+  if(!hit){hit=1;g.position.y=1;sBoomB(1.3*v);flash(.6*v);for(let k=0;k<4;k++)shock(X,Z,k&1?0xffffff:0xffc84a,18+k*10,.5+k*.15);pillar(X,Z,0xffd060,40,9,.6);
+   forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<12){if(isB(i))eH(i,dm_*6);else fKill(i)}else if(d<22){if(!eUp(i,X,Z,1.8))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<14,4,X,Z);
+   cubes(X,.5,Z,50,[0xffc84a,0x6b6490,0x8a8a8a,0x5a5690],18,.55,1.6);for(let n=0;n<120;n++){const a=rnd()*PI*2;emit(X,1,Z,Math.cos(a)*40,rnd()*10,Math.sin(a)*40,.8,n&1?0xffd060:0xffffff,2.2,-4)}}
+  const k=(t-1)/1.2;m.opacity=Math.max(0,1-k);gl_.opacity=.35*Math.max(0,1-k);return k<1},()=>{S.remove(g);S.remove(ring);m.dispose();gl_.dispose();ring.material.dispose()})}
+// 6 · Огненный Лотос Будды: лотос из огня разных цветов, бросок и взрыв
+function lotus(){const o=CS(),dm_=DMG(),v=kv(o),g=new T3.Group(),pet=[],cols=[0xff4020,0x30a0ff,0x40ff80,0xffd040,0xc040ff];let F=fwd();MO(o).cast&&MO(o).cast();if(o===ME)ME.hold=1.2;
+ for(let L=0;L<2;L++)for(let k=0;k<10;k++){const c=new T3.Mesh(new T3.ConeGeometry(.45,2.2-L*.6,6),glm(cols[(k+L)%5],.85)),a=k/10*PI*2+L*.3;c.position.set(Math.cos(a)*(1-L*.4),.8,Math.sin(a)*(1-L*.4));c.rotation.set(Math.sin(a)*(.9-L*.4),0,-Math.cos(a)*(.9-L*.4));g.add(c);pet.push(c)}
+ const core=new T3.Mesh(SPH,glm(0xffffff));core.scale.setScalar(.6);g.add(core);S.add(g);tone(200,800,1.2,'sawtooth',.08*v,0,10);nz2(1.2,.3*v,500,3000,'bandpass');let t=0,ph=0,X=0,Y=0,Z=0,V=0,bt=0;
+ fx.push(dt=>{t+=dt;const T=TM();g.rotation.y+=dt*3;pet.forEach((c,i)=>c.material.color.setHex(cols[(i+Math.floor(T*6))%5]));
+  if(ph===0){F=fwd();face(o,F);const p=CP().position,k=Math.min(1,t/1.2);X=p.x+F.x*1.5;Y=6.5;Z=p.z+F.z*1.5;g.position.set(X,Y,Z);g.scale.setScalar(.3+1.5*k);core.scale.setScalar(.4+.5*k+.1*Math.sin(T*30));
+   for(let n=0;n<6;n++){const a=rnd()*PI*2,r=5;emit(X+Math.cos(a)*r,Y+(rnd()-.5)*3,Z+Math.sin(a)*r,-Math.cos(a)*r*2,1,-Math.sin(a)*r*2,.4,cols[n%5],1.5,0)}lite(X,Y,Z,cols[Math.floor(T*6)%5],2);
+   if(t>=1.2){ph=1;V=10}return true}
+  const s=32*dt;X+=F.x*s;Z+=F.z*s;V-=30*dt;Y+=V*dt;g.position.set(X,Y,Z);for(let n=0;n<5;n++)emit(X,Y,Z,(rnd()-.5)*6,(rnd()-.5)*6,(rnd()-.5)*6,.4,cols[n%5],1.6,0);
+  if(Y>1)return true;
+  if(!bt){bt=1;S.remove(g);sBoomB(1.4*v);flash(.6*v);for(let k=0;k<5;k++)shock(X,Z,cols[k],14+k*7,.5+k*.12);pillar(X,Z,0xff6020,35,7,.7);pillar(X,Z,0x30a0ff,28,4,.6);
+   blast(X,2,Z,16,dm_*1.8,0xff5020,0xffd040,2);cubes(X,.5,Z,40,[0xff4020,0x30a0ff,0xffd040,0x6b6490],16,.5,1.5);
+   const dome=new T3.Mesh(SPH,glm(0xff7030,.6));dome.position.set(X,0,Z);kfx(dome,1,k=>{dome.scale.set(18*Math.sqrt(k),12*Math.sqrt(k),18*Math.sqrt(k));dome.material.opacity=.6*(1-k)})}
+  bt+=dt;if(bt<2.5){for(let n=0;n<4;n++){const a=rnd()*PI*2,r=rnd()*10;emit(X+Math.cos(a)*r,.3,Z+Math.sin(a)*r,0,4+rnd()*6,0,.6,cols[n%5],1.6,0)}if(Math.floor(bt*4)!==Math.floor((bt-dt)*4))forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<10)eH(i,dm_*.5)});return true}
+  return false},()=>{S.remove(g);g.traverse(m=>{if(m.material)m.material.dispose();if(m.geometry&&m.geometry.type==='ConeGeometry')m.geometry.dispose()});if(o===ME)ME.hold=0})}
+// 7 · Кольца Души: 7 колец поднимаются от ног и одно за другим бьют волнами
+function rings(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),C={x:g.position.x,z:g.position.z},cols=[0xffe060,0xffe060,0xa040ff,0xa040ff,0x202020,0x202020,0xff2030],R=[];MO(o).cast&&MO(o).cast();if(o===ME)ME.hold=1.2;
+ cols.forEach((c,i)=>{const m=new T3.Mesh(new T3.TorusGeometry(2.6+i*.12,.12,6,40),c===0x202020?new T3.MeshBasicMaterial({color:0x111111,transparent:true}):glm(c,.95));m.rotation.x=PI/2;m.position.set(C.x,.2,C.z);m.visible=false;S.add(m);R.push({m,c,f:0})});
+ let t=0;fx.push(dt=>{t+=dt;const T=TM(),p=g.position;
+  R.forEach((r,i)=>{const t0=i*.16,k=Math.min(1,Math.max(0,(t-t0)/.35));if(t>=t0&&!r.m.visible){r.m.visible=true;tone(300+i*80,300+i*80,.4,'sine',.07*v);lite(p.x,2,p.z,r.c===0x202020?0x8040ff:r.c,1.5)}
+   if(t<1.6){r.m.position.set(p.x,.3+k*(.6+i*.65),p.z);r.m.rotation.z=T*(1+i*.2)*(i&1?1:-1);r.m.rotation.x=PI/2+Math.sin(T*2+i)*.15;
+    if(r.m.visible&&rnd()<.5){const a=rnd()*PI*2,rr=2.6+i*.12;emit(p.x+Math.cos(a)*rr,r.m.position.y,p.z+Math.sin(a)*rr,0,1,0,.4,r.c===0x202020?0x8040ff:r.c,1.3,0)}}
+   else{const q=t-1.6-i*.12;if(q>0&&!r.f){r.f=1;r.m.position.set(p.x,.4,p.z);r.m.rotation.set(PI/2,0,0);tone(150-i*10,40,.4,'sine',.4*v);const cc=r.c===0x202020?0x8040ff:r.c;shock(p.x,p.z,cc,16+i*3,.5);
+     forE((j,x,z)=>{const d=Math.hypot(x-p.x,z-p.z);if(d<14+i*2.5){if(isB(j))eH(j,dm_*1.2);else if(i===6&&eUp(j,p.x,p.z,1.6)){}else eH(j,dm_*1.1)}});plT(q2=>Math.hypot(q2.x-p.x,q2.z-p.z)<14+i*2.5,.8,p.x,p.z);
+     for(let n=0;n<30;n++){const a=rnd()*PI*2;emit(p.x,1,p.z,Math.cos(a)*30,rnd()*4,Math.sin(a)*30,.5,cc,1.6,0)}}
+    if(r.f){const s=1+Math.max(0,q)*20;r.m.scale.setScalar(s);r.m.material.opacity=Math.max(0,1-q*2)}}});
+  return t<3.3},()=>{R.forEach(r=>{S.remove(r.m);r.m.geometry.dispose();r.m.material.dispose()});if(o===ME)ME.hold=0})}
+// 8 · Пожиратель Звёзд: чёрная звезда втягивает врагов и взрывается сверхновой
+function devour(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),X=p.x+F.x*20,Z=p.z+F.z*20,Y=9,g=new T3.Group(),core=new T3.Mesh(SPH,new T3.MeshBasicMaterial({color:0x000000})),rim=new T3.Mesh(SPH,glm(0xff9030,.5)),disk=new T3.Mesh(new T3.RingGeometry(1.4,4,64),glm(0xffa040,.8)),disk2=new T3.Mesh(new T3.RingGeometry(1.2,2.6,64),glm(0xffffff,.7));
+ MO(o).cast&&MO(o).cast();face(o,F);disk.rotation.x=disk2.rotation.x=PI/2.3;g.add(core,rim,disk,disk2);g.position.set(X,Y,Z);S.add(g);tone(80,40,3,'sawtooth',.2*v,0,3);nz2(3,.35*v,2000,100,'lowpass');let t=0,tk=0,end=0;const D=3;
+ fx.push(dt=>{t+=dt;const T=TM(),k=Math.min(1,t/.6);
+  if(t<D){core.scale.setScalar(2.2*k);rim.scale.setScalar(2.8*k*(1+.08*Math.sin(T*20)));disk.scale.setScalar(2.4*k);disk2.scale.setScalar(2.4*k);disk.rotation.z+=dt*4;disk2.rotation.z-=dt*6;lite(X,Y,Z,0xff9030,2);
+   for(let n=0;n<10;n++){const a=rnd()*PI*2,r=14+rnd()*14,e=rnd()-.5;emit(X+Math.cos(a)*r,Y+e*r*.6,Z+Math.sin(a)*r,-Math.cos(a)*r*1.4+Math.sin(a)*r,-e*r*.8,-Math.sin(a)*r*1.4-Math.cos(a)*r,.7,n%3?0xffd0a0:0xffffff,1.3,0)}
+   tk+=dt;const tick=tk>.25;if(tick)tk=0;
+   forE((i,x,z)=>{const dx=X-x,dz=Z-z,d=Math.hypot(dx,dz)||1;if(d<32&&!isB(i)){stn(i,.3);const sp=Math.min(d,(12+26*(1-d/32))*dt);ex[i]+=dx/d*sp;ez[i]+=dz/d*sp;if(d<3)fKill(i)}else if(isB(i)&&tick&&d<10)eH(i,dm_*.6)});
+   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<5,.5,X,Z);return true}
+  if(!end){end=1;S.remove(g);sBoomB(1.5*v);flash(.9*v);tone(40,20,2,'sine',.7*v);for(let k=0;k<4;k++)shock(X,Z,k&1?0xffffff:0xffa040,24+k*12,.6+k*.2);pillar(X,Z,0xffffff,60,8,.7);
+   blast(X,Y,Z,18,dm_*2,0xffa040,0xffffff,2.2);cubes(X,.5,Z,40,[0xffa040,0x333333,0x6b6490],16,.5,1.5);const nova=new T3.Mesh(SPH,glm(0xffffff,.9));nova.position.set(X,Y,Z);kfx(nova,.8,k=>{nova.scale.setScalar(2+30*Math.sqrt(k));nova.material.opacity=.9*(1-k)})}
+  return false},()=>{S.remove(g);[core,rim,disk,disk2].forEach(m=>{m.material.dispose()});disk.geometry.dispose();disk2.geometry.dispose()})}
+return{rasengan,odama,planet,chidori,palm,lotus,rings,devour}})();
+{const N=CLS[2];N.sp=N.sp.slice();N.sp[1]=NSK.rasengan;N.sp[2]=NSK.odama;N.sp[3]=NSK.planet;N.sp[6]=NSK.chidori;
+ [[1,'🔵','Расенган',3,1.2],[2,'🌕','Одама Расенган',9,2.2],[3,'🪐','Планетарный Расенган',16,4.3],[6,'⚡','Чидори',6,.8]].forEach(([i,ic,nm,cd,du])=>{N.ic[i]=ic;N.tx[i]=(i+1)+' · '+nm;N.nm[i]=ic+' '+nm;N.cdm[i]=cd;N.dur[i]=du});
+ const W=CLS[1];W.sp=W.sp.slice();W.ic=W.ic.slice();W.tx=W.tx.slice();W.nm=W.nm.slice();W.cdm=W.cdm.slice();W.dur=W.dur.slice();
+ [[4,NSK.palm,'🙏','Ладонь Будды',20,2.2],[5,NSK.lotus,'🪷','Огненный Лотос',18,4.8],[6,NSK.rings,'💫','Кольца Души',22,3.3],[7,NSK.devour,'🕳️','Пожиратель Звёзд',24,3.2]].forEach(([i,f,ic,nm,cd,du])=>{W.sp[i]=f;W.ic[i]=ic;W.tx[i]=(i+1)+' · '+nm;W.nm[i]=ic+' '+nm;W.cdm[i]=cd;W.dur[i]=du})}
+
 const SWM=SWX.model(),NIN=armNinja(makeNinja(2.4));let cls=0;ME.cl=0;DU.cm=dum;DU.cl=0;[DU2,DU3].forEach(D=>{D.cm=D.dm;D.cl=0});
 const cN=[document.getElementById('cm'),document.getElementById('cs'),document.getElementById('cn'),document.getElementById('ck'),document.getElementById('cb')];
 function setClass(c){if(c===cls)return;P.remove(mage.g);mage=c==4?BLKM:c==3?KORM[korSk]:c==2?NIN:c?SWM:SK[skI];P.add(mage.g);cls=ME.cl=c;const k=CLS[c];spells=k.sp;cdm=k.cdm;TDUR=k.dur;
@@ -1453,7 +1557,7 @@ document.getElementById('kb').onclick=korSwap;
 const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
-function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?([1,1.5,1.25,.5][i]||1):1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
+function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
 function cast(i){if(!started||ME.dead>0)return;if(cls===2&&i===8)return;if(cls===3&&i>6&&i<9)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
  netSend({t:'c',c:cls,k:korSk,i,x:P.position.x,z:P.position.z,y:yaw});doCast(ME,i)}
 const ICE={iceServers:[]},$=id=>document.getElementById(id),nst=t=>{const e=$('nst');if(e)e.textContent=t},shw=(id,v)=>$(id).style.display=v?'block':'none';
