@@ -1076,7 +1076,7 @@ const forE=cb=>{for(let i=0;i<NE;i++)if(al[i]&&!fl_[i])cb(i,ex[i],ez[i])};
 const stn=(i,t)=>{if(!isB(i))est[i]=Math.max(est[i],t)};
 function near(x,z,r,used){let b=-1,bd=r;forE((i,qx,qz)=>{if(used.has(i))return;const d=Math.hypot(qx-x,qz-z);if(d<bd){bd=d;b=i}});return b}
 // игроки (манекен в тестах; в совместной игре друзья друг друга не ранят — так устроена игра)
-function plT(test,mul,x,z){if(!CTX)return;for(const q of players){if(q===CTX.o||mode==='duel'||q.dead>0||CTX.hit.has(q))continue;if(test(q.g.position)){CTX.hit.add(q);pHurt(q,CTX.dmg*mul,CTX.o,x,z)}}}
+function plT(test,mul,x,z){if(!CTX)return;for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.hit.has(q))continue;if(test(q.g.position)){CTX.hit.add(q);pHurt(q,CTX.dmg*mul,CTX.o,x,z)}}}
 // ---- звук (синтез) ----
 const BP=60/128;
 function wub(dur,vol,rate,f,dl){if(!AC)return;try{const t=AC.currentTime+(dl||0),o=AC.createOscillator(),o2=AC.createOscillator(),fl=AC.createBiquadFilter(),g=AC.createGain(),l=AC.createOscillator(),lg=AC.createGain();
@@ -1222,7 +1222,9 @@ function eH(i,d){if(!al[i])return;if(isB(i)){bossHit(d);return}if(fl_[i]||(im[i]
 function eUp(i,x,z,p){if(!al[i]||isB(i)||fl_[i]||(im[i]&&!dm))return false;const dx=ex[i]-x,dz=ez[i]-z,d=Math.hypot(dx,dz)||1,sp=(14+rnd()*14)*p;evx[i]=dx/d*sp;evz[i]=dz/d*sp;evy[i]=16+rnd()*12;eh[i]=.05;fl_[i]=1;return true}
 const forE=cb=>{for(let i=0;i<NE;i++)if(al[i]&&!fl_[i])cb(i,ex[i],ez[i])};
 const stn=(i,t)=>{if(!isB(i))est[i]=Math.max(est[i],t)};
-function plT(test,mul,x,z){if(!CTX)return;for(const q of players){if(q===CTX.o||mode==='duel'||q.dead>0||CTX.hit.has(q))continue;if(test(q.g.position)){CTX.hit.add(q);pHurt(q,CTX.dmg*mul,CTX.o,x,z)}}}
+// урон по героям: работает в PvP и тестах; rep — можно бить повторно раз в rep секунд (для длинных умений)
+const coop=()=>typeof COOPM==='function'?COOPM():mode==='duel';
+function plT(test,mul,x,z,rep){if(!CTX||coop())return;const tn=performance.now()/1000;CTX.ht=CTX.ht||new Map();for(const q of players){if(q===CTX.o||q.dead>0)continue;if(rep){if(tn-(CTX.ht.get(q)||-99)<rep)continue}else if(CTX.hit.has(q))continue;if(test(q.g.position)){if(rep)CTX.ht.set(q,tn);else CTX.hit.add(q);pHurt(q,CTX.dmg*mul,CTX.o,x,z)}}}
 const cone=(p,F,R,c)=>(x,z)=>{const dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz)||1;return d<R&&(dx*F.x+dz*F.z)/d>c};
 // ---- кубики-обломки: один InstancedMesh на всех, с физикой ----
 const NC=700,CM=new T3.InstancedMesh(CUBE,new T3.MeshLambertMaterial({color:0xffffff}),NC);CM.frustumCulled=false;CM.instanceMatrix.setUsage(T3.DynamicDrawUsage);
@@ -1255,7 +1257,7 @@ function kick(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),seen=new Set();pos
    if(rnd()<.6)cubes(p.x,.3,p.z,1,[0x5a9a3a,0x6b4423],5,.3,.6);
    forE((i,x,z)=>{if(!seen.has(i)&&Math.hypot(x-p.x,z-p.z)<3.2){seen.add(i);if(!eUp(i,p.x,p.z,1.3))eH(i,dm_*1.5)}});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<3,1,p.x,p.z);return true}
   if(!done){done=1;const c=cone(p,F,11,.45);sHit(v);sBoomB(.5*v);shock(p.x+F.x*3,p.z+F.z*3,0xffc23a,12,.4);ringH(p.x+F.x*2,3,p.z+F.z*2,6,0xffc23a,.35,0,1,F);
-   forE((i,x,z)=>{if(c(x,z)){if(!eUp(i,p.x,p.z,2.2))eH(i,dm_*2)}});cubes(p.x+F.x*3,.5,p.z+F.z*3,14,[0x5a9a3a,0x6b4423,0x8a8a8a],9,.4,1,F.x*10,F.z*10)}
+   forE((i,x,z)=>{if(c(x,z)){if(!eUp(i,p.x,p.z,2.2))eH(i,dm_*2)}});plT(q=>c(q.x,q.z),2,p.x,p.z,.01);cubes(p.x+F.x*3,.5,p.z+F.z*3,14,[0x5a9a3a,0x6b4423,0x8a8a8a],9,.4,1,F.x*10,F.z*10)}
   return t<.5})}
 // ---- сферы с вихрем ----
 function orb(c1,c2,r){const g=new T3.Group(),core=new T3.Mesh(SPH,glm(0xffffff)),sh=new T3.Mesh(SPH,glm(c1,.9)),ha=new T3.Mesh(SPH,glm(c2,.28)),rs=[0,1,2].map(i=>{const q=new T3.Mesh(RNG,glm(c1,.75));q.rotation.set(i*1.05,i*.6,0);g.add(q);return q});g.add(core,sh,ha);S.add(g);
@@ -1285,9 +1287,9 @@ function spin(dir){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),red=dir>0,[CH,D]=ST[red
    forE((i,x,z)=>{if(red){const dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz)||1;if(d<15&&!isB(i)){stn(i,.2);const sp=(26*(1-d/15)+6)*dt;ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}
      const od=Math.hypot(x-X,z-Z);if(od<3.2){if(!eUp(i,X,Z,1.5))eH(i,dm_)}else if(tick&&od<6)eH(i,dm_*.6)}
     else{const dx=X-x,dz=Z-z,d=Math.hypot(dx,dz)||1;if(d<24&&!isB(i)){stn(i,.2);const sp=Math.min(d,(10+18*(1-d/24))*dt);ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}if(tick&&d<4.5)eH(i,dm_*.7)}});
-   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<5,.5,X,Z);return true}
+   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<5,.5,X,Z,.4);return true}
   flash(.3*v);sBoomB(.8*v);shock(X,Z,c1,red?22:14,.5);shock(X,Z,0xffffff,10,.35);lite(X,4,Z,c1,3);if(red)pillar(X,Z,c1,16,2.2,.5);
-  forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<(red?15:9)){if(isB(i))eH(i,dm_*3);else if(red&&!eUp(i,X,Z,2.1))eH(i,dm_*2.5);else if(!red)eH(i,dm_*2.4)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<12,2,X,Z);
+  forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<(red?15:9)){if(isB(i))eH(i,dm_*3);else if(red&&!eUp(i,X,Z,2.1))eH(i,dm_*2.5);else if(!red)eH(i,dm_*2.4)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<12,2,X,Z,.01);
   for(let n=0;n<60;n++){const a=rnd()*PI*2,e=rnd()-.4;emit(X,Y,Z,Math.cos(a)*26*(red?1:-.2),e*18,Math.sin(a)*26*(red?1:-.2),.6,n&1?c1:0xffffff,1.9,0)}
   cubes(X,.8,Z,18,[c1,0x5a9a3a,0x6b4423,0x8a8a8a],red?12:6,.42,1.1);return false},()=>{ob.userData.kill();if(o===ME)ME.hold=0})}
 const red=()=>spin(1),blue=()=>spin(-1);
@@ -1315,12 +1317,12 @@ function purple(){const o=CS(),dm_=DMG(),v=kv(o);pose(o,'reach',PT.merge+.4);
   const q=t-PT.merge,s=26*dt;X+=F.x*s;Z+=F.z*s;tr+=s;Y+=(4.6-Y)*Math.min(1,dt*3);const R=Math.min(1,q/.2);P.position.set(X,Y,Z);P.userData.set(R,dt,T);lite(X,Y,Z,0xa040ff,3*R);
   swirl(P.position,0xa040ff,0xffffff,5.5*R+.1,10,1);trail(P.position,F.x,F.z,0xa040ff,0xff80ff,4);if(rnd()<.7)cubes(X+(rnd()-.5)*8,.4,Z+(rnd()-.5)*8,2,[0x5a9a3a,0x6b4423,0x8a8a8a,0xa040ff],10,.45,.9);
   if((ls+=s)>3){ls=0;shock(X,Z,0x8030ff,9*R,.35);trk.push([X,Z])}
-  forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<7*R+.5){if(isB(i)){if(!bh){bh=1;eH(i,dm_*10)}}else fKill(i)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<7*R,4,X,Z);
+  forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<7*R+.5){if(isB(i)){if(!bh){bh=1;eH(i,dm_*10)}}else fKill(i)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<7*R,4,X,Z,.5);
   if(q<PT.fly)return true;
   // финальный взрыв: убивает всех вокруг, даже золотых, боссу огромный урон
   flash(1*v);sBoomB(1.3*v);tone(50,20,2.5,'sine',.8*v);for(let k2=0;k2<4;k2++)shock(X,Z,k2&1?0xffffff:0xa040ff,26+k2*14,.6+k2*.25);pillar(X,Z,0xc080ff,50,6,.8);lite(X,6,Z,0xa040ff,5);
   for(let n=0;n<200;n++){const a=rnd()*PI*2,e2=rnd();emit(X,Y,Z,Math.cos(a)*45*(1-e2*.5),e2*35,Math.sin(a)*45*(1-e2*.5),1,n%3?0xa040ff:0xffffff,2.6,-4)}cubes(X,1,Z,60,[0xa040ff,0x5a9a3a,0x6b4423,0x8a8a8a,0x333333],22,.55,1.8);
-  forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<22){if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<22,6,X,Z);
+  forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<22){if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<22,6,X,Z,.01);
   scar(trk);return false},()=>{b.userData.kill();r.userData.kill();P&&P.userData.kill()})}
 function scar(tr){if(tr.length<2)return;const[a,b]=[tr[0],tr[tr.length-1]],L=Math.hypot(b[0]-a[0],b[1]-a[1]),m=new T3.Mesh(new T3.PlaneGeometry(9,L),new T3.MeshBasicMaterial({color:0x2a0848,transparent:true,opacity:.8,depthWrite:false}));
  m.rotation.x=-PI/2;m.rotation.z=Math.atan2(b[0]-a[0],b[1]-a[1]);m.position.set((a[0]+b[0])/2,.05,(a[1]+b[1])/2);kfx(m,4,k=>{m.material.opacity=.8*(1-k*k)});m.geometry.keepUntil=1}
@@ -1338,7 +1340,7 @@ function tnt(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),CX=p.x+F.x
    flash(.15*v);sBoomB(.7*v);shock(x,z,0xff8030,14,.45);lite(x,3,z,0xff8030,2.5);
    for(let n=0;n<30;n++){const a2=rnd()*PI*2,e=rnd();emit(x,1,z,Math.cos(a2)*18*(1-e*.5),e*18,Math.sin(a2)*18*(1-e*.5),.6,n%3?0xff7020:0xffe080,1.9,-8)}
    cubes(x,.8,z,9,[0xd8261c,0xffffff,0x5a9a3a,0x8a8a8a,0x333333],10,.4,1);
-   forE((i,qx,qz)=>{if(Math.hypot(qx-x,qz-z)<7.5){if(isB(i))eH(i,dm_*1.5);else if(!eUp(i,x,z,1.2))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-x,q.z-z)<7,1,x,z);return false},
+   forE((i,qx,qz)=>{if(Math.hypot(qx-x,qz-z)<7.5){if(isB(i))eH(i,dm_*1.5);else if(!eUp(i,x,z,1.2))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-x,q.z-z)<7,1,x,z,.15);return false},
    ()=>{S.remove(m);ms.forEach(q=>q.dispose())})}}
 // ===== Q · Блок-стена: вырастает рядами, держит врагов, потом рассыпается =====
 const BM=[0x8a8a8a,0x707070,0x9a9a9a,0x7a6a5a].map(c=>{const m=lam(c);m.keep=1;return m}),AM=new T3.MeshLambertMaterial({color:0x9a60ff,emissive:0x6020c0});AM.keep=1;
@@ -1361,7 +1363,7 @@ function ringB(){const o=CS(),g=CP(),C={x:g.position.x,z:g.position.z},dm_=DMG()
   list.push({m:new T3.Mesh(CUBE,am?AM:BM[(k+h)%4]),x:C.x+Math.cos(a)*R0,y:SZ/2+h*SZ,z:C.z+Math.sin(a)*R0,d:h*.1+k*.012,c:col})}
  shock(C.x,C.z,0x9a60ff,12,.5);
  blocksFx(list,4,()=>{forE((i,x,z)=>{const dx=x-C.x,dz=z-C.z,d=Math.hypot(dx,dz)||1;if(d<R0+1.4){ex[i]=C.x+dx/d*(R0+1.4);ez[i]=C.z+dz/d*(R0+1.4);stn(i,.2)}})},
-  {x:C.x,z:C.z,k:2.2,sp:4,f:()=>{sBoomB(.8);shock(C.x,C.z,0x9a60ff,24,.5);forE((i,x,z)=>{if(Math.hypot(x-C.x,z-C.z)<13){if(!eUp(i,C.x,C.z,1.6))eH(i,dm_*1.5)}})}})}
+  {x:C.x,z:C.z,k:2.2,sp:4,f:()=>{sBoomB(.8);shock(C.x,C.z,0x9a60ff,24,.5);forE((i,x,z)=>{if(Math.hypot(x-C.x,z-C.z)<13){if(!eUp(i,C.x,C.z,1.6))eH(i,dm_*1.5)}});plT(q=>Math.hypot(q.x-C.x,q.z-C.z)<13,1.5,C.x,C.z)}})}
 // ===== R · УЛЬТА «АТОМНЫЙ»: время стоит, меч вверх, аура, выброс, фраза, ядерный взрыв =====
 // Тайминги (сек) — подгоним под озвучку: charge — подъём меча и аура, burst — выброс, voice — фраза, boom — взрыв
 const UT={pre:2,charge:1.6,burst:.4,voice:1.8,boom:4.6},CAPT=[[2.1,'I AM'],[3.55,'I AM ATOMIC']],CAM={z:1,y:0,sh:0};let FRZ=0;
@@ -1462,7 +1464,7 @@ function odama(){const o=CS(),M=MO(o),dm_=DMG(),v=kv(o),ob=orb(0x66ccff,0x2a8cff
  fx.push(dt=>{t+=dt;const T=TM();if(ph===0){F=fwd();face(o,F);const h=hnd(o),k=Math.min(1,t/1);if(M)M.chg=k;ob.position.set(h.x,h.y+1+2.2*k,h.z);ob.userData.set(.3+1.9*k,dt,T);spiralFX(ob.position,2.2*k+.5,0x9fe6ff,0xffffff,8);lite(h.x,h.y+2,h.z,0x66ccff,1+2*k);
    if(t>=1){ph=1;X=ob.position.x;Y=ob.position.y;Z=ob.position.z;if(M){M.chg=0;M.thr&&M.thr()}nz2(.6,.4*v,400,4000,'bandpass')}return true}
   const s=36*dt;X+=F.x*s;Z+=F.z*s;tr+=s;Y+=(2.6-Y)*Math.min(1,dt*6);ob.position.set(X,Y,Z);ob.userData.set(2.2,dt,T);spiralFX(ob.position,2.6,0x9fe6ff,0xffffff,12);lite(X,Y,Z,0x66ccff,2.5);
-  if(rnd()<.6)cubes(X,.3,Z,2,[0x6b6490,0x8a8a8a,0x5a5690],9,.4,.8);forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<4.5){if(isB(i))eH(i,dm_*.15);else if(!eUp(i,X,Z,1.4))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<4.5,1.5,X,Z);
+  if(rnd()<.6)cubes(X,.3,Z,2,[0x6b6490,0x8a8a8a,0x5a5690],9,.4,.8);forE((i,x,z)=>{if(Math.hypot(x-X,z-Z)<4.5){if(isB(i))eH(i,dm_*.15);else if(!eUp(i,X,Z,1.4))eH(i,dm_*2)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<4.5,1.5,X,Z,.35);
   if(tr<30)return true;np('rzb',1);sBoomB(1.1*v);flash(.5*v);blast(X,Y,Z,14,dm_*1.6,0x66ccff,0xffffff,2);pillar(X,Z,0x9fe6ff,30,4,.6);cubes(X,.5,Z,30,[0x66ccff,0x6b6490,0x8a8a8a],14,.5,1.4);return false},
   ()=>{ob.userData.kill();if(M)M.chg=0;if(o===ME)ME.hold=0})}
 // 4 · Планетарный Расенган: большой шар и 3 малых на орбите, медленно летит и перемалывает всех
@@ -1474,7 +1476,7 @@ function planet(){const o=CS(),M=MO(o),dm_=DMG(),v=kv(o),C=orb(0x66ccff,0x2a8cff
    for(let n=0;n<6;n++){const a=rnd()*PI*2,r=12;emit(X+Math.cos(a)*r,Y+(rnd()-.5)*6,Z+Math.sin(a)*r,-Math.cos(a)*r*1.8,0,-Math.sin(a)*r*1.8,.5,0x9fe6ff,1.4,0)}
    if(t>=1.6){ph=1;if(M){M.chg=0;M.thr&&M.thr()}flash(.3*v);nz2(1,.4*v,300,3000,'bandpass')}return true}
   const q=t-1.6,s=20*dt;X+=F.x*s;Z+=F.z*s;Y+=(4-Y)*Math.min(1,dt*3);place(T,1,6);lite(X,Y,Z,0x66ccff,3);if(rnd()<.8)cubes(X+(rnd()-.5)*10,.3,Z+(rnd()-.5)*10,2,[0x6b6490,0x8a8a8a],10,.4,.8);
-  forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<9){if(isB(i))eH(i,dm_*.12);else if(!eUp(i,X,Z,1.2))eH(i,dm_*2)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<8,1.5,X,Z);
+  forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<9){if(isB(i))eH(i,dm_*.12);else if(!eUp(i,X,Z,1.2))eH(i,dm_*2)}});plT(q2=>Math.hypot(q2.x-X,q2.z-Z)<8,1.5,X,Z,.35);
   if(q<2.6)return true;np('rzb',1.2);sBoomB(1.4*v);flash(.7*v);blast(X,Y,Z,20,dm_*2,0x66ccff,0xffffff,2.4);for(let k=0;k<3;k++)shock(X,Z,0x9fe6ff,30+k*12,.6+k*.2);pillar(X,Z,0x9fe6ff,45,6,.8);cubes(X,.5,Z,45,[0x66ccff,0x6b6490,0x8a8a8a,0x333333],16,.55,1.6);return false},
   ()=>{C.userData.kill();S3.forEach(s=>s.userData.kill());S.remove(rg);rg.material.dispose();if(M)M.chg=0;if(o===ME)ME.hold=0})}
 // 7 · Чидори: молния в руке, рывок-удар, всё на пути получает разряд
@@ -1485,7 +1487,7 @@ function chidori(){const o=CS(),g=CP(),M=MO(o),dm_=DMG(),v=kv(o);let t=0,F=fwd()
    bolt(new V3(p.x-F.x*3,2.5,p.z-F.z*3),new V3(p.x,2.5,p.z),0x9fe6ff,.25,.8);bolt(h,new V3(h.x+F.x*3,h.y,h.z+F.z*3),0xffffff,.08,.5);
    forE((i,x,z)=>{if(Math.hypot(x-p.x,z-p.z)<3.2){eH(i,dm_*2.2);stn(i,1);bolt(new V3(p.x,3,p.z),new V3(x,2,z),0xffffff,.15,.6)}});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<3,1.6,p.x,p.z);return true}
   if(!done){done=1;if(M)M.chg=0;sBoomB(.5*v);flash(.2*v);shock(p.x,p.z,0x9fe6ff,10,.3);for(let k=0;k<8;k++){const an=rnd()*PI*2;bolt(new V3(p.x,3,p.z),new V3(p.x+Math.cos(an)*8,rnd()*4,p.z+Math.sin(an)*8),0x9fe6ff,.2,1.2)}
-   forE((i,x,z)=>{if(Math.hypot(x-p.x,z-p.z)<7)eH(i,dm_*1.5)})}return false},()=>{if(M)M.chg=0;if(o===ME)ME.hold=0})}
+   forE((i,x,z)=>{if(Math.hypot(x-p.x,z-p.z)<7)eH(i,dm_*1.5)});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<7,1,p.x,p.z,.01)}return false},()=>{if(M)M.chg=0;if(o===ME)ME.hold=0})}
 // ---------- МЕЧНИК ----------
 // 5 · Ладонь Будды: с неба падает гигантская золотая ладонь
 const GM=()=>new T3.MeshStandardMaterial({color:0xffc84a,emissive:0x8a5a00,metalness:.6,roughness:.35,transparent:true,opacity:1});
@@ -1523,7 +1525,7 @@ function rings(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),C={x:g.position.x,z:g.pos
    if(t<1.6){r.m.position.set(p.x,.3+k*(.6+i*.65),p.z);r.m.rotation.z=T*(1+i*.2)*(i&1?1:-1);r.m.rotation.x=PI/2+Math.sin(T*2+i)*.15;
     if(r.m.visible&&rnd()<.5){const a=rnd()*PI*2,rr=2.6+i*.12;emit(p.x+Math.cos(a)*rr,r.m.position.y,p.z+Math.sin(a)*rr,0,1,0,.4,r.c===0x202020?0x8040ff:r.c,1.3,0)}}
    else{const q=t-1.6-i*.12;if(q>0&&!r.f){r.f=1;r.m.position.set(p.x,.4,p.z);r.m.rotation.set(PI/2,0,0);tone(150-i*10,40,.4,'sine',.4*v);const cc=r.c===0x202020?0x8040ff:r.c;shock(p.x,p.z,cc,16+i*3,.5);
-     forE((j,x,z)=>{const d=Math.hypot(x-p.x,z-p.z);if(d<14+i*2.5){if(isB(j))eH(j,dm_*1.2);else if(i===6&&eUp(j,p.x,p.z,1.6)){}else eH(j,dm_*1.1)}});plT(q2=>Math.hypot(q2.x-p.x,q2.z-p.z)<14+i*2.5,.8,p.x,p.z);
+     forE((j,x,z)=>{const d=Math.hypot(x-p.x,z-p.z);if(d<14+i*2.5){if(isB(j))eH(j,dm_*1.2);else if(i===6&&eUp(j,p.x,p.z,1.6)){}else eH(j,dm_*1.1)}});plT(q2=>Math.hypot(q2.x-p.x,q2.z-p.z)<14+i*2.5,.8,p.x,p.z,.05);
      for(let n=0;n<30;n++){const a=rnd()*PI*2;emit(p.x,1,p.z,Math.cos(a)*30,rnd()*4,Math.sin(a)*30,.5,cc,1.6,0)}}
     if(r.f){const s=1+Math.max(0,q)*20;r.m.scale.setScalar(s);r.m.material.opacity=Math.max(0,1-q*2)}}});
   return t<3.3},()=>{R.forEach(r=>{S.remove(r.m);r.m.geometry.dispose();r.m.material.dispose()});if(o===ME)ME.hold=0})}
@@ -1535,7 +1537,7 @@ function devour(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),X=p.x+F
    for(let n=0;n<10;n++){const a=rnd()*PI*2,r=14+rnd()*14,e=rnd()-.5;emit(X+Math.cos(a)*r,Y+e*r*.6,Z+Math.sin(a)*r,-Math.cos(a)*r*1.4+Math.sin(a)*r,-e*r*.8,-Math.sin(a)*r*1.4-Math.cos(a)*r,.7,n%3?0xffd0a0:0xffffff,1.3,0)}
    tk+=dt;const tick=tk>.25;if(tick)tk=0;
    forE((i,x,z)=>{const dx=X-x,dz=Z-z,d=Math.hypot(dx,dz)||1;if(d<32&&!isB(i)){stn(i,.3);const sp=Math.min(d,(12+26*(1-d/32))*dt);ex[i]+=dx/d*sp;ez[i]+=dz/d*sp;if(d<3)fKill(i)}else if(isB(i)&&tick&&d<10)eH(i,dm_*.6)});
-   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<5,.5,X,Z);return true}
+   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<5,.5,X,Z,.4);return true}
   if(!end){end=1;S.remove(g);sBoomB(1.5*v);flash(.9*v);tone(40,20,2,'sine',.7*v);for(let k=0;k<4;k++)shock(X,Z,k&1?0xffffff:0xffa040,24+k*12,.6+k*.2);pillar(X,Z,0xffffff,60,8,.7);
    blast(X,Y,Z,18,dm_*2,0xffa040,0xffffff,2.2);cubes(X,.5,Z,40,[0xffa040,0x333333,0x6b6490],16,.5,1.5);const nova=new T3.Mesh(SPH,glm(0xffffff,.9));nova.position.set(X,Y,Z);kfx(nova,.8,k=>{nova.scale.setScalar(2+30*Math.sqrt(k));nova.material.opacity=.9*(1-k)})}
   return false},()=>{S.remove(g);[core,rim,disk,disk2].forEach(m=>{m.material.dispose()});disk.geometry.dispose();disk2.geometry.dispose()})}
