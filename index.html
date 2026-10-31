@@ -1554,21 +1554,24 @@ let GG=null;function galGeo(){if(GG)return GG;const N=2600,pos=new Float32Array(
  GG=new T3.BufferGeometry();GG.setAttribute('position',new T3.BufferAttribute(pos,3));GG.setAttribute('color',new T3.BufferAttribute(col,3));return GG}
 function galaxy(){const g=new T3.Group(),pm=new T3.PointsMaterial({size:1.6,vertexColors:true,blending:AB,transparent:true,depthWrite:false,fog:false}),pts=new T3.Points(galGeo(),pm),core=new T3.Mesh(SPH,glmF(0xfff0d0,.9)),halo=new T3.Mesh(SPH,glmF(0x8060ff,.25));
  pts.frustumCulled=false;g.add(pts,core,halo);S.add(g);return{g,pts,pm,core,halo}}
-function devour(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),Tl={x:F.z,z:-F.x},C={x:p.x+F.x*45,z:p.z+F.z*45},G=[-1,0,1].map(s=>{const q=galaxy();q.x=C.x+Tl.x*s*34;q.z=C.z+Tl.z*s*34;q.hit=0;return q});
- MO(o).cast&&MO(o).cast();face(o,F);tone(60,240,2,'sine',.16*v,0,4);for(let k=0;k<6;k++)tone(500+k*120,500+k*120,2.5,'sine',.03*v,k*.1);let t=0,fin=0;const HT=[1.4,1.8,2.2];
- fx.push(dt=>{t+=dt;const T=TM();CAMS(.25);camTo(t<3?2.2:1,t<3?16:0,dt);
-  G.forEach((q,i)=>{const k=Math.min(1,t/.9),R=30*k;q.pts.scale.setScalar(R);q.core.scale.setScalar(2.5*k);q.halo.scale.setScalar(R*.45);q.pts.rotation.y+=dt*(1.6+i*.3);q.g.rotation.x=1.05;
+function devour(){const o=CS(),p=CP().position,F=fwd(),dm_=DMG(),v=kv(o),Tl={x:F.z,z:-F.x},C={x:p.x+F.x*55,z:p.z+F.z*55},G=[-2,-1,0,1,2].map(s=>{const q=galaxy();q.x=C.x+Tl.x*s*40-F.x*Math.abs(s)*10;q.z=C.z+Tl.z*s*40-F.z*Math.abs(s)*10;q.hit=0;return q});
+ const RB=new T3.BoxGeometry(1,1,1),rifts=[...Array(7)].map((_,k)=>{const g=new T3.Group(),core=new T3.Mesh(RB,new T3.MeshBasicMaterial({color:0x02000a,transparent:true,opacity:0,fog:false})),gl=new T3.Mesh(RB,glmF(0xe0e8ff,0)),gl2=new T3.Mesh(RB,glmF(0x8060ff,0));g.add(gl2,gl,core);g.position.set(C.x+F.x*25+(rnd()-.5)*150,32+rnd()*26,C.z+F.z*25+(rnd()-.5)*60);g.rotation.set(0,Math.atan2(Tl.x,Tl.z)+(rnd()-.5)*.9,(rnd()-.5)*.9);S.add(g);return{g,core,gl,gl2,L:150+rnd()*120,d:k*.08}});
+ MO(o).cast&&MO(o).cast();face(o,F);tone(60,240,2,'sine',.16*v,0,4);for(let k=0;k<6;k++)tone(500+k*120,500+k*120,2.5,'sine',.03*v,k*.1);let t=0,fin=0;const HT=[1.5,1.85,2.2,2.55,2.9];
+ fx.push(dt=>{t+=dt;const T=TM();CAMS(.25);camTo(t<3.8?2.6:1,t<3.8?24:0,dt);
+  rifts.forEach(r=>{const o2=Math.min(1,Math.max(0,(t-r.d)/.5)),c2=t>3.6?Math.max(0,1-(t-3.6)/.6):1,w=o2*c2;r.core.scale.set(r.L,.5+5*w,.3+5*w);r.gl.scale.set(r.L*1.02,1+7.5*w,1+7.5*w);r.gl2.scale.set(r.L*1.06,2+14*w,2+14*w);r.core.material.opacity=.95*w;r.gl.material.opacity=.9*w;r.gl2.material.opacity=.35*w*(.8+.2*Math.sin(T*20));
+   if(w>.3)for(let n=0;n<3;n++){const s2=(rnd()-.5)*r.L;const v3=new V3(s2,0,0).applyEuler(r.g.rotation).add(r.g.position);emit(v3.x,v3.y,v3.z,(rnd()-.5)*6,-10-rnd()*20,(rnd()-.5)*6,1.2,n&1?0xffffff:0xc0b0ff,2.4,-2)}});
+  G.forEach((q,i)=>{const k=Math.min(1,Math.max(0,(t-.5)/.9)),R=38*k;q.pts.scale.setScalar(R);q.core.scale.setScalar(2.5*k);q.halo.scale.setScalar(R*.45);q.pts.rotation.y+=dt*(1.6+i*.3);q.g.rotation.x=1.05;
    if(t<HT[i]){q.g.position.set(q.x,48-14*k,q.z);for(let n=0;n<5;n++){const a=rnd()*PI*2,rr=R*(.3+rnd()*.7);emit(q.x+Math.cos(a)*rr,q.g.position.y,q.z+Math.sin(a)*rr,-Math.sin(a)*20,-4,Math.cos(a)*20,.6,0xc0b0ff,2,0)}}
    else{const d=Math.min(1,(t-HT[i])/.35);q.g.position.set(q.x,34*(1-d*d)+2,q.z);q.g.rotation.x=1.05*(1-d);
     if(d>=1&&!q.hit){q.hit=1;sBoomB(1.2*v);flash(.5*v);CAMS(2.5);for(let k2=0;k2<3;k2++)shock(q.x,q.z,k2&1?0xffffff:0x8060ff,40+k2*20,.6+k2*.2);pillar(q.x,q.z,0xc0b0ff,100,12,.7);
-     forE((j,x,z)=>{const dd=Math.hypot(x-q.x,z-q.z);if(dd<28){if(isB(j))eH(j,dm_*5);else fKill(j)}else if(dd<45){if(!eUp(j,q.x,q.z,2))eH(j,dm_*2)}});plT(q2=>Math.hypot(q2.x-q.x,q2.z-q.z)<30,3,q.x,q.z,.05);
+     forE((j,x,z)=>{const dd=Math.hypot(x-q.x,z-q.z);if(dd<36){if(isB(j))eH(j,dm_*5);else fKill(j)}else if(dd<60){if(!eUp(j,q.x,q.z,2.2))eH(j,dm_*2)}});plT(q2=>Math.hypot(q2.x-q.x,q2.z-q.z)<36,3,q.x,q.z,.05);
      cubes(q.x,1,q.z,50,[0x8060ff,0xffffff,0x6b6490,0x333333],24,.6,1.6);for(let n=0;n<160;n++){const a=rnd()*PI*2;emit(q.x,3,q.z,Math.cos(a)*60,rnd()*30,Math.sin(a)*60,1,n&1?0xc0b0ff:0xffffff,3,-4)}}
     if(q.hit){q.pm.opacity=Math.max(0,1-(t-HT[i]-.35)*1.2);q.pts.scale.setScalar(30+(t-HT[i])*40)}}
    lite(q.x,40,q.z,0x8060ff,2)});
-  if(t>2.8&&!fin){fin=1;sBoomB(1.6*v);tone(30,15,3,'sine',.9*v);flash(.9*v);CAMS(4);for(let k2=0;k2<5;k2++)shock(C.x,C.z,k2&1?0xffffff:0xa080ff,90+k2*30,.8+k2*.2);pillar(C.x,C.z,0xffffff,200,25,1);
-   forE((j,x,z)=>{if(Math.hypot(x-C.x,z-C.z)<70){if(isB(j))eH(j,dm_*8);else fKill(j)}});plT(q2=>Math.hypot(q2.x-C.x,q2.z-C.z)<70,5,C.x,C.z,.05);
-   const sp=galaxy();sp.g.position.set(C.x,1,C.z);kfx(sp.g,1.6,k=>{sp.pts.scale.setScalar(20+120*Math.sqrt(k));sp.pts.rotation.y+=.03;sp.pm.opacity=1-k;sp.core.scale.setScalar(6*(1-k));sp.halo.scale.setScalar(40*k);sp.halo.material.opacity=.25*(1-k)})}
-  return t<3.6},()=>{camReset();G.forEach(q=>{S.remove(q.g);q.pm.dispose();q.core.material.dispose();q.halo.material.dispose()})})}
+  if(t>3.4&&!fin){fin=1;sBoomB(1.6*v);tone(30,15,3,'sine',.9*v);flash(.9*v);CAMS(4);for(let k2=0;k2<6;k2++)shock(C.x,C.z,k2&1?0xffffff:0xa080ff,130+k2*40,.9+k2*.2);pillar(C.x,C.z,0xffffff,260,35,1.1);
+   forE((j,x,z)=>{if(Math.hypot(x-C.x,z-C.z)<110){if(isB(j))eH(j,dm_*8);else fKill(j)}});plT(q2=>Math.hypot(q2.x-C.x,q2.z-C.z)<110,5,C.x,C.z,.05);
+   const sp=galaxy();sp.g.position.set(C.x,1,C.z);kfx(sp.g,1.6,k=>{sp.pts.scale.setScalar(30+180*Math.sqrt(k));sp.pts.rotation.y+=.03;sp.pm.opacity=1-k;sp.core.scale.setScalar(6*(1-k));sp.halo.scale.setScalar(40*k);sp.halo.material.opacity=.25*(1-k)})}
+  return t<4.4},()=>{camReset();rifts.forEach(r=>{S.remove(r.g);[r.core,r.gl,r.gl2].forEach(m=>m.material.dispose())});RB.dispose();G.forEach(q=>{S.remove(q.g);q.pm.dispose();q.core.material.dispose();q.halo.material.dispose()})})}
 // ===== Маг 7 · Мировой разрез: время стоит, разрез цепляется за все цели и режет мир зигзагом из нескольких линий =====
 const WT={stop:2.1,after:4.2};let WCE=null;
 function wcCap(on,txt){if(!WCE){WCE=document.createElement('div');WCE.style.cssText='position:fixed;left:0;right:0;top:20%;text-align:center;font:900 clamp(40px,11vw,120px) "Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif;letter-spacing:.12em;color:#fff;text-shadow:0 0 10px #f00,0 0 30px #a00,0 0 70px #f22;pointer-events:none;z-index:30;opacity:0;transition:opacity .2s,transform 1.6s ease-out;transform:scale(.85)';document.body.appendChild(WCE)}
@@ -1652,7 +1655,7 @@ return{rasengan,odama,planet,chidori,palm,lotus,rings,devour,worldCut,shinra}})(
 {const N=CLS[2];N.sp=N.sp.slice();N.sp[8]=NSK.shinra;N.ic[8]='🌀';N.nu[8]='9';N.tx[8]='9 · Шинра Тенсей';N.nm[8]='🌀 Шинра Тенсей';N.cdm[8]=180;N.dur[8]=12;N.sp[1]=NSK.rasengan;N.sp[2]=NSK.odama;N.sp[3]=NSK.planet;N.sp[6]=NSK.chidori;
  [[1,'🔵','Расенган',3,1.2],[2,'🌕','Одама Расенган',9,2.2],[3,'🪐','Планетарный Расенган',16,4.3],[6,'⚡','Чидори',6,.8]].forEach(([i,ic,nm,cd,du])=>{N.ic[i]=ic;N.tx[i]=(i+1)+' · '+nm;N.nm[i]=ic+' '+nm;N.cdm[i]=cd;N.dur[i]=du});
  const W=CLS[1];W.sp=W.sp.slice();W.ic=W.ic.slice();W.tx=W.tx.slice();W.nm=W.nm.slice();W.cdm=W.cdm.slice();W.dur=W.dur.slice();
- [[4,NSK.palm,'🙏','Ладонь Будды',20,3],[5,NSK.lotus,'🪷','Огненный Лотос',18,6],[6,NSK.rings,'💫','Кольца Души',22,4.2],[7,NSK.devour,'🌌','Удар Млечного Пути',24,3.2]].forEach(([i,f,ic,nm,cd,du])=>{W.sp[i]=f;W.ic[i]=ic;W.tx[i]=(i+1)+' · '+nm;W.nm[i]=ic+' '+nm;W.cdm[i]=cd;W.dur[i]=du})}
+ [[4,NSK.palm,'🙏','Ладонь Будды',30,3],[5,NSK.lotus,'🪷','Огненный Лотос',40,6],[6,NSK.rings,'💫','Кольца Души',22,4.2],[7,NSK.devour,'🌌','Удар Млечного Пути',180,4.4]].forEach(([i,f,ic,nm,cd,du])=>{W.sp[i]=f;W.ic[i]=ic;W.tx[i]=(i+1)+' · '+nm;W.nm[i]=ic+' '+nm;W.cdm[i]=cd;W.dur[i]=du})}
 
 const SWM=SWX.model(),NIN=armNinja(makeNinja(2.4));let cls=0;ME.cl=0;DU.cm=dum;DU.cl=0;[DU2,DU3].forEach(D=>{D.cm=D.dm;D.cl=0});
 const cN=[document.getElementById('cm'),document.getElementById('cs'),document.getElementById('cn'),document.getElementById('ck'),document.getElementById('cb')];
