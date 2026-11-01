@@ -51,7 +51,7 @@ body.cls1 #bar button[data-i="10"]{order:-3}
 }
 @media (pointer:coarse) and (max-height:430px){:root{--b:40px}.mw{gap:8px}.card{padding:8px}.card .ci{font-size:26px}.ht{font-size:11px;line-height:1.4}}
 #hpw{position:relative;width:230px;height:18px;background:#2a1030;border:1px solid #8a60ff;border-radius:4px;overflow:hidden;margin:4px 0}#hpb{height:100%;background:#3ddc6a;width:100%}#hpt{position:absolute;inset:0;text-align:center;font-size:12px;line-height:18px;font-weight:700}#dead{position:fixed;inset:0;display:none;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#ff5060;background:rgba(40,0,10,.45);pointer-events:none;text-shadow:0 0 12px #000}
-body.cls3 #bar button[data-i="7"],body.cls3 #bar button[data-i="8"],body.cls4 #bar button[data-i="7"],body.cls4 #bar button[data-i="8"]{display:none}body.cls4 #bar button[data-i="6"]{border-color:#ff60ff;box-shadow:0 0 12px #a040ff}
+body.cls3 #bar button[data-i="7"],body.cls3 #bar button[data-i="8"]{display:none}body.cls4 #bar button[data-i="6"]{border-color:#ff60ff;box-shadow:0 0 12px #a040ff}
 #tb #kb{display:none}body.cls3 #tb #kb{display:flex}
 body.cls2 #bar button:not([data-i="0"]):not([data-i="1"]):not([data-i="2"]):not([data-i="3"]):not([data-i="4"]):not([data-i="5"]):not([data-i="6"]):not([data-i="7"]):not([data-i="8"]):not([data-i="9"]):not([data-i="10"]){display:none}
 </style></head><body>
@@ -69,7 +69,7 @@ body.cls2 #bar button:not([data-i="0"]):not([data-i="1"]):not([data-i="2"]):not(
 </div>
 
 <button id="cont" class="cont">▶ Продолжить</button>
-<div class="ht">ПК: WASD — ходьба · Shift — бег · мышь — камера · 1–9 — заклинания · Q — стена · E — купол · T — сменить героя · M — меню<br>📱 Левая половина экрана — стик (появляется под пальцем) · правая — камера · круглые кнопки — заклинания · ✦ — скрыть/показать кнопки<br>Мечник: 1–9 и 0 — техники, ЛКМ или E — удар<br>🎛 Коробас: 1–7 — умения, ЛКМ — вааб-волна, Q — стена, E — купол, T или 🎨 — скин<br>🧱 Блочный воин: 1–6 — умения, 7 или R — ульта «Атомный» (раз в 3 мин), Q — блок-стена, E — блок-крепость<br>Золотые враги бессмертны: только №4</div>
+<div class="ht">ПК: WASD — ходьба · Shift — бег · мышь — камера · 1–9 — заклинания · Q — стена · E — купол · T — сменить героя · M — меню<br>📱 Левая половина экрана — стик (появляется под пальцем) · правая — камера · круглые кнопки — заклинания · ✦ — скрыть/показать кнопки<br>Мечник: 1–9 и 0 — техники, ЛКМ или E — удар<br>🎛 Коробас: 1–7 — умения, ЛКМ — вааб-волна, Q — стена, E — купол, T или 🎨 — скин<br>🧱 Блочный воин: 1–6 — умения, 7 или R — ульта «Атомный» (раз в 3 мин), 8 — Сонидо, 9 — Зелье силы, Q — блок-стена, E — блок-купол<br>Золотые враги бессмертны: только №4</div>
 </div></div>
 <div id="net"><div><div style="font-size:26px;font-weight:800">👥 ИГРА С ДРУЗЬЯМИ</div>
 <div id="nlob"><div class="h">Твоё имя (можно не менять)</div><input id="nn" maxlength="14">
@@ -610,7 +610,7 @@ hbg.renderOrder=10;hbf.renderOrder=11;hbf.position.z=.01;hb.add(hbg,hbf);S.add(h
 const GOAL_DMG=60,BASE_DMG=20,DMG_PER_LVL=10,HP_PER_LVL=20,CD_PER_LVL=.01,STEAL_HEAL=.4,RESPAWN=5,SHIELD_T=2.5;
 const dmgOf=q=>BASE_DMG+DMG_PER_LVL*q.lvl,cdk=q=>Math.max(.3,1-CD_PER_LVL*q.lvl);
 function hitPl(x,z,r){if(!CTX)return;for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.hit.has(q))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z;if(dx*dx+dz*dz<(r+1.5)*(r+1.5)){CTX.hit.add(q);pHurt(q,CTX.dmg,CTX.o,x,z)}}}
-function pHurt(q,d,src,x,z){if(q.wcI&&q.wcI>performance.now()/1000)return;if(q.dead>0||q.dash||domeCov(q))return;if(q===ME&&(mode==='test'||mode==='menu'))return;if(q!==ME&&net.on)return;if(COOPM()&&src&&players.includes(src))return;
+function pHurt(q,d,src,x,z){if(q.wcI&&q.wcI>performance.now()/1000)return;if(q.bd_&&q.bd_.e>performance.now()/1000&&Math.hypot(q.g.position.x-q.bd_.x,q.g.position.z-q.bd_.z)<q.bd_.r)return;if(q.dead>0||q.dash||domeCov(q))return;if(q===ME&&(mode==='test'||mode==='menu'))return;if(q!==ME&&net.on)return;if(COOPM()&&src&&players.includes(src))return;
  if(q.wall>0&&x!==undefined&&wallBlocks(q,x,z)){wallHit(q,x,z);return}
  q.hp-=d;if(d>=1){const p=q.g.position;for(let k=0;k<14;k++)emit(p.x,3,p.z,(rnd()-.5)*10,rnd()*8,(rnd()-.5)*10,.6,0xff3040,1.6,-10);if(q===ME)shake(.6)}
  if(q.hp<=0)pDie(q,src)}
@@ -1254,13 +1254,13 @@ function blade(){const o=CS(),p=CP().position.clone(),F=fwd(),dm_=DMG(),v=kv(o),
  for(let k=0;k<20;k++){const a=a0+(rnd()-.5)*2.4;emit(p.x+Math.sin(a)*6,2.5,p.z+Math.cos(a)*6,Math.sin(a)*10,rnd()*4,Math.cos(a)*10,.4,0xc8a0ff,1.3,0)}}
 // ===== 2 · Пинок-рывок =====
 function kick(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),seen=new Set();pose(o,'kick',.45);face(o,F);nz2(.3,.4*v,200,3000,'bandpass');let t=0,done=0;
- fx.push(dt=>{t+=dt;const p=g.position;if(t<.26){const s=62*dt;p.x+=F.x*s;p.z+=F.z*s;if(o!==ME){o.tx=p.x;o.tz=p.z}face(o,F);
+ fx.push(dt=>{t+=dt;const p=g.position;if(t<.4){const s=120*dt;p.x+=F.x*s;p.z+=F.z*s;if(o!==ME){o.tx=p.x;o.tz=p.z}face(o,F);
    for(let k=0;k<4;k++)emit(p.x+(rnd()-.5),1+rnd()*3,p.z+(rnd()-.5),-F.x*10,rnd()*3,-F.z*10,.4,k&1?0xffc23a:0xffffff,1.3,0);
    if(rnd()<.6)cubes(p.x,.3,p.z,1,[0x5a9a3a,0x6b4423],5,.3,.6);
-   forE((i,x,z)=>{if(!seen.has(i)&&Math.hypot(x-p.x,z-p.z)<3.2){seen.add(i);if(!eUp(i,p.x,p.z,1.3))eH(i,dm_*1.5)}});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<3,1,p.x,p.z);return true}
+   forE((i,x,z)=>{if(!seen.has(i)&&Math.hypot(x-p.x,z-p.z)<4.5){seen.add(i);if(!eUp(i,p.x,p.z,1.3))eH(i,dm_*1.5)}});plT(q=>Math.hypot(q.x-p.x,q.z-p.z)<3,1,p.x,p.z);return true}
   if(!done){done=1;const c=cone(p,F,11,.45);sHit(v);sBoomB(.5*v);shock(p.x+F.x*3,p.z+F.z*3,0xffc23a,12,.4);ringH(p.x+F.x*2,3,p.z+F.z*2,6,0xffc23a,.35,0,1,F);
    forE((i,x,z)=>{if(c(x,z)){if(!eUp(i,p.x,p.z,2.2))eH(i,dm_*2)}});plT(q=>c(q.x,q.z),2,p.x,p.z,.01);cubes(p.x+F.x*3,.5,p.z+F.z*3,14,[0x5a9a3a,0x6b4423,0x8a8a8a],9,.4,1,F.x*10,F.z*10)}
-  return t<.5})}
+  return t<.65})}
 // ---- сферы с вихрем ----
 function orb(c1,c2,r){const g=new T3.Group(),core=new T3.Mesh(SPH,glmF(0xffffff)),sh=new T3.Mesh(SPH,glmF(c1,.9)),ha=new T3.Mesh(SPH,glmF(c2,.28)),rs=[0,1,2].map(i=>{const q=new T3.Mesh(RNG,glmF(c1,.75));q.rotation.set(i*1.05,i*.6,0);g.add(q);return q});g.add(core,sh,ha);S.add(g);
  g.userData={set(s,dt,T){s=Math.max(.01,s);core.scale.setScalar(.45*r*s);sh.scale.setScalar(r*s);ha.scale.setScalar(2*r*s*(1+.12*Math.sin(T*11)));rs.forEach((q,i)=>{q.rotation.x+=dt*(3+i);q.rotation.y+=dt*(4-i);q.scale.setScalar(r*s*(2.8-((T*2.5+i*.33)%1)*1.5))})},
@@ -1415,9 +1415,39 @@ function atomic(){const o=CS(),g=CP(),C0={x:g.position.x,z:g.position.z},dm_=DMG
   for(let n=0;n<14;n++){const a=rnd()*PI*2,r=rnd()*70*e;emit(C0.x+Math.cos(a)*r,rnd()*ch,C0.z+Math.sin(a)*r,Math.cos(a)*20,10+rnd()*20,Math.sin(a)*20,1.2,n%3?0xa040ff:0xfff0ff,3.2,-2)}
   CAM.z=q<.75?1.5+6*Math.min(1,q*4):1+6.5*(1-q)/.25;CAM.y=q<.75?8+70*Math.min(1,q*4):78*(1-q)/.25;
   return q<1},()=>{cfil('');cap(0);if(core)core.userData.kill();CAM.z=1;CAM.y=0;CAM.sh=0;FRZ=0;own.forEach(m=>{S.remove(m);if(m.material)m.material.dispose();if(m.geometry!==SPH&&m.geometry!==RNG)m.geometry.dispose()});if(M&&M.sg)M.sg.scale.set(3.4*PX,2.4*PX,12*PX)})}
+// ===== E · Блок-купол: купол из светящихся блоков, внутри герой полностью неуязвим, в конце купол взрывается =====
+function domeB(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),C={x:g.position.x,z:g.position.z},RD=6.5,DUR=5,now0=performance.now()/1000,pts=[];pose(o,'up',.5);
+ for(let x=-RD;x<=RD;x+=SZ)for(let y=SZ/2;y<=RD+.3;y+=SZ)for(let z=-RD;z<=RD;z+=SZ){const d=Math.hypot(x,y,z);if(Math.abs(d-RD)<SZ*.55)pts.push([x,y,z])}
+ const N=pts.length,mat=new T3.MeshLambertMaterial({color:0xc8a0ff,emissive:0x5a20c0,transparent:true,opacity:.55}),IM=new T3.InstancedMesh(CUBE,mat,N),D3=new T3.Object3D();IM.frustumCulled=false;S.add(IM);
+ const shell=new T3.Mesh(SPH,glmF(0xb080ff,.12));shell.position.set(C.x,0,C.z);S.add(shell);
+ o.bd_={x:C.x,z:C.z,r:RD-.5,e:now0+DUR};sCrum(.7*v);tone(300,900,.5,'sine',.12*v);shock(C.x,C.z,0xb080ff,16,.5);let t=0;
+ fx.push(dt=>{t+=dt;const T=TM();
+  for(let i=0;i<N;i++){const[x,y,z]=pts[i],k=Math.max(0,Math.min(1,(t-y*.06)/.25));D3.position.set(C.x+x,y-(1-k)*SZ,C.z+z);D3.rotation.set(0,0,0);D3.scale.setScalar(SZ*.96*Math.max(.01,k));D3.updateMatrix();IM.setMatrixAt(i,D3.matrix)}IM.instanceMatrix.needsUpdate=true;
+  mat.emissiveIntensity=.8+.4*Math.sin(T*6);shell.scale.set(RD+.4,RD+.4,RD+.4);shell.material.opacity=.12+.06*Math.sin(T*4);lite(C.x,4,C.z,0xb080ff,1.2);
+  forE((i,x,z)=>{const dx=x-C.x,dz=z-C.z,d=Math.hypot(dx,dz)||1;if(d<RD+1.4){if(!isB(i)){ex[i]=C.x+dx/d*(RD+1.4);ez[i]=C.z+dz/d*(RD+1.4);stn(i,.2)}}});
+  if(rnd()<.5){const a=rnd()*PI*2,e=rnd()*PI/2;emit(C.x+Math.cos(a)*Math.cos(e)*RD,Math.sin(e)*RD,C.z+Math.sin(a)*Math.cos(e)*RD,0,1,0,.6,0xd0b0ff,1.6,0)}
+  if(t<DUR)return true;
+  sBoomB(.9*v);sCrum(v);shock(C.x,C.z,0xb080ff,30,.6);flash(.2*v);for(let i=0;i<N;i+=2){const[x,y,z]=pts[i];cubes(C.x+x,y,C.z+z,1,[0xc8a0ff,0x9a60ff,0xffffff],10,SZ*.8,1.6,x*3,z*3)}
+  forE((i,x,z)=>{if(Math.hypot(x-C.x,z-C.z)<16){if(!eUp(i,C.x,C.z,1.8))eH(i,dm_*1.5)}});plT(q=>Math.hypot(q.x-C.x,q.z-C.z)<16,1.5,C.x,C.z,.01);return false},
+  ()=>{S.remove(IM);IM.dispose();mat.dispose();S.remove(shell);shell.material.dispose();if(o.bd_&&o.bd_.e<=performance.now()/1000+.1)o.bd_=null})}
+// ===== 8 · Сонидо: мгновенная вспышка-перемещение с остаточным образом =====
+function sonido(){const o=CS(),g=CP(),F=fwd(),v=kv(o),M=MO(o),p=g.position,a={x:p.x,z:p.z},D=26,b={x:p.x+F.x*D,z:p.z+F.z*D},now=performance.now()/1000;
+ o.wcI=Math.max(o.wcI||0,now+.3);nz2(.12,.55*v,9000,2500,'highpass');tone(1400,300,.1,'sine',.12*v);
+ if(M&&M.g){const gh=M.g.clone(true),gm=glmF(0x9fd0ff,.55);gh.traverse(m=>{if(m.material)m.material=gm});const wp=new V3();M.g.getWorldPosition(wp);gh.position.copy(wp);gh.quaternion.copy(o.g.quaternion);gh.scale.copy(M.g.scale);S.add(gh);let tt=0;
+  fx.push(dt=>{tt+=dt;gm.opacity=.55*Math.max(0,1-tt/.7);gh.position.y=wp.y+tt*.5;return tt<.7},()=>{S.remove(gh);gm.dispose()})}
+ const ln=new T3.Mesh(CUBE,glmF(0xffffff,.8));ln.position.set((a.x+b.x)/2,2.5,(a.z+b.z)/2);ln.rotation.y=Math.atan2(F.x,F.z);S.add(ln);let t2=0;fx.push(dt=>{t2+=dt;ln.scale.set(.15*(1-t2/.25),.15*(1-t2/.25)+.01,D);ln.material.opacity=.8*(1-t2/.25);return t2<.25},()=>{S.remove(ln);ln.material.dispose()});
+ for(const q of[a,b]){shock(q.x,q.z,0xbfe8ff,6,.3);for(let n=0;n<14;n++){const an=rnd()*PI*2;emit(q.x,1+rnd()*3,q.z,Math.cos(an)*8,rnd()*3,Math.sin(an)*8,.35,n&1?0xffffff:0x9fd0ff,1.4,0)}cubes(q.x,.3,q.z,3,[0x6b6490,0x8a8a8a],5,.3,.6)}
+ p.x=b.x;p.z=b.z;if(o!==ME){o.tx=b.x;o.tz=b.z}face(o,F)}
+// ===== 9 · Зелье силы: 10 секунд урон +50% и скорость +40% =====
+function potion(){const o=CS(),g=CP(),v=kv(o),now=performance.now()/1000,DUR=10;o.buff=now+DUR;pose(o,'up',.5);
+ for(let k=0;k<5;k++)tone(500+k*120,700+k*150,.12,'sine',.08*v,k*.07);nz2(.4,.2*v,800,3000,'bandpass');shock(g.position.x,g.position.z,0xff5030,10,.5);flash(.12*v);
+ const ring=new T3.Mesh(RNG,glmF(0xff6030,.8));ring.rotation.x=-PI/2;S.add(ring);let t=0;
+ fx.push(dt=>{t+=dt;const p=g.position,T=TM();ring.position.set(p.x,.3,p.z);ring.scale.setScalar(2.2+Math.sin(T*6)*.2);ring.material.opacity=.7*Math.min(1,(DUR-t)/.5);
+  for(let n=0;n<3;n++){const a=rnd()*PI*2;emit(p.x+Math.cos(a)*1.3,.5+rnd()*4,p.z+Math.sin(a)*1.3,0,4+rnd()*4,0,.6,n&1?0xff5030:0xffc040,1.4,0)}
+  return t<DUR&&(o.buff||0)>performance.now()/1000-.05},()=>{S.remove(ring);ring.material.dispose()})}
 const IC=['🗡️','🦶','🔵','🔴','🟣','🧨'],NM=['Аметистовый клинок','Пинок-рывок','Синий: притяжение','Красный: отталкивание','Фиолетовый: стирание','ТНТ-дождь'];
 const BLK_CAM=CAM;
-return{H:{glmF,kfx,ringH,eH,eUp,forE,stn,plT,orb,swirl,bolt,cubes,fKill,kv,MO,DMG,face,isB,glm,sBoomB,cone,SPH,RNG,CUBE},model,sp:[blade,kick,blue,red,purple,tnt],ult:atomic,UT,CAM,frz:()=>Math.max(FRZ,FRZE-performance.now()/1000),setFrz,wall:wallB,dome:ringB,IC,NM,cdm:[.6,3,15,12,25,10],dur:[.35,.5,12.4,8.9,21.6,2],cubes}})();
+return{sonido,potion,domeB,H:{glmF,kfx,ringH,eH,eUp,forE,stn,plT,orb,swirl,bolt,cubes,fKill,kv,MO,DMG,face,isB,glm,sBoomB,cone,SPH,RNG,CUBE},model,sp:[blade,kick,blue,red,purple,tnt],ult:atomic,UT,CAM,frz:()=>Math.max(FRZ,FRZE-performance.now()/1000),setFrz,wall:wallB,dome:ringB,IC,NM,cdm:[.6,1.5,15,12,25,10],dur:[.35,.5,12.4,8.9,21.6,2],cubes}})();
 
 const BLKM=BLK.model();
 // ===== КЛАССЫ, 1×1 ОНЛАЙН (WebRTC без серверов) =====
@@ -1449,7 +1479,7 @@ function nSlam(){const o=CS(),f=fwd(),p=CP().position,tx=p.x+f.x*22,tz=p.z+f.z*2
   return t<1.3})}
 CLS.push({sp:[rasen,rifle('mosin'),rifle('kar'),rifle('m14'),nKunai,nVortex,nDash,nSlam,()=>{},wallSh,domeSh],cdm:[15,1.4,1,.16,3,8,6,12,0,6,5.2],dur:[5,1.4,1,.16,1.2,2.2,.4,1.6,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<8?['🌀','🔫','🎯','⚡','🥷','🌪️','🌩️','🌑'][i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<8?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<8?['1 · Расенсюрикен','2 · Мосин 91/30','3 · Kar98k','4 · M14','5 · Теневые кунаи','6 · Вихрь теней','7 · Рывок-молния','8 · Удар Пустоты'][i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<8?['🌀 Расенсюрикен','🔫 Мосин 91/30','🎯 Kar98k','⚡ M14','🥷 Теневые кунаи','🌪️ Вихрь теней','🌩️ Рывок-молния','🌑 Удар Пустоты'][i]:i>8?x:'')});
 CLS.push({sp:[...KOR.sp,()=>{},()=>{},wallSh,domeSh],cdm:[...KOR.cdm,0,0,6,5.2],dur:[...KOR.dur,0,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<7?KOR.IC[i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<7?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+KOR.NM[i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<7?KOR.IC[i]+' '+KOR.NM[i]:i>8?x:'')});
-CLS.push({sp:[...BLK.sp,BLK.ult,()=>{},()=>{},BLK.wall,BLK.dome],cdm:[...BLK.cdm,180,0,0,7,6],dur:[...BLK.dur,12,0,0,7,4],ic:CLS[0].ic.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]:i>8?['🧱','🏰'][i-9]:''),nu:CLS[0].nu.map((x,i)=>i<7?(i==6?'7/R':String(i+1)):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+[...BLK.NM,'АТОМНЫЙ'][i]:i==9?'Q · Блок-стена':i==10?'E · Блок-крепость':''),nm:CLS[0].nm.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]+' '+[...BLK.NM,'АТОМНЫЙ (ульта)'][i]:i==9?'🧱 Блок-стена':i==10?'🏰 Блок-крепость':'')});
+CLS.push({sp:[...BLK.sp,BLK.ult,BLK.sonido,BLK.potion,BLK.wall,BLK.domeB],cdm:[...BLK.cdm,180,2,25,7,12],dur:[...BLK.dur,12,.3,10,7,5],ic:CLS[0].ic.map((x,i)=>i<9?[...BLK.IC,'☢️','💨','⚗️'][i]:['🧱','🛡️'][i-9]),nu:CLS[0].nu.map((x,i)=>i<9?(i==6?'7/R':String(i+1)):x),tx:CLS[0].tx.map((x,i)=>i<9?(i+1)+' · '+[...BLK.NM,'АТОМНЫЙ','Сонидо','Зелье силы'][i]:i==9?'Q · Блок-стена':'E · Блок-купол'),nm:CLS[0].nm.map((x,i)=>i<9?[...BLK.IC,'☢️','💨','⚗️'][i]+' '+[...BLK.NM,'АТОМНЫЙ (ульта)','Сонидо','Зелье силы'][i]:i==9?'🧱 Блок-стена':'🛡️ Блок-купол')});
 // ===== НОВЫЕ ТЕХНИКИ: Ниндзя (Расенган ×3, Чидори) и Мечник (Ладонь Будды, Огненный Лотос, Кольца Души, Пожиратель Звёзд) =====
 const NSK=(function(){
 const T3=THREE,V3=T3.Vector3,PI=Math.PI,{glmF,kfx,ringH,eH,eUp,forE,stn,plT,orb,swirl,bolt,cubes,fKill,kv,MO,DMG,face,isB,glm,sBoomB,SPH,RNG,CUBE}=BLK.H,TM=()=>performance.now()/1000;
@@ -1691,8 +1721,8 @@ document.getElementById('kb').onclick=korSwap;
 const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
-function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:o.cl===3?.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
-function cast(i){if(!started||ME.dead>0)return;if(cls===3&&i>6&&i<9)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
+function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:o.cl===3?.5:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
+function cast(i){if(!started||ME.dead>0)return;if(cls===3&&i>6&&i<9)return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
  netSend({t:'c',c:cls,k:korSk,i,x:P.position.x,z:P.position.z,y:yaw});doCast(ME,i)}
 const ICE={iceServers:[]},$=id=>document.getElementById(id),nst=t=>{const e=$('nst');if(e)e.textContent=t},shw=(id,v)=>$(id).style.display=v?'block':'none';
 // ===== КООП: босс (один на всех, ведёт игрок с наименьшим номером), раунд 3 мин =====
@@ -1785,7 +1815,7 @@ const clock=new THREE.Clock();let fa=0,fc=0,wave=0;const fpsE=document.getElemen
 function loop(){requestAnimationFrame(loop);const rd=Math.min(clock.getDelta(),.05);tsc=Math.min(1,tsc+rd*2.2);const dt=paused?0:rd*tsc;if(mode==='run'&&ME.dead<=0)surv+=dt;
  const now=performance.now()/1000;if(pL||skyN)pitch+=(.12-pitch)*Math.min(1,dt*3);skyK+=((skyN?1:0)-skyK)*Math.min(1,dt*3);const f=fwd(),rt=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw)),mv=new THREE.Vector3();
  if(K.KeyW)mv.add(f);if(K.KeyS)mv.sub(f);if(K.KeyD)mv.add(rt);if(K.KeyA)mv.sub(rt);if(jid!==null)mv.addScaledVector(f,-jy).addScaledVector(rt,jx);
- if(ME.hold>0)ME.hold-=dt;if(ME.dead>0||ME.dash||ME.hold>0)mv.set(0,0,0);if(mv.lengthSq()){mv.normalize();CP().position.addScaledVector(mv,((K.ShiftLeft||Math.hypot(jx,jy)>.9)?20:10)*dt);P.rotation.y=Math.atan2(mv.x,mv.z)}
+ if(ME.hold>0)ME.hold-=dt;if(ME.dead>0||ME.dash||ME.hold>0)mv.set(0,0,0);if(mv.lengthSq()){mv.normalize();CP().position.addScaledVector(mv,((K.ShiftLeft||Math.hypot(jx,jy)>.9)?20:10)*((ME.buff||0)>performance.now()/1000?1.4:1)*dt);P.rotation.y=Math.atan2(mv.x,mv.z)}
  mage.u(now,mv.lengthSq()>0);ground.position.set(Math.round(CP().position.x/8)*8,0,Math.round(CP().position.z/8)*8);grid.position.set(Math.round(CP().position.x/4)*4,.02,Math.round(CP().position.z/4)*4);
  // enemies
  EUT.value=now;ETG.length=0;ETG.push(CP().position);if(mode==='duel')RP.forEach(q=>{if(q.nid!=null&&q.dead<=0&&q.g.visible)ETG.push(q.g.position)});NM=0;const FZ=BLK.frz()>0;const csp=mode==='run'?1+Math.min(.9,surv/200):1;for(let i=0;i<NE;i++)if(al[i]){if(FZ)continue;if(i===NE-1){bossTick(dt);continue}if(fl_[i]){ex[i]+=evx[i]*dt;ez[i]+=evz[i]*dt;evy[i]-=40*dt;eh[i]+=evy[i]*dt;if(eh[i]<=0){eh[i]=0;fl_[i]=0;kill(i);if(!al[i])continue}else{D.position.set(ex[i],eh[i],ez[i]);D.rotation.set(now*6+i,now*4,0);D.scale.setScalar(im[i]?1.6:1);D.updateMatrix();EM.setMatrixAt(i,D.matrix);continue}}
