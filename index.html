@@ -258,115 +258,130 @@ void main(){float y=vU.y,nn=n(vec2(vU.x*5.,y*3.-t*3.*sp))*.6+n(vec2(vU.x*11.,y*7
  const ad=(par,m,x,y,z)=>{m.position.set(x||0,y||0,z||0);par.add(m);return m},Me=(g,m)=>new T.Mesh(g,m);
  return{T:TU,std,glow,clothTex,cloth,flame,ringTex,ad,Me}})();
 
-// ---------- Великий архимаг (пёстрые многослойные одежды, корона, посох с кристаллом, книга, кольца рун) ----------
+// ---------- Архимаг звёздной бездны (оригинальный дизайн: длинные белые волосы, чёрно-фиолетовая мантия с золотом и цепями, посох с терновым кольцом и сферой) ----------
 function makeArchmage(){const T=THREE,{std,glow,clothTex,cloth,flame,ringTex,ad,Me}=HZ,g=new T.Group(),B=new T.Group();g.add(B);
- const GOLD=std(0xe9b949,{metalness:.85,roughness:.28,emissive:0x3a2600}),GEM=c=>new T.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.9,metalness:.2,roughness:.15});
- const indigo=std(0x1e1650,{emissive:0x07041a,map:clothTex('#1e1650','#e9b949','rune',3)}),crim=std(0x8e1636,{emissive:0x1a0208,map:clothTex('#8e1636','#f2c75a','rune',7),side:2}),
-  teal=std(0x0f6f68,{emissive:0x021412,map:clothTex('#0f6f68','#f2c75a','wave',9),side:2}),royal=std(0x4a1f9a,{emissive:0x0c0420,map:clothTex('#3d1a86','#f5cf6a','star',11),side:2}),
-  dark=std(0x0d0a1c,{roughness:.9}),skin=std(0xe2c9b8),beard=std(0xeeeaf2,{roughness:.95});
- // нижняя мантия-юбка
- const sk=ad(B,Me(new T.LatheGeometry([[1.45,0],[1.38,.4],[1.12,1.3],[.86,2.1],[.66,2.75]].map(p=>new T.Vector2(p[0],p[1])),28),indigo));
- ad(B,Me(new T.LatheGeometry([[1.47,.02],[1.46,.22],[1.40,.38]].map(p=>new T.Vector2(p[0],p[1])),28),GOLD));
- // передние полотнища: малиновое и бирюзовое
- const pL=ad(B,cloth(.8,2.3,3,8,crim,1.4),-.36,2.62,.7);pL.rotation.set(-.32,-.18,.06);const pR=ad(B,cloth(.8,2.3,3,8,teal,1.4),.36,2.62,.7);pR.rotation.set(-.32,.18,-.06);
- // торс, пояс с камнем
- ad(B,Me(new T.CylinderGeometry(.6,.78,1.45,16),indigo),0,3.35,0);
- ad(B,Me(new T.TorusGeometry(.76,.1,8,28),GOLD),0,2.68,0).rotation.x=Math.PI/2;ad(B,Me(new T.OctahedronGeometry(.17,0),GEM(0x30e0ff)),0,2.7,.82);
- for(const q of[-1,1])ad(B,Me(new T.BoxGeometry(.12,1.25,.05),GOLD),q*.22,3.4,.64).rotation.x=-.12;
- // высокий воротник-веер и наплечники в два яруса
- ad(B,Me(new T.CylinderGeometry(.82,.5,.95,18,1,true,Math.PI*.5,Math.PI),crim),0,4.55,-.12);
- const pauld=q=>{const G=new T.Group();G.position.set(q*.86,4.02,0);B.add(G);ad(G,Me(new T.SphereGeometry(.46,16,10,0,PI2,0,Math.PI/2),GOLD));ad(G,Me(new T.SphereGeometry(.4,16,10,0,PI2,0,Math.PI/2),teal),0,-.18,0).scale.set(1.18,.8,1.18);
-  ad(G,Me(new T.OctahedronGeometry(.11,0),GEM(q<0?0xff3a7a:0x7a5cff)),0,.38,.12);for(let i=0;i<3;i++)ad(G,Me(new T.ConeGeometry(.06,.36,5),GOLD),q*(.1+i*.14),.32-i*.06,-.05).rotation.z=-q*(.5+i*.25);return G};pauld(-1);pauld(1);
- // задний плащ со звёздами
- const cape=ad(B,cloth(2.5,3.9,6,12,royal,1.3),0,4.2,-.62);cape.rotation.x=.1;
- // рукава-колокола и руки
- const arm=q=>{const G=new T.Group();G.position.set(q*.92,3.95,0);B.add(G);ad(G,Me(new T.CylinderGeometry(.2,.46,1.5,14,1,true),teal),0,-.72,0);
-  ad(G,Me(new T.CylinderGeometry(.44,.47,.18,14,1,true),GOLD),0,-1.42,0);ad(G,Me(new T.CylinderGeometry(.43,.43,.05,14,1,true),crim),0,-1.36,0);ad(G,Me(new T.SphereGeometry(.15,10,8),skin),0,-1.55,0);G.rotation.z=q*.18;return G};
+ const GOLD=std(0xd9b25a,{metalness:.9,roughness:.25,emissive:0x2e2008}),GEM=c=>new T.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:1.1,metalness:.2,roughness:.12});
+ const robe=std(0x1b1134,{emissive:0x06030e,map:clothTex('#1b1134','#c9a24a','rune',3)}),robe2=std(0x1b1134,{emissive:0x06030e,map:clothTex('#1b1134','#c9a24a','rune',3),side:2}),
+  vio=std(0x4f22a0,{emissive:0x15062f,map:clothTex('#3f1888','#e2c070','star',11),side:2}),skin=std(0xeadbd6,{roughness:.7}),
+  hairT=(()=>{const c=document.createElement('canvas');c.width=64;c.height=256;const x=c.getContext('2d'),gr=x.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#cdbff0');x.fillStyle=gr;x.fillRect(0,0,64,256);for(let i=0;i<22;i++){x.strokeStyle=i%3?'rgba(150,130,200,.35)':'rgba(255,255,255,.7)';x.lineWidth=1+i%2;x.beginPath();const px=3+i*2.8;x.moveTo(px,0);x.bezierCurveTo(px+4,80,px-4,170,px+2,256);x.stroke()}return new T.CanvasTexture(c)})(),hair=std(0xffffff,{map:hairT,roughness:.5,emissive:0x3a3555,side:2}),capeO=std(0x2c1b58,{emissive:0x0d0624,map:clothTex('#2c1b58','#e0bc66','star',21),side:2}),V2=(a,b)=>new T.Vector2(a,b),PI=Math.PI;
+ // длинная узкая мантия с золотой каймой
+ ad(B,Me(new T.LatheGeometry([[1.15,0],[1.08,.5],[.86,1.4],[.66,2.2],[.56,2.75]].map(p=>V2(p[0],p[1])),28),robe));
+ ad(B,Me(new T.LatheGeometry([[1.17,.02],[1.165,.14]].map(p=>V2(p[0],p[1])),28),GOLD));
+ // полотнища спереди: фиолетовое со звёздами в центре, чёрные с рунами по бокам
+ const pC=ad(B,cloth(.5,2.45,3,8,vio,1.4),0,2.62,.64);pC.rotation.x=-.3;
+ const pL=ad(B,cloth(.5,2.5,3,8,robe2,1.4),-.44,2.62,.52);pL.rotation.set(-.3,-.25,.05);const pR=ad(B,cloth(.5,2.5,3,8,robe2,1.4),.44,2.62,.52);pR.rotation.set(-.3,.25,-.05);
+ // торс, золотая отделка, пояс с камнем, цепи с подвесками
+ ad(B,Me(new T.CylinderGeometry(.5,.62,1.45,16),robe),0,3.35,0);
+ for(const q of[-1,1])ad(B,Me(new T.BoxGeometry(.07,1.3,.05),GOLD),q*.17,3.4,.55).rotation.x=-.1;
+ ad(B,Me(new T.TorusGeometry(.63,.07,8,28),GOLD),0,2.68,0).rotation.x=PI/2;{const d=ad(B,Me(new T.OctahedronGeometry(.16,0),GEM(0x9a4cff)),0,2.66,.68);d.scale.set(.8,1.3,.6)}
+ const chain=(r,y,z,gem)=>{const c=ad(B,Me(new T.TorusGeometry(r,.018,5,20,PI),GOLD),0,y,z);c.rotation.z=PI;if(gem){const d=ad(B,Me(new T.OctahedronGeometry(.055,0),GEM(0xb070ff)),0,y-r-.06,z+.01);d.scale.y=1.6}};
+ chain(.3,3.86,.56,1);chain(.42,3.7,.6,0);chain(.36,2.6,.66,1);chain(.52,2.58,.6,0);
+ // высокий воротник
+ ad(B,Me(new T.CylinderGeometry(.8,.46,1.0,18,1,true,PI*.5,PI),robe2),0,4.55,-.1);ad(B,Me(new T.CylinderGeometry(.76,.44,.96,18,1,true,PI*.5,PI),vio),0,4.56,-.08);
+ ad(B,Me(new T.TorusGeometry(.8,.03,5,20,PI),GOLD),0,5.05,-.1).rotation.set(PI/2,0,PI);
+ // наплечники: тёмные с золотым кантом, шипом и камнем
+ for(const q of[-1,1]){const G=new T.Group();G.position.set(q*.84,4.0,0);B.add(G);ad(G,Me(new T.SphereGeometry(.44,16,10,0,PI2,0,PI/2),robe)).scale.set(1.2,.72,1.1);ad(G,Me(new T.TorusGeometry(.5,.035,5,22),GOLD),0,.01,0).rotation.x=PI/2;
+  ad(G,Me(new T.ConeGeometry(.09,.55,5),GOLD),q*.36,.3,0).rotation.z=-q*1.0;ad(G,Me(new T.OctahedronGeometry(.09,0),GEM(0x9a4cff)),0,.34,.14)}
+ // плащ: снаружи чёрный с золотыми рунами, внутри фиолетовый со звёздами
+ const cape=ad(B,cloth(2.2,4.3,5,12,vio,1.3),0,4.2,-.6);cape.rotation.x=.1;const cape2=ad(B,cloth(1.7,4.2,4,12,capeO,1.3),0,4.22,-.7);cape2.rotation.x=.11;const capeS=[-1,1].map(q=>{const a=ad(B,cloth(1.35,3.9,3,12,capeO,1.25),q*.75,4.2,-.62);a.rotation.set(.1,q*.5,q*.2);const b=ad(B,cloth(1.0,3.3,3,10,robe2,1.2),q*1.25,4.1,-.38);b.rotation.set(.08,q*.95,q*.32);return[a,b]}).flat();
+ // рукава-колокола
+ const arm=q=>{const G=new T.Group();G.position.set(q*.9,3.95,0);B.add(G);ad(G,Me(new T.CylinderGeometry(.19,.46,1.55,14,1,true),robe2),0,-.74,0);ad(G,Me(new T.CylinderGeometry(.17,.42,1.5,14,1,true),vio),0,-.74,0);
+  ad(G,Me(new T.CylinderGeometry(.45,.47,.1,14,1,true),GOLD),0,-1.5,0);ad(G,Me(new T.SphereGeometry(.14,10,8),skin),0,-1.56,0);G.rotation.z=q*.18;return G};
  const aL=arm(-1),aR=arm(1);
- // голова: капюшон, тень лица, светящиеся глаза, длинная борода, корона
- const H=new T.Group();H.position.set(0,4.85,.04);B.add(H);
- ad(H,Me(new T.SphereGeometry(.5,18,14),royal),0,.05,-.08).scale.set(1,1.12,1.06);ad(H,Me(new T.SphereGeometry(.4,14,10),dark),0,-.02,.12);
- const eyes=[-1,1].map(q=>ad(H,Me(new T.SphereGeometry(.055,8,6),glow(0x9ff6ff)),q*.14,.04,.48));
- const bd=ad(H,Me(new T.ConeGeometry(.3,1.35,10),beard),0,-.82,.3);bd.rotation.x=Math.PI+.12;for(const q of[-1,1])ad(H,Me(new T.ConeGeometry(.07,.5,6),beard),q*.17,-.27,.43).rotation.set(Math.PI,0,q*.9);
- ad(H,Me(new T.TorusGeometry(.5,.05,6,28),GOLD),0,.32,-.04).rotation.x=Math.PI/2-.15;
- for(let i=0;i<5;i++){const a=(i-2)*.42,c=ad(H,Me(new T.ConeGeometry(.07,.36+(i===2?.24:0),5),GOLD),Math.sin(a)*.5,.5+(i===2?.12:0),Math.cos(a)*.42-.04);c.rotation.set(Math.cos(a)*.25,0,-Math.sin(a)*.25);
-  ad(H,Me(new T.OctahedronGeometry(.06,0),GEM([0xff3a7a,0x30e0ff,0xffe14a,0x30e0ff,0xff3a7a][i])),Math.sin(a)*.5,.42,Math.cos(a)*.46-.04)}
- // посох: тёмное дерево, золотые спирали, когти, большой кристалл
+ // голова: бледное лицо, фиолетовые глаза, длинные белые волосы
+ const H=new T.Group();H.position.set(0,4.85,.04);B.add(H);ad(H,Me(new T.SphereGeometry(.34,16,12),skin)).scale.set(.9,1.12,.95);
+ const eyes=[-1,1].map(q=>{ad(H,Me(new T.BoxGeometry(.12,.025,.02),std(0x2a2038)),q*.12,.1,.3);const e=ad(H,Me(new T.SphereGeometry(.05,8,6),glow(0xb070ff)),q*.12,.03,.3);e.scale.set(1.3,.7,.6);return e});
+ {const hc=ad(H,Me(new T.SphereGeometry(.38,16,12,0,PI2,0,PI*.55),hair),0,.05,-.04);hc.rotation.x=-.38;ad(H,Me(new T.SphereGeometry(.36,14,10),hair),0,-.02,-.13).scale.set(1,1.05,.9)}
+ for(let i=0;i<7;i++){const a=(i-3)*.25,c=ad(H,Me(new T.ConeGeometry(.06,.32,5),hair),Math.sin(a)*.3,.26,Math.cos(a)*.28);c.rotation.set(2.25,0,-a*.9)}
+ for(const q of[-1,1]){const c=ad(H,Me(new T.ConeGeometry(.085,1.7,6),hair),q*.33,-.78,.12);c.rotation.set(PI,0,-q*.06)}
+ const hairC=ad(B,cloth(.5,3.7,2,10,hair,1.25),0,5.1,-.84);hairC.rotation.x=.09;const hairB=[[-.36,3.4,-.1],[.36,3.5,.1],[-.66,3.0,-.2],[.66,3.1,.2]].map(([x,L,rz],i)=>{const c=ad(B,cloth(.42,L,2,9,hair,1.2),x,5.05-Math.abs(x)*.15,-.8+Math.abs(x)*.12);c.rotation.set(.09,x*.5,rz);return c});
+ const hairS=[-1,1].map(q=>{const c=ad(B,cloth(.55,3.1,2,8,hair,1.2),q*.62,4.95,-.5);c.rotation.set(.06,q*.7,0);return c});
+ // посох: чёрное древко, терновое золотое кольцо с шипами, звёздная сфера, цепи с камнями
  const st=new T.Group();st.position.set(1.28,2.35,.42);B.add(st);
- ad(st,Me(new T.CylinderGeometry(.07,.09,5.6,8),std(0x2a1a10,{roughness:.8})),0,1.1,0);for(let i=0;i<5;i++)ad(st,Me(new T.TorusGeometry(.1,.025,6,14),GOLD),0,-.9+i*.9,0).rotation.x=Math.PI/2;
- const head=new T.Group();head.position.y=4.0;st.add(head);for(let i=0;i<4;i++){const c=ad(head,Me(new T.TorusGeometry(.42,.04,6,16,Math.PI*.8),GOLD),0,.25,0);c.rotation.set(0,i*Math.PI/2,Math.PI*.6)}
- const cry=ad(head,Me(new T.IcosahedronGeometry(.32,0),new T.MeshStandardMaterial({color:0xffffff,emissive:0xb070ff,emissiveIntensity:1.2,metalness:.1,roughness:.05,flatShading:true})),0,.6,0);
- const cg=ad(head,Me(new T.SphereGeometry(.75,14,10),glow(0xb070ff,.35)),0,.6,0),cg2=ad(head,Me(new T.SphereGeometry(1.3,14,10),glow(0x5040ff,.12)),0,.6,0);
- const sats=[0,1,2].map(i=>ad(head,Me(new T.OctahedronGeometry(.09,0),GEM([0xff3a7a,0x30e0ff,0xffe14a][i])),0,.6,0));
- // парящая книга у левой руки
- const book=new T.Group();B.add(book);ad(book,Me(new T.BoxGeometry(.75,.14,.55),std(0x5a1424,{roughness:.7})));ad(book,Me(new T.BoxGeometry(.7,.16,.5),std(0xf2e6c8)),.02,0,0);
- for(const[x,z]of[[-.35,-.25],[.35,-.25],[-.35,.25],[.35,.25]])ad(book,Me(new T.BoxGeometry(.1,.17,.1),GOLD),x,0,z);const pg=ad(book,Me(new T.PlaneGeometry(.6,.42),glow(0x9fe8ff,.6)),0,.1,0);pg.rotation.x=-Math.PI/2;
- // три кольца рун вокруг тела и круг под ногами
- const RTX=ringTex(),rings=[[2.1,0xff4fa0,.0],[2.5,0x40e0ff,.5],[2.9,0xffd24a,-.4]].map(([r,c,tl])=>{const m=ad(B,Me(new T.RingGeometry(r*.92,r,48,1),new T.MeshBasicMaterial({map:RTX,color:c,transparent:true,opacity:.5,blending:AB,depthWrite:false,side:2})),0,2.6,0);m.rotation.set(Math.PI/2+tl,0,0);m.userData.noShadow=true;return m});
- const gc=ad(g,Me(new T.PlaneGeometry(5.4,5.4),new T.MeshBasicMaterial({map:RTX,color:0x9a6cff,transparent:true,opacity:.45,blending:AB,depthWrite:false})),0,.07,0);gc.rotation.x=-Math.PI/2;gc.userData.noShadow=true;
- // тайминги
- let lt=0,ct=0,ph=0;const cc=new T.Color();
- return{g,cast(){ct=.9},u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;HZ.T.value=t;ct=Math.max(0,ct-dt);ph+=dt*(mv?9:0);const ca=Math.min(1,ct*4),w=mv?1:0;
+ ad(st,Me(new T.CylinderGeometry(.06,.08,5.8,8),std(0x120c18,{roughness:.6,metalness:.4})),0,1.1,0);for(let i=0;i<5;i++)ad(st,Me(new T.TorusGeometry(.09,.022,6,14),GOLD),0,-.9+i*.9,0).rotation.x=PI/2;
+ ad(st,Me(new T.ConeGeometry(.08,.4,6),GOLD),0,-1.95,0).rotation.x=PI;
+ const head=new T.Group();head.position.y=4.1;st.add(head);
+ ad(head,Me(new T.TorusGeometry(.56,.04,6,30),GOLD),0,.6,0);ad(head,Me(new T.TorusGeometry(.47,.02,5,26),GOLD),0,.6,0);
+ [.8,.3,.5,.3,.42,.3,.5,.3].forEach((L,i)=>{const a=PI/2+i*PI/4,c=ad(head,Me(new T.ConeGeometry(i%2?.05:.07,L,5),GOLD),Math.cos(a)*(.56+L/2),.6+Math.sin(a)*(.56+L/2),0);c.rotation.z=a-PI/2});
+ for(let i=0;i<8;i++){const a=i*PI/4+PI/8,c=ad(head,Me(new T.ConeGeometry(.03,.16,4),GOLD),Math.cos(a)*.4,.6+Math.sin(a)*.4,0);c.rotation.z=a+PI/2}
+ const cry=ad(head,Me(new T.SphereGeometry(.34,20,14),new T.MeshStandardMaterial({color:0x2a0a50,emissive:0x8a40ff,emissiveIntensity:1.3,metalness:.1,roughness:.08})),0,.6,0);
+ const cg=ad(head,Me(new T.SphereGeometry(.62,14,10),glow(0xa060ff,.35)),0,.6,0),cg2=ad(head,Me(new T.SphereGeometry(1.2,14,10),glow(0x6030ff,.12)),0,.6,0);
+ const sats=[0,1,2].map(i=>ad(head,Me(new T.OctahedronGeometry(.05,0),glow([0xffffff,0xd0a0ff,0xffffff][i])),0,.6,0));
+ const chs=[-1,1].map(q=>{const G=new T.Group();G.position.set(q*.56,.6,0);head.add(G);ad(G,Me(new T.CylinderGeometry(.012,.012,.9,4),GOLD),0,-.45,0);ad(G,Me(new T.OctahedronGeometry(.07,0),GEM(0xb070ff)),0,-.98,0).scale.y=1.5;return G});
+ let lt=0,ct=0;
+ return{g,cast(){ct=.9},u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;HZ.T.value=t;ct=Math.max(0,ct-dt);const ca=Math.min(1,ct*4),w=mv?1:0;
   B.position.y=.3+Math.sin(t*1.8)*.14;B.rotation.x=w*.12;
-  aR.rotation.x=-.35-ca*.75-w*.2+Math.sin(t*1.2)*.04;aR.rotation.z=.12;st.position.y=2.35+ca*.9;st.position.z=.42+ca*.35;st.rotation.x=-.06-ca*.3;st.rotation.z=-.05;aL.rotation.x=-.5-Math.sin(t*1.5)*.08-ca*.8;aL.rotation.z=-.4;
+  aR.rotation.x=-.35-ca*.75-w*.2+Math.sin(t*1.2)*.04;aR.rotation.z=.12;st.position.y=2.35+ca*.9;st.position.z=.42+ca*.35;st.rotation.x=-.06-ca*.3;st.rotation.z=-.05;aL.rotation.x=-.3-Math.sin(t*1.5)*.06-ca*.9;aL.rotation.z=-.25;
   H.rotation.y=Math.sin(t*.7)*.12;H.rotation.x=-ca*.15;
-  pL.userData.wv(t,1,w*.6);pR.userData.wv(t+1.3,1,w*.6);cape.userData.wv(t,1.3,w);
-  cc.setHSL((t*.08)%1,.85,.62);cry.material.emissive.copy(cc);cg.material.color.copy(cc);cry.rotation.y=t*1.2;cry.rotation.x=t*.7;const sc=1+Math.sin(t*4)*.08+ca*.6;cg.scale.setScalar(sc);cg2.scale.setScalar(sc*(1+ca));cg2.material.opacity=.12+ca*.25;
-  sats.forEach((s,i)=>{const a=t*2.4+i*2.09;s.position.set(Math.cos(a)*.62,.6+Math.sin(a*1.3)*.2,Math.sin(a)*.62)});
-  book.position.set(-1.45+Math.sin(t*.9)*.08,3.05+Math.sin(t*1.7)*.12,.75);book.rotation.set(-.35,.5+Math.sin(t*.8)*.1,.1);pg.material.opacity=.45+.25*Math.sin(t*5)+ca*.4;
-  rings.forEach((r,i)=>{r.rotation.z=t*(i%2?-.5:.4)*(1+ca*4);r.material.opacity=.32+.18*Math.sin(t*2+i)+ca*.4});gc.rotation.z=t*.25;gc.material.opacity=.28+ca*.5;
-  eyes.forEach(e=>e.scale.setScalar(1+ca*.8))}}}
+  pC.userData.wv(t+.6,1,w*.6);pL.userData.wv(t,1,w*.6);pR.userData.wv(t+1.3,1,w*.6);cape.userData.wv(t,1.3,w);cape2.userData.wv(t,1.3,w);hairC.userData.wv(t+.4,1.1,w*.9);hairS.forEach((c,i)=>c.userData.wv(t+i,1,w*.8));hairB.forEach((c,i)=>c.userData.wv(t+i*.7,1.2,w*.9));capeS.forEach((c,i)=>c.userData.wv(t+i*.5,1.3,w));
+  cry.material.emissiveIntensity=1.2+.35*Math.sin(t*3)+ca*1.5;cry.rotation.y=t*.6;const sc=1+Math.sin(t*4)*.08+ca*.6;cg.scale.setScalar(sc);cg2.scale.setScalar(sc*(1+ca));cg2.material.opacity=.12+ca*.25;
+  sats.forEach((s,i)=>{const a=t*2.4+i*2.09;s.position.set(Math.cos(a)*.44,.6+Math.sin(a*1.3)*.25,Math.sin(a)*.44)});
+  chs.forEach((c,i)=>{c.rotation.z=Math.sin(t*2.1+i*2)*.14+w*.2;c.rotation.x=Math.sin(t*1.7+i)*.1});
+  eyes.forEach(e=>e.scale.set(1.3*(1+ca*.5),.7*(1+ca*.5),.6))}}}
 
-// ---------- Святой огненный мечник (тёмные одежды с огненной вышивкой, ореол пламени, летающие мечи) ----------
-function makeSaint(){const T=THREE,{std,glow,clothTex,cloth,flame,ringTex,ad,Me}=HZ,g=new T.Group(),B=new T.Group();g.add(B);
- const GOLD=std(0xe7b648,{metalness:.85,roughness:.3,emissive:0x2a1800}),blk=std(0x16121c,{map:clothTex('#16121c','#c8342a','flame',13),emissive:0x050207}),
-  red=std(0x8d1a1f,{emissive:0x1c0204,side:2}),blkS=std(0x16121c,{side:2,map:clothTex('#16121c','#d9a440','flame',17)}),skin=std(0xe8cdb6),hairM=std(0x0c0a12,{roughness:.45,metalness:.2}),jade=new T.MeshStandardMaterial({color:0x3fd7a0,emissive:0x0c5a40,metalness:.3,roughness:.2});
- // длинное одеяние
+// ---------- Повелитель пламени с тяжёлым мечом (оригинальный дизайн: чёрные одежды, длинные чёрные волосы, диск-лотос за спиной, широкий чёрный меч, огненный лотос в руке) ----------
+function makeSaint(){const T=THREE,{std,glow,clothTex,cloth,flame,ringTex,ad,Me}=HZ,g=new T.Group(),B=new T.Group();g.add(B);const PI=Math.PI;
+ const GOLD=std(0xcfa544,{metalness:.9,roughness:.3,emissive:0x2a1800}),blk=std(0x15111a,{map:clothTex('#15111a','#b08a3a','flame',13),emissive:0x040205}),
+  blkS=std(0x15111a,{side:2,map:clothTex('#15111a','#b08a3a','flame',17)}),red=std(0xa31a22,{emissive:0x2a0407,side:2}),skin=std(0xe8cdb6),hairM=std(0x09080d,{roughness:.4,metalness:.25,side:2}),
+  iron=std(0x17151c,{metalness:.85,roughness:.32,emissive:0x050408});
+ // длинное чёрное одеяние с золотой каймой
  ad(B,Me(new T.LatheGeometry([[1.05,0],[1.0,.5],[.82,1.3],[.6,1.95]].map(p=>new T.Vector2(p[0],p[1])),24),blk));
- ad(B,Me(new T.LatheGeometry([[1.07,.01],[1.06,.16]].map(p=>new T.Vector2(p[0],p[1])),24),GOLD));
- const fp=ad(B,cloth(.7,1.9,3,8,blkS,1.3),0,1.95,.62);fp.rotation.x=-.3;
- // торс с перекрёстным воротом, пояс с нефритом
+ ad(B,Me(new T.LatheGeometry([[1.07,.01],[1.06,.13]].map(p=>new T.Vector2(p[0],p[1])),24),GOLD));
+ const fp=ad(B,cloth(.6,1.9,3,8,blkS,1.3),0,1.95,.62);fp.rotation.x=-.3;
+ // торс, перекрёстный ворот, красный кушак с пряжкой и длинными лентами
  ad(B,Me(new T.CylinderGeometry(.5,.62,1.35,14),blk),0,2.6,0);
- for(const q of[-1,1]){const v=ad(B,Me(new T.BoxGeometry(.16,1.1,.06),red),q*.16,2.75,.52);v.rotation.set(-.12,0,q*.45)}
- ad(B,Me(new T.CylinderGeometry(.64,.64,.26,16),red),0,2.0,0);ad(B,Me(new T.BoxGeometry(.3,.22,.08),jade),0,2.0,.64);for(const q of[-1,1])ad(B,Me(new T.TorusGeometry(.645,.025,5,24),GOLD),0,2.0+q*.13,0).rotation.x=Math.PI/2;
+ for(const q of[-1,1]){const v=ad(B,Me(new T.BoxGeometry(.13,1.1,.06),GOLD),q*.16,2.75,.52);v.rotation.set(-.12,0,q*.45)}
+ ad(B,Me(new T.CylinderGeometry(.64,.64,.3,16),red),0,2.0,0);ad(B,Me(new T.BoxGeometry(.3,.26,.08),GOLD),0,2.0,.64);for(const q of[-1,1])ad(B,Me(new T.TorusGeometry(.645,.022,5,24),GOLD),0,2.0+q*.15,0).rotation.x=PI/2;
+ const rib=[-1,1].map(q=>{const c=ad(B,cloth(.24,2.7,2,10,red,1.1),q*.5,2.05,-.45);c.rotation.set(.25,q*.5,q*.12);return c});
  // наплечники
- for(const q of[-1,1]){const p=ad(B,Me(new T.SphereGeometry(.34,12,8,0,PI2,0,Math.PI/2),std(0x22202a,{metalness:.6,roughness:.35})),q*.66,3.22,0);p.scale.set(1.15,.7,1.1);ad(B,Me(new T.TorusGeometry(.34,.03,5,18),GOLD),q*.66,3.22,0).rotation.x=Math.PI/2}
+ for(const q of[-1,1]){const p=ad(B,Me(new T.SphereGeometry(.34,12,8,0,PI2,0,PI/2),iron),q*.66,3.22,0);p.scale.set(1.2,.7,1.1);ad(B,Me(new T.TorusGeometry(.36,.03,5,18),GOLD),q*.66,3.22,0).rotation.x=PI/2}
  // руки и широкие рукава
- const arm=q=>{const G=new T.Group();G.position.set(q*.7,3.2,0);B.add(G);ad(G,Me(new T.CylinderGeometry(.16,.4,1.25,12,1,true),blkS),0,-.6,0);ad(G,Me(new T.CylinderGeometry(.38,.4,.1,12,1,true),GOLD),0,-1.2,0);ad(G,Me(new T.SphereGeometry(.12,8,6),skin),0,-1.32,0);return G};
+ const arm=q=>{const G=new T.Group();G.position.set(q*.7,3.2,0);B.add(G);ad(G,Me(new T.CylinderGeometry(.16,.42,1.25,12,1,true),blkS),0,-.6,0);ad(G,Me(new T.CylinderGeometry(.4,.42,.09,12,1,true),GOLD),0,-1.2,0);ad(G,Me(new T.SphereGeometry(.12,8,6),skin),0,-1.32,0);return G};
  const aL=arm(-1),aR=arm(1);aL.rotation.z=-.2;
- // голова: лицо, глаза с отблеском, волосы с длинными прядями, золотая заколка-венец
+ // голова: лицо, длинные распущенные чёрные волосы, небольшая заколка
  const H=new T.Group();H.position.set(0,3.62,0);B.add(H);ad(H,Me(new T.SphereGeometry(.36,16,12),skin)).scale.set(.92,1.08,.95);
  for(const q of[-1,1]){ad(H,Me(new T.BoxGeometry(.1,.035,.02),std(0x111018)),q*.13,.05,.33);ad(H,Me(new T.SphereGeometry(.028,6,5),glow(0xffa040)),q*.13,.04,.345)}
- {const hc=ad(H,Me(new T.SphereGeometry(.4,16,12,0,PI2,0,Math.PI*.5),hairM),0,.06,-.05);hc.scale.set(1,1.05,1.08);hc.rotation.x=-.5;ad(H,Me(new T.SphereGeometry(.4,14,10),hairM),0,-.02,-.12).scale.set(.98,1,.9)}
+ {const hc=ad(H,Me(new T.SphereGeometry(.4,16,12,0,PI2,0,PI*.5),hairM),0,.06,-.05);hc.scale.set(1,1.05,1.08);hc.rotation.x=-.5;ad(H,Me(new T.SphereGeometry(.4,14,10),hairM),0,-.02,-.12).scale.set(.98,1,.9)}
  for(let i=0;i<7;i++){const a=(i-3)*.24,c=ad(H,Me(new T.ConeGeometry(.06,.3,5),hairM),Math.sin(a)*.31,.27,Math.cos(a)*.29);c.rotation.set(2.25,0,-a*.9)}
- for(const q of[-1,1]){const c=ad(H,Me(new T.ConeGeometry(.07,.75,5),hairM),q*.31,-.2,.12);c.rotation.set(Math.PI,0,-q*.12)}
- ad(H,Me(new T.CylinderGeometry(.12,.15,.2,10),GOLD),0,.42,-.08);ad(H,Me(new T.BoxGeometry(.5,.04,.04),GOLD),0,.45,-.08);ad(H,Me(new T.OctahedronGeometry(.05,0),jade),0,.54,-.08);
- const tail=[];{let par=H,y=.3;for(let i=0;i<7;i++){const G=new T.Group();G.position.set(0,i?-.32:.3,i?0:-.32);par.add(G);const m=ad(G,Me(new T.ConeGeometry(.13-i*.012,.4,6),hairM),0,-.18,0);m.rotation.x=Math.PI;tail.push(G);par=G}}
- // плащ
- const cape=ad(B,cloth(1.7,2.9,5,10,red,1.3),0,3.28,-.5);cape.rotation.x=.08;
- // ореол из пламени за спиной и веер летающих мечей
- const halo=new T.Group();halo.position.set(0,3.5,-.9);B.add(halo);
- const hr=ad(halo,Me(new T.TorusGeometry(1.05,.035,6,40),glow(0xffb050,.6)));const hr2=ad(halo,Me(new T.RingGeometry(.9,1.25,48),new T.MeshBasicMaterial({map:ringTex(),color:0xff7030,transparent:true,opacity:.35,blending:AB,depthWrite:false,side:2})));
- const fl=[];for(let i=0;i<12;i++){const a=i/12*PI2,m=ad(halo,Me(new T.PlaneGeometry(.5,1.1),flame(0xffe0a0,0xff3010,.42,1.2)),Math.cos(a)*1.25,Math.sin(a)*1.25,0);m.rotation.z=a-Math.PI/2;m.geometry.translate(0,.45,0);fl.push(m)}
- const fs=[];for(let i=0;i<4;i++){const G=new T.Group();B.add(G);ad(G,Me(new T.BoxGeometry(.07,.03,1.5),std(0xdfe6ff,{metalness:.9,roughness:.15,emissive:0x402010})),0,0,.4);ad(G,Me(new T.BoxGeometry(.3,.05,.06),GOLD),0,0,-.36);
-  ad(G,Me(new T.PlaneGeometry(.22,1.6),flame(0xffe0a0,0xff4020,.35,1.6)),0,0,.45).rotation.x=-Math.PI/2;fs.push(G)}
- // главный меч: длинный цзянь с огненной кромкой, кисточка
+ for(const q of[-1,1]){const c=ad(H,Me(new T.ConeGeometry(.075,1.25,5),hairM),q*.32,-.5,.12);c.rotation.set(PI,0,-q*.08)}
+ ad(H,Me(new T.CylinderGeometry(.08,.1,.14,8),GOLD),0,.42,-.1);
+ const hairC=ad(B,cloth(1.0,2.5,4,9,hairM,1.2),0,3.86,-.66);hairC.rotation.x=.1;
+ const tail=[];{let par=H;for(let i=0;i<7;i++){const G=new T.Group();G.position.set(0,i?-.32:.3,i?0:-.32);par.add(G);const m=ad(G,Me(new T.ConeGeometry(.13-i*.012,.4,6),hairM),0,-.18,0);m.rotation.x=PI;tail.push(G);par=G}}
+ // плащ: чёрный снаружи, красный внутри
+ const cape=ad(B,cloth(1.8,2.9,5,10,red,1.3),0,3.28,-.5);cape.rotation.x=.08;const cape2=ad(B,cloth(1.95,2.8,5,10,blkS,1.3),0,3.3,-.57);cape2.rotation.x=.09;
+ // большой диск-лотос за спиной: кремовый с золотыми лепестками, золотой обод и языки пламени по кругу
+ const manT=(()=>{const N=512,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d'),C0=N/2;x.translate(C0,C0);
+  let gr=x.createRadialGradient(0,0,10,0,0,C0);gr.addColorStop(0,'#fff6dc');gr.addColorStop(.55,'#f1d9b0');gr.addColorStop(.8,'#c8523c');gr.addColorStop(1,'#7a1418');x.fillStyle=gr;x.beginPath();x.arc(0,0,C0-4,0,PI2);x.fill();
+  const petal=(n,r0,r1,w,fill,stroke)=>{for(let i=0;i<n;i++){x.save();x.rotate(i/n*PI2);x.beginPath();x.moveTo(0,-r0);x.quadraticCurveTo(w,-(r0+r1)/2,0,-r1);x.quadraticCurveTo(-w,-(r0+r1)/2,0,-r0);x.fillStyle=fill;x.fill();x.strokeStyle=stroke;x.lineWidth=3;x.stroke();x.restore()}};
+  petal(24,150,246,34,'rgba(205,165,70,.55)','#8a6a20');petal(16,84,176,36,'rgba(232,200,110,.8)','#8a6a20');petal(8,24,104,40,'#e9c668','#7a5a18');
+  x.strokeStyle='#b08a3a';for(const[r,w]of[[250,8],[180,3],[106,4]]){x.lineWidth=w;x.beginPath();x.arc(0,0,r,0,PI2);x.stroke()}
+  x.fillStyle='#c9a24a';x.beginPath();x.arc(0,0,26,0,PI2);x.fill();x.strokeStyle='#7a5a18';x.lineWidth=3;x.stroke();const t=new T.CanvasTexture(c);t.anisotropy=4;return t})();
+ const halo=new T.Group();halo.position.set(0,4.2,-1.1);halo.scale.setScalar(.72);B.add(halo);
+ const disc=ad(halo,Me(new T.CircleGeometry(1.55,48),new T.MeshBasicMaterial({map:manT,side:2,transparent:true,opacity:.97})));ad(halo,Me(new T.TorusGeometry(1.56,.06,6,48),GOLD));
+ const fl=[];for(let i=0;i<14;i++){const a=i/14*PI2,L=i%2?.5:.8,c=ad(halo,Me(new T.ConeGeometry(.17,L,4),GOLD),Math.cos(a)*(1.6+L/2),Math.sin(a)*(1.6+L/2),0);c.rotation.z=a-PI/2;c.scale.z=.35;
+  if(!(i%2)){const m=ad(halo,Me(new T.PlaneGeometry(.55,1.2),flame(0xffe0a0,0xff3010,.4,1.2)),Math.cos(a)*1.7,Math.sin(a)*1.7,-.03);m.rotation.z=a-PI/2;m.geometry.translate(0,.5,0);fl.push(m)}}
+ const hg=ad(halo,Me(new T.CircleGeometry(2.5,32),glow(0xff5a20,.1)),0,0,-.06);
+ // огненный лотос над левой ладонью: лепестки разного пламени
+ const lot=new T.Group();B.add(lot);const LC=[0x40e0ff,0x60ff90,0xb070ff,0xffd040,0xffffff,0xff5a30],pet=[];
+ for(let r=0;r<2;r++)for(let i=0;i<6;i++){const a=i/6*PI2+r*.52,G=new T.Group();G.rotation.y=a;lot.add(G);const m=ad(G,Me(new T.ConeGeometry(.1,.36-r*.08,4),glow(LC[(i+r*3)%6],.9)),0,.1+r*.06,.17-r*.06);m.scale.z=.4;m.rotation.x=.75-r*.4;pet.push(m)}
+ ad(lot,Me(new T.SphereGeometry(.1,10,8),glow(0xffffff,1)),0,.12,0);const lg=ad(lot,Me(new T.SphereGeometry(.42,12,8),glow(0x80c0ff,.22)),0,.14,0);
+ const lf=ad(lot,Me(new T.PlaneGeometry(.5,.9),flame(0xffffff,0x60a0ff,.45,1.6)),0,.15,0);lf.geometry.translate(0,.4,0);
+ // главный меч: тяжёлый широкий чёрный клинок с золотой насечкой и красными знаками
  const swg=new T.Group();swg.position.set(.9,2.1,.6);
- const bladeM=new T.MeshStandardMaterial({color:0xf2f4ff,metalness:.95,roughness:.12,emissive:0xff5a20,emissiveIntensity:.35});
- const blade=ad(swg,Me(new T.BoxGeometry(.16,.05,3.4),bladeM),0,0,2.15);ad(swg,Me(new T.ConeGeometry(.08,.35,4),bladeM),0,0,3.99).rotation.x=Math.PI/2;
- ad(swg,Me(new T.BoxGeometry(.06,.06,3.3),glow(0xff7a30,.85)),0,0,2.15);
- const sh1=ad(swg,Me(new T.PlaneGeometry(.55,3.6),flame(0xfff2b0,0xff3a10,.4,2)),0,0,2.2);sh1.rotation.x=-Math.PI/2;const sh2=ad(swg,Me(new T.PlaneGeometry(.55,3.6),flame(0xfff2b0,0xff3a10,.4,2)),0,0,2.2);sh2.rotation.set(-Math.PI/2,Math.PI/2,0);
- ad(swg,Me(new T.BoxGeometry(.85,.12,.16),GOLD),0,0,.42);for(const q of[-1,1])ad(swg,Me(new T.ConeGeometry(.07,.32,5),GOLD),q*.5,0,.5).rotation.set(Math.PI/2,0,-q*.6);
- ad(swg,Me(new T.CylinderGeometry(.06,.06,.6,8),red),0,0,.05).rotation.x=Math.PI/2;ad(swg,Me(new T.SphereGeometry(.09,8,6),jade),0,0,-.28);
- const tas=ad(swg,Me(new T.ConeGeometry(.06,.5,6),red),0,-.25,-.32);
+ ad(swg,Me(new T.BoxGeometry(.5,.09,3.5),iron),0,0,2.25);ad(swg,Me(new T.BoxGeometry(.4,.1,.22),iron),0,0,4.1);
+ for(const q of[-1,1])ad(swg,Me(new T.BoxGeometry(.03,.1,3.5),GOLD),q*.2,0,2.25);
+ const bl=ad(swg,Me(new T.BoxGeometry(.1,.1,2.9),glow(0xff4a20,.7)),0,0,2.3);for(let i=0;i<5;i++)ad(swg,Me(new T.BoxGeometry(.3,.1,.05),glow(0xff7030,.6)),0,0,1.1+i*.6);
+ const sh1=ad(swg,Me(new T.PlaneGeometry(.9,3.8),flame(0xfff2b0,0xff3a10,.3,2)),0,0,2.3);sh1.rotation.x=-PI/2;const sh2=ad(swg,Me(new T.PlaneGeometry(.55,3.8),flame(0xfff2b0,0xff3a10,.3,2)),0,0,2.3);sh2.rotation.set(-PI/2,PI/2,0);
+ ad(swg,Me(new T.BoxGeometry(.8,.16,.2),GOLD),0,0,.42);ad(swg,Me(new T.CylinderGeometry(.065,.065,.85,8),red),0,0,-.05).rotation.x=PI/2;ad(swg,Me(new T.TorusGeometry(.11,.035,6,14),GOLD),0,0,-.58);
+ const tas=ad(swg,Me(new T.ConeGeometry(.06,.5,6),red),0,-.25,-.6);
  B.add(swg);let swing=0,lt=0,ph=0,em=0;
  return{g,swg,hit(){swing=1},cast(){swing=1},u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;HZ.T.value=t;swing=Math.max(0,swing-dt*3.2);ph+=dt*(mv?11:0);const w=mv?1:0;
-  swg.rotation.set(swing>0?-1.6+(1-swing)*2.9:.25,swing>0?(swing-.5)*.8:0,0);aR.rotation.x=swing>0?-1.6+(1-swing)*1.8:-.5;aR.rotation.z=.15;aL.rotation.x=-Math.sin(ph)*.4*w+Math.sin(t*1.3)*.04;
+  swg.rotation.set(swing>0?-1.6+(1-swing)*2.9:.25,swing>0?(swing-.5)*.8:0,0);aR.rotation.x=swing>0?-1.6+(1-swing)*1.8:-.5;aR.rotation.z=.15;aL.rotation.x=-.95+Math.sin(t*1.3)*.05;aL.rotation.z=-.25;
   B.position.y=mv?Math.abs(Math.sin(t*11))*.2:Math.sin(t*1.6)*.05;B.rotation.x=w*.14;H.rotation.y=Math.sin(t*.6)*.1;
   tail.forEach((G,i)=>{G.rotation.x=(i?.12:.5)+w*.35+Math.sin(t*3-i*.7)*(.06+i*.02);G.rotation.z=Math.sin(t*2.2-i*.6)*.05*i});tas.rotation.x=Math.sin(t*5)*.3;
-  fp.userData.wv(t,1,w*.5);cape.userData.wv(t+.7,1.2,w);
-  halo.rotation.z=t*.35;hr2.rotation.z=-t*.6;hr.material.opacity=.45+.15*Math.sin(t*6);fl.forEach((m,i)=>{const s=.8+.35*Math.sin(t*5+i*1.7);m.scale.set(s,s,1)});
-  fs.forEach((G,i)=>{const a=-1.1+i*.73;G.position.set(Math.sin(a)*1.7,3.0+Math.cos(a)*1.1+Math.sin(t*2+i)*.12,-1.1);G.rotation.set(-Math.PI/2+.25,0,a*.6)});
+  fp.userData.wv(t,1,w*.5);cape.userData.wv(t+.7,1.2,w);cape2.userData.wv(t+.7,1.2,w);hairC.userData.wv(t+.3,1.1,w*.9);rib.forEach((c,i)=>c.userData.wv(t*1.4+i*2,1.8,w*1.2));
+  halo.rotation.z=t*.12;fl.forEach((m,i)=>{const s=.8+.35*Math.sin(t*5+i*1.7);m.scale.set(s,s,1)});hg.material.opacity=.08+.05*Math.sin(t*2.5);
+  lot.position.set(-.98,2.42+Math.sin(t*2.2)*.06,1.05);lot.rotation.y=t*1.6;lg.scale.setScalar(1+.15*Math.sin(t*6));bl.material.opacity=.55+.25*Math.sin(t*4);
   em+=dt*(mv?14:5);while(em>1){em--;const p=g.getWorldPosition(_hzv);emit(p.x+(rnd()-.5)*2,p.y+rnd()*3.5,p.z+(rnd()-.5)*2,(rnd()-.5)*1.5,2+rnd()*3,(rnd()-.5)*1.5,.9,rnd()<.5?0xff7030:0xffc060,.9,1)}}}}
 const _hzv=new THREE.Vector3();
 
@@ -641,20 +656,20 @@ function dialTex(){const c=document.createElement('canvas');c.width=c.height=102
  for(let k=0;k<12;k++){g.save();g.rotate(k/12*PI2);g.fillStyle='#bff7ff';g.font='bold 64px serif';g.fillText(RN[k],0,-320);g.fillStyle='#7cff9a';g.font='84px serif';g.fillText(Z[k],0,-450);g.restore()}
  for(let k=0;k<60;k++){g.save();g.rotate(k/60*PI2);g.fillStyle='#e8ffff';g.fillRect(-2,-390,4,k%5?12:28);g.restore()}
  return new THREE.CanvasTexture(c)}
-function goal(){const O=CP().position;pL=1;play('goal',2.08);
+function goal(){const O=CP().position,F0=fwd();pL=1;play('goal',2.08);
  const m=magic(new THREE.Vector3(O.x,11,O.z),stack(5,23,13,4,[0xffd060,0xbff7ff,0xffffff],[12,12,6],[2,0,2,3,2]),'w',0);
- const dm2=new THREE.MeshBasicMaterial({map:dialTex(),transparent:true,depthWrite:false,side:2}),dial=new THREE.Mesh(new THREE.PlaneGeometry(30,30),dm2);dial.position.z=1;m.G.add(dial);
+ const dm2=new THREE.MeshBasicMaterial({map:dialTex(),transparent:true,depthWrite:false,side:2}),dial=new THREE.Mesh(new THREE.PlaneGeometry(10,10),dm2);dial.position.z=1;m.G.add(dial);
  const hm=new THREE.MeshBasicMaterial({color:0xe8ffff,transparent:true,depthWrite:false,blending:AB});
- const hand=(len,w)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,1,.3).translate(0,.5,0),hm);o.scale.y=len;o.position.z=1.6;m.G.add(o);return o};
- const mh=hand(12.5,.45),hh=hand(8,.8),jw=new THREE.Mesh(new THREE.SphereGeometry(.9,10,8),hm);jw.position.z=1.7;m.G.add(jw);
+ const hand=(len,w)=>FX3.hand(len,w,hm,m.G);
+ const mh=hand(4.4,.22),hh=hand(2.9,.32),jw=new THREE.Mesh(new THREE.SphereGeometry(.26,10,8),hm);jw.position.z=1.7;m.G.add(jw);
  let t=0,last=0,w=0,X=0,Z=0;const T0=5.3,CD=9,NTK=10,STP=CD/NTK,TE=T0+CD,GC=[0xbff7ff,0x7cff9a,0x99aaa0];
  fx.push(dt=>{t+=dt;const F=fwd(),ax=new THREE.Vector3(-F.z,0,F.x),G=m.G.position;
-  G.set(O.x+F.x*34,11,O.z+F.z*34);m.G.rotation.y=Math.atan2(F.x,F.z)+Math.PI;
-  const q=Math.min(t/5,1),ea=1-Math.pow(1-q,3);dial.scale.setScalar(.2+.8*ea+(t>TE?(t-TE)*1.2:0));dial.rotation.z=(1-ea)*3;dm2.opacity=hm.opacity=ea*(t>TE?Math.max(0,1-(t-TE)*1.6):1);
-  m.set(t,fade(t,4.5,TE,TE+.7));
+  G.set(O.x-F0.x*2.5,5.6,O.z-F0.z*2.5);m.G.rotation.y=Math.atan2(F0.x,F0.z)+Math.PI;
+  const q=Math.min(t/5,1),ea=1-Math.pow(1-q,3);dial.scale.setScalar(.2+.8*ea+(t>TE?(t-TE)*1.2:0));dm2.opacity=hm.opacity=ea*(t>TE?Math.max(0,1-(t-TE)*1.6):1);
+  m.set(t,0);
   const u=Math.max(0,t-T0),T2=Math.min(u,CD),fl=Math.floor(T2/STP+1e-9),sp=Math.min(1,(T2-fl*STP)/.27),e=Math.sin(sp*Math.PI/2)+(sp<1?Math.sin(sp*Math.PI)*.12:0);
   mh.rotation.z=-(fl+e)/NTK*PI2;hh.rotation.z=-(.92+.08*T2/CD)*PI2;
-  const rim=(n,c,v)=>{for(let k=0;k<n;k++){const a=rnd()*PI2,cs=Math.cos(a)*15;emit(G.x+ax.x*cs,G.y+Math.sin(a)*15,G.z+ax.z*cs,-F.x*v,(rnd()-.3)*3,-F.z*v,1,c,2.2,0)}};
+  const rim=(n,c,v)=>{for(let k=0;k<n;k++){const a=rnd()*PI2,cs=Math.cos(a)*5.1;emit(G.x+ax.x*cs,G.y+Math.sin(a)*5.1,G.z+ax.z*cs,-F.x*v,(rnd()-.3)*3,-F.z*v,1,c,2.2,0)}};
   st.textContent=t<T0?'':t<TE?'☠ Цель всей жизни — смерть: '+(TE-t).toFixed(1)+' с':'';
   if(t<TE){for(let k=0;k<5;k++)emit(O.x+(rnd()-.5)*2,rnd()*3,O.z+(rnd()-.5)*2,(rnd()-.5)*2,4+rnd()*4,(rnd()-.5)*2,1,GC[k%3],1.3,0);
    if(t>TE-3){shake((t-(TE-3))*.12);if(rnd()<dt*8)rim(10,0xff5060,14)}
@@ -1888,7 +1903,7 @@ function shinra(){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g.position.
  let t=0,b=0,hit=new Set(),cs=-1,ce=null,m2=0;const H=18;
  const cap=(on,a,r)=>{if(!ce){ce=document.createElement('div');ce.style.cssText='position:fixed;left:0;right:0;top:20%;text-align:center;font:900 clamp(34px,9vw,96px) "Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif;color:#000;-webkit-text-stroke:2px #fff;text-shadow:0 0 6px #fff,0 0 16px #fff,0 0 36px rgba(255,255,255,.75),0 0 70px rgba(255,255,255,.4);pointer-events:none;z-index:30;opacity:0;transition:opacity .25s,transform 1.2s ease-out';document.body.appendChild(ce)}
   if(a)ce.innerHTML=a+'<div style="font:800 clamp(13px,3.2vw,26px) system-ui;letter-spacing:.3em;margin-top:8px;color:#000;-webkit-text-stroke:1px #fff;text-shadow:0 0 8px #fff,0 0 20px #fff">'+r+'</div>';ce.style.opacity=on?1:0;ce.style.transform=on?'scale(1.05)':'scale(.9)'};
- fx.push(dt=>{t+=dt;const C=BLK.CAM,k=Math.min(1,dt*2.2),T=TM(),gp=g.position;if(!m2&&t>=13){m2=1;if(typeof SND!=='undefined'&&SND.shinra2&&typeof play==='function')play('shinra2',.7*v)}
+ fx.push(dt=>{t+=dt;const C=BLK.CAM,k=Math.min(1,dt*2.2),T=TM(),gp=g.position;if(!m2&&t>=4){m2=1;if(typeof SND!=='undefined'&&SND.shinra2&&typeof play==='function')play('shinra2',.7*v)}
   // камера отъезжает, фразы сменяются
   if(t<TE-.8){const far=t>T0?1:0;C.z+=((4+far*4)-C.z)*k;C.y+=((45+far*60)-C.y)*k}else{C.z+=(1-C.z)*k*1.6;C.y+=(0-C.y)*k*1.6}
   ST_.caps.forEach((c,i)=>{if(t>=c[0]&&cs<i){cs=i;cap(1,c[1],c[2])}});if(t>T0+1.4)cap(0);
@@ -1950,14 +1965,14 @@ for(const q of[-1,1]){
  // жабры: 5 тёмных щелей
  for(let k=0;k<5;k++){const b=new T3.BoxGeometry(.003,.05-k*.003,.0035);b.rotateX(-.15);b.translate(q*.072,-.004,.335-k*.016);add(b,3)}}
 // пасть: нижняя челюсть-корыто (шарнир у z=.355) + зубы сверху и снизу
-{const NZ=14,NR=12,po=[],pi=[],po2=[];for(let i=0;i<=NZ;i++){const u=i/NZ,z=.355+u*.095,w=.058*Math.sqrt(Math.max(0,1-u*u))+.004,d=.028*(1-u*.6)+.004;
+{const BY=(x,z)=>{const u=Math.max(0,(.5-z)/.9),hh=Math.max(.004,u<.3?.085*Math.pow(u/.3,.5):.085),w=hh*.82;return -hh*.82*Math.sqrt(Math.max(.15,1-(x/w)*(x/w)))};const NZ=14,NR=12,po=[],pi=[],po2=[];for(let i=0;i<=NZ;i++){const u=i/NZ,z=.355+u*.095,w=.058*Math.sqrt(Math.max(0,1-u*u))+.004,d=.028*(1-u*.6)+.004;
   for(let j=0;j<=NR;j++){const a=PI+j/NR*PI,x=Math.cos(a)*w,y=Math.sin(a)*d-.03;po.push(x,y,z);po2.push(x*.86,y*.8-.002+.004,z-.004)}}
  for(let i=0;i<NZ;i++)for(let j=0;j<NR;j++){const a=i*(NR+1)+j,b=a+NR+1;pi.push(a,b,a+1,b,b+1,a+1)}
  for(const [arr,k] of [[po,0],[po2,3]]){const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(arr,3));g.setIndex(pi.slice());g.computeVertexNormals();add(g,k,1)}
  // тёмное нёбо над пастью
- {const g=new T3.CircleGeometry(1,24,0,PI);g.rotateX(PI/2);g.scale(.058,1,.09);g.translate(0,-.05,.36);add(g,3)}
+ {const g=new T3.CircleGeometry(1,24,0,PI);g.rotateX(PI/2);g.scale(.048,1,.09);g.translate(0,-.05,.36);{const a=g.attributes.position;for(let i=0;i<a.count;i++)a.setY(i,BY(a.getX(i),a.getZ(i))-.003)}add(g,3)}
  const tooth=(x,y,z,up,s,jw)=>{const g=new T3.ConeGeometry(.0045*s,.016*s,5);if(!up)g.rotateX(PI);g.translate(x,y+(up?.008:-.008)*s,z);add(g,1,jw)};
- for(let i=0;i<12;i++){const u=(i+.5)/12,z=.36+u*.085,w=.054*Math.sqrt(Math.max(0,1-u*u));for(const q of[-1,1]){tooth(q*w,-.045,z,0,1.15-u*.3,0);tooth(q*w*.92,-.03,z-.002,1,1-u*.3,1)}}}
+ for(let i=0;i<12;i++){const u=(i+.5)/12,z=.36+u*.085,w=.054*Math.sqrt(Math.max(0,1-u*u));for(const q of[-1,1]){tooth(q*w*.8,BY(q*w*.8,z)+.001,z,0,1.15-u*.3,0);tooth(q*w*.92,-.03,z-.002,1,1-u*.3,1)}}}
 // склейка в одну геометрию
 const GEO=new T3.BufferGeometry();{let n=0;parts.forEach(p=>n+=p.g.attributes.position.count);const P=new Float32Array(n*3),Nn=new Float32Array(n*3),K=new Float32Array(n),J=new Float32Array(n);let o=0;
  parts.forEach(p=>{const c=p.g.attributes.position.count;P.set(p.g.attributes.position.array,o*3);Nn.set(p.g.attributes.normal.array,o*3);K.fill(p.kind,o,o+c);J.fill(p.jw,o,o+c);o+=c;p.g.dispose()});
@@ -2304,7 +2319,7 @@ void main(){vec2 uv=vUv;float ca=0.;
   for(let i=1;i<lv;i++){mDown.uniforms.t.value=dn[i-1].texture;mDown.uniforms.px.value.set(1/dn[i-1].width,1/dn[i-1].height);pass(mDown,dn[i])}
   let src=dn[lv-1];for(let i=lv-2;i>=0;i--){mUp.uniforms.t.value=src.texture;mUp.uniforms.b.value=dn[i].texture;mUp.uniforms.px.value.set(.5/src.width,.5/src.height);pass(mUp,up[i]);src=up[i]}
   mComp.uniforms.tS.value=main.texture;mComp.uniforms.tB.value=src.texture;pass(mComp,null)}
- window.PFX={draw,size};
+ window.PFX={draw,size,comp:mComp};
  // ---------- уровни качества ----------
  const NAMES=['эконом','высокое','ультра'];let cool=0,lowN=0,hiN=0,ups=0;
  function set(t,force){t=Math.max(0,Math.min(force?2:maxT,t));tier=t;shadowSet(t===2);size()}
@@ -2425,7 +2440,7 @@ void main(){vec2 q=vU*2.-1.;float rr,e,inside;
   let fis=null,done=0;
   UFX.run(WS+WA+3,(t,dt)=>{const k=Math.min(1,t/WS);ci.set(t<WS+.4?k:Math.max(0,1-(t-WS-.4)*2),t,3*k);cr.set(t<WS?k:1,t<WS?.6+k*.6:Math.max(0,1.2-(t-WS)*.35),t<WS+WA?1:Math.max(0,1-(t-WS-WA)/3));
    sh.set(t<WS?k*.65:Math.max(0,.65-(t-WS)*1.2));sh.spin(dt);
-   if(t>=WS&&!done){done=1;UFX.release(lv,60,30,4);fis=UFX.cracks(M.x,M.z,0,0xff2a20,{line:1,L:650,w:44,ang});
+   if(t>=WS&&!done){done=1;UFX.release(lv,60,30,4);fis=UFX.cracks(M.x,M.z,0,0xff2a20,{line:1,L:650,w:30,ang:ang-Math.PI/2});
     for(let n=0;n<UFX.K(70);n++){const s=(rnd()-.5)*600,x=M.x+dx*s,z=M.z+dz*s,sd=rnd()<.5?1:-1,v=15+rnd()*35;UFX.rock(x,1,z,dz*sd*v,15+rnd()*30,-dx*sd*v,.6+rnd()*1.6,3+rnd()*2)}
     for(let n=0;n<UFX.K(60);n++){const s=(rnd()-.5)*560,x=M.x+dx*s,z=M.z+dz*s,sd=rnd()<.5?1:-1;UFX.puff(x,2,z,dz*sd*(6+rnd()*12),4+rnd()*6,-dx*sd*(6+rnd()*12),9+rnd()*8,3.5+rnd()*2,0x5a3a48,7,.5,.8)}}
    if(fis){const q=t-WS;fis.set(Math.min(1,q/.12),Math.max(.25,1.6-q*.3),q<WA?1:Math.max(0,1-(q-WA)/3))}},
@@ -2458,14 +2473,198 @@ void main(){vec2 q=vU*2.-1.;float rr,e,inside;
    if(o2){const q=t-HIT;wet.set(Math.min(1,q/.6),Math.max(.15,1.2-q*.25),q<6?1:Math.max(0,1-(q-6)/4));sh.set(20+q*130,Math.max(0,1-q/1.2)*1.2)}},
   ()=>{c1.kill();wet.kill();if(sh)sh.kill()})});
  // --- Блочный воин: АТОМНЫЙ (подготовка 2, зарядка до 3.6, выброс 4.0, взрыв 5.8 → 13.3) ---
- wrap(4,6,'atomic',()=>{const{o,O}=ctx(),T1=3.6,T2=4.0,T3=5.8,T4=13.3;
+ wrap(4,6,'atomic',()=>{window.FX3ND=performance.now()+17000;const{o,O}=ctx(),T1=3.6,T2=4.0,T3=5.8,T4=13.3;
   const lv=UFX.levitate(O.x,O.z,46,6,30,2,16,1.3),cr=UFX.cracks(O.x,O.z,30,0xb060ff,{dark:0x100818}),big=UFX.cracks(O.x,O.z,150,0xc080ff,{dark:0x0a0610}),sh0=UFX.shafts(O.x,O.z,8,120,0xa050ff,8);let b=0,sh=null,mush=0;
   UFX.run(T4+4,(t,dt)=>{const k=Math.min(1,t/T1);cr.set(t<T3?k*.9:1,t<T3?.3+k:Math.max(0,1.3-(t-T3)*.3),1);sh0.set(t<T3?k*(t>T1?.7:.45):Math.max(0,.7-(t-T3)*.6));sh0.spin(dt);
-   if(t>=T3&&!b){b=1;UFX.release(lv,120,60,5);sh=UFX.shell(O.x,0,O.z,0xe0b0ff);UFX.burst(O.x,O.z,110,110,70,1.8,5.5);UFX.dustRing(O.x,O.z,80,120,30,0x4a3a5a,5,3)}
+   if(t>=T3&&!b){b=1;UFX.release(lv,120,60,5);sh=UFX.shell(O.x,0,O.z,0xe0b0ff);UFX.burst(O.x,O.z,110,110,70,1.8,5.5)}
    if(b){const q=t-T3;big.set(Math.min(1,q/.35),Math.max(.25,1.9-q*.22),q<T4-T3?1:Math.max(0,1-(q-(T4-T3))/4));sh.set(Math.min(170,10+q*120),Math.max(0,1-q/1.6)*1.5);
-    if(q<3.5&&(mush+=dt)>.06){mush=0;UFX.column(O.x,O.z,4,55,24,q<.8?0x7a6290:0x443650,5.5,8);if(q>.8){const a=rnd()*P2,r=10+rnd()*25;UFX.puff(O.x+Math.cos(a)*r*.3,70+rnd()*20,O.z+Math.sin(a)*r*.3,Math.cos(a)*r,2+rnd()*4,Math.sin(a)*r,30+rnd()*14,5,0x5a4868,14,.5,.5)}}}},
+    }},
   ()=>{cr.kill();big.kill();sh0.kill();if(sh)sh.kill();UFX.drop(lv)})});
 })();
+
+// ===== FX3-BEGIN: графика v4 — красивые ударные волны, столбы света, искры-звёзды, вспышки попаданий, руны под героями, ёлки, горы, цвет =====
+// Тайминги умений и звук не тронуты: меняются только общие «кирпичики» (shock, pillar, kill, castFX) и окружение.
+const FX3=(()=>{const T=THREE,lv=()=>GFX.tier===0?0:isTouch?1:2,lo=()=>lv()<2;
+ const NZ='float h1(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h1(i),h1(i+vec2(1,0)),f.x),mix(h1(i+vec2(0,1)),h1(i+vec2(1,1)),f.x),f.y);}\n';
+ const noSh=m=>{m.userData.noShadow=true;m.frustumCulled=false;return m};
+ // ---------- текстуры: мягкое свечение, звезда-вспышка, рунный круг ----------
+ const cvs=n=>{const c=document.createElement('canvas');c.width=c.height=n;return c};
+ const glowT=(()=>{const c=cvs(128),x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.55)');g.addColorStop(.6,'rgba(255,255,255,.12)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
+ const starT=(()=>{const c=cvs(128),x=c.getContext('2d');x.globalCompositeOperation='lighter';
+  let g=x.createRadialGradient(64,64,0,64,64,40);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.3,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);
+  for(const[a,L,w]of[[0,62,5],[Math.PI/2,62,5],[Math.PI/4,34,3],[-Math.PI/4,34,3]]){x.save();x.translate(64,64);x.rotate(a);g=x.createLinearGradient(-L,0,L,0);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;
+   x.beginPath();x.moveTo(-L,0);x.quadraticCurveTo(0,-w,L,0);x.quadraticCurveTo(0,w,-L,0);x.fill();x.restore()}
+  return new T.CanvasTexture(c)})();
+ const runeT=(()=>{const N=512,c=cvs(N),x=c.getContext('2d'),C0=N/2;let sd=23;const rr=()=>(sd=(sd*16807)%2147483647)/2147483647;
+  x.strokeStyle='#fff';x.fillStyle='#fff';x.lineCap='round';x.shadowColor='#fff';x.shadowBlur=8;
+  const ring=(r,w)=>{x.lineWidth=w;x.beginPath();x.arc(C0,C0,r*C0,0,PI2);x.stroke()};ring(.95,5);ring(.88,2);ring(.62,3);ring(.2,3);
+  for(const off of[0,Math.PI/5]){x.lineWidth=3;x.beginPath();for(let k=0;k<=5;k++){const a=off+k*PI2/5*2,r=.62*C0;k?x.lineTo(C0+Math.cos(a)*r,C0+Math.sin(a)*r):x.moveTo(C0+Math.cos(a)*r,C0+Math.sin(a)*r)}x.stroke()}
+  for(let i=0;i<22;i++){const a=i/22*PI2,r=.75*C0;x.save();x.translate(C0+Math.cos(a)*r,C0+Math.sin(a)*r);x.rotate(a+Math.PI/2);x.lineWidth=3;x.beginPath();for(let k=0;k<4;k++){const px=(rr()-.5)*22,py=(rr()-.5)*30;k?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();x.restore()}
+  for(let i=0;i<10;i++){const a=i/10*PI2;x.lineWidth=2;x.beginPath();x.moveTo(C0+Math.cos(a)*.2*C0,C0+Math.sin(a)*.2*C0);x.lineTo(C0+Math.cos(a)*.36*C0,C0+Math.sin(a)*.36*C0);x.stroke()}
+  const t=new T.CanvasTexture(c);t.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());return t})();
+ const flat=(tex,c,o,s)=>{const m=noSh(new T.Mesh(QG,new T.MeshBasicMaterial({map:tex,color:c,transparent:true,opacity:o,blending:AB,depthWrite:false})));m.rotation.x=-Math.PI/2;m.scale.set(s,s,1);return m};
+
+ // ---------- вспышка экрана: мягкая, не «выбеливает» картинку ----------
+ try{fl.style.background='radial-gradient(circle at 50% 55%,rgba(255,255,255,.16),rgba(255,255,255,.46))'}catch(e){}
+ // ---------- цвет: яркие эффекты сохраняют свой цвет, а не уходят в белое; чуть глубже тени ----------
+ try{const mc=PFX.comp,a='c=mix(c,.86+.14*(1.-exp(-(c-.86)/.14)),step(vec3(.86),c));';
+  if(mc&&mc.fragmentShader.includes(a)){mc.fragmentShader=mc.fragmentShader.replace(a,
+   '{float m=max(c.r,max(c.g,c.b));if(m>.72){float n=.72+.28*(1.-exp(-(m-.72)/.5));c*=n/m;c=mix(c,vec3(n),smoothstep(1.3,5.,m)*.5);}}'+
+   '{float l2=dot(c,vec3(.299,.587,.114));c*=mix(vec3(.93,.95,1.06),vec3(1.05,1.,.96),smoothstep(.08,.75,l2));c=mix(c,c*c*(3.-2.*c),.22*gr);}');
+   mc.uniforms.bs.value=.82;mc.needsUpdate=true}}catch(e){console.error('fx3 grade',e)}
+ // ---------- свет: больше объёма (лунный свет сильнее, заливка слабее) ----------
+ try{const hemi=S.children.find(o=>o.isHemisphereLight);if(hemi)hemi.intensity=.84;GFX.sun.intensity=1.75;GFX.sun.color.set(0xe4d8ff)}catch(e){}
+
+ // ---------- частицы: искры-звёздочки (крестообразный блик у крупных частиц) ----------
+ PM.fragmentShader='varying vec3 v;void main(){vec2 p=gl_PointCoord-.5;float d=length(p)*2.;if(d>1.)discard;float f=1.-d;float L=max(v.r,max(v.g,v.b));'+
+  'float st=max(0.,1.-abs(p.x)*11.)*max(0.,1.-abs(p.y)*2.1)+max(0.,1.-abs(p.y)*11.)*max(0.,1.-abs(p.x)*2.1);'+
+  'vec3 c=v*f*f*1.5+vec3(pow(f,7.))*L*.85+(v+vec3(L*.35))*st*f*.75;gl_FragColor=vec4(c,1.);}';PM.needsUpdate=true;
+
+ // ---------- ударная волна: огненный шлейф, лучи-прожилки, свечение, вспышка в центре, пыль ----------
+ const VQ='varying vec2 u;void main(){u=uv*2.-1.;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
+ const SHF=NZ+`varying vec2 u;uniform vec3 c;uniform float o,k,sd;
+void main(){float L=length(u),r=L/.78;if(r>1.28)discard;vec2 d=u/max(L,1e-4);
+ float n=nz(d*4.+sd+r*2.-k*3.),n2=nz(d*17.+sd*3.);
+ float tr=smoothstep(.4,1.,r)*step(r,1.);tr*=tr*(.25+.75*n);
+ float sk=pow(n2,4.)*smoothstep(.15,1.,r)*step(r,1.02)*1.5;
+ float gl=smoothstep(1.28,1.,r)*step(1.,r);gl*=gl*.55;
+ float ed=smoothstep(.05,0.,abs(r-1.));
+ float core=exp(-r*r*5.)*max(0.,1.-k*4.)*1.4;
+ float v=(tr*.6+sk*.55+gl+ed*.8)*o+core;
+ gl_FragColor=vec4(mix(c,vec3(1.),clamp(ed*.55+core*.5+sk*.25,0.,1.))*v,1.);}`;
+ let nSh=0,spd=0,spdCool=0;
+ {const _s=shock;shock=function(x,z,c,Rr,Tt){const r=_s.apply(this,arguments);try{
+   Tt=Tt||.5;const L=lv();if(Rr>=16)impact(x,z,Math.min(Rr*.5,26),c);if(!L||nSh>(L>1?26:7)||Rr<(L>1?12:20))return r;nSh++;
+   const mat=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:AB,uniforms:{c:{value:new T.Color(c)},o:{value:1},k:{value:0},sd:{value:rnd()*50}},vertexShader:VQ,fragmentShader:SHF});
+   const m=noSh(new T.Mesh(QG,mat));m.rotation.x=-Math.PI/2;m.position.set(x,.34,z);m.scale.setScalar(.01);S.add(m);let t=0;
+   fx.push(dt=>{t+=dt;const k=Math.min(1,t/Tt),s=Math.max(.01,Rr*Math.sqrt(k))/.78;m.scale.set(s,s,1);mat.uniforms.k.value=k;mat.uniforms.o.value=Math.pow(1-k,1.3);return k<1},()=>{nSh--;S.remove(m);mat.dispose()});
+   if(Rr>=14){const n=Math.min(lo()?16:44,Rr|0),v=Rr/Tt*.55;for(let i=0;i<n;i++){const a=rnd()*PI2,q=.6+rnd()*.6;emit(x+Math.cos(a)*2,.4,z+Math.sin(a)*2,Math.cos(a)*v*q,2+rnd()*9,Math.sin(a)*v*q,.5+rnd()*.6,i&3?c:0xffffff,i&1?2.6:1.5,-9)}}
+   if(Rr>=40&&spdCool<=0){const p=CP().position,dd=Math.hypot(p.x-x,p.z-z);if(dd<Rr*1.6+30){spd=1;spdCool=.9;SL.style.transform='rotate('+(rnd()*360|0)+'deg) scale(1.6)'}}
+  }catch(e){console.error('fx3 shock',e)}return r}}
+
+ // ---------- столб света: бегущие вверх потоки энергии, белое ядро, сияние у основания, искры ----------
+ const PV='varying vec3 n,v;varying vec2 q;void main(){q=uv;n=normalize(normalMatrix*normal);vec4 m=modelViewMatrix*vec4(position,1.);v=-m.xyz;gl_Position=projectionMatrix*m;}';
+ const PF=NZ+`varying vec3 n,v;varying vec2 q;uniform vec3 c;uniform float o,t,hh;
+void main(){float f=abs(dot(normalize(n),normalize(v))),core=pow(f,2.5),a=q.x*6.2832;
+ float s=nz(vec2(cos(a)*2.8+5.,sin(a)*2.8+q.y*hh*.22-t*5.)),s2=s*s*(3.-2.*s);
+ float top=smoothstep(1.,.5,q.y),base=smoothstep(.16,0.,q.y);
+ float al=(core*(.7+.55*s2)+pow(s,3.)*f*1.3)*top+base*f*.8;
+ gl_FragColor=vec4(mix(c,vec3(1.),clamp(core*core*.75+base*.4,0.,1.))*al*o,1.);}`;
+ let nPl=0;
+ {const _p=pillar;pillar=function(x,z,c,h,w,Tt){if(!lv()||nPl>(lo()?9:22))return _p.apply(this,arguments);try{nPl++;Tt=Tt||1;
+   const mat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:2,blending:AB,uniforms:{c:{value:new T.Color(c)},o:{value:1},t:{value:rnd()*9},hh:{value:h}},vertexShader:PV,fragmentShader:PF});
+   const m=noSh(new T.Mesh(PCG,mat)),g=flat(glowT,c,.9,w*3.4);m.position.set(x,0,z);g.position.set(x,.3,z);S.add(m,g);let t=0;
+   fx.push(dt=>{t+=dt;const k=Math.min(1,t/Tt),q=w*(1.15-k*.65)*Math.min(1,t/.08+.2);m.scale.set(q,h*Math.min(1,.35+t/.12),q);mat.uniforms.t.value+=dt;const o=Math.pow(1-k,.8);mat.uniforms.o.value=.95*o;g.material.opacity=.9*o;g.scale.setScalar(w*(3.4+k*1.5));
+    if(rnd()<.6){const a=rnd()*PI2;emit(x+Math.cos(a)*q,rnd()*h*.3,z+Math.sin(a)*q,-Math.sin(a)*5,10+rnd()*16,Math.cos(a)*5,.6,rnd()<.4?0xffffff:c,1.7,0)}
+    return k<1},()=>{nPl--;S.remove(m,g);mat.dispose();g.material.dispose()})}catch(e){console.error('fx3 pillar',e);return _p.apply(this,arguments)}}}
+
+ // ---------- вспышки-звёзды при попадании (один общий объект, до 48 одновременно) ----------
+ const NH=48,HM=noSh(new T.InstancedMesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:starT,transparent:true,blending:AB,depthWrite:false,depthTest:false}),NH)),HL=[],_m=new T.Matrix4(),_p=new T.Vector3(),_s=new T.Vector3(),_c=new T.Color(),_q=new T.Quaternion(),_z=new T.Vector3(0,0,1);
+ for(let i=0;i<NH;i++){HL.push({t:0,T:0,x:0,y:0,z:0,s:0,r:0,c:0});_m.makeScale(0,0,0);HM.setMatrixAt(i,_m);HM.setColorAt(i,_c.set(0))}HM.renderOrder=20;S.add(HM);let hi=0,hitN=0;
+ function star(x,y,z,c,s,life){const h=HL[hi];hi=(hi+1)%NH;h.t=h.T=life||.22;h.x=x;h.y=y;h.z=z;h.s=s;h.c=c;h.r=rnd()*PI2}
+ {const _k=kill;kill=function(i,rem){const was=al[i],x=ex[i],z=ez[i];const r=_k.apply(this,arguments);
+   try{if(was&&!al[i]&&hitN<[2,6,12][lv()]){hitN++;const c=CCOL[(CTX&&CTX.o?CTX.o.cl:cls)||0]||0xffffff;star(x,1.6,z,c,5+rnd()*3,.24);
+    for(let k=0;k<5;k++){const a=rnd()*PI2,sp=8+rnd()*14;emit(x,1.2,z,Math.cos(a)*sp,6+rnd()*12,Math.sin(a)*sp,.35+rnd()*.3,k&1?0xffffff:c,1.3,-26)}
+    emit(x,1,z,(rnd()-.5)*1.5,5+rnd()*3,(rnd()-.5)*1.5,1.1,c,2.6,2)}}catch(e){}return r}}
+
+ // ---------- место попадания: трещины в цвет умения, осколки камня, кольцо пыли ----------
+ const IMP=[];let nCr=0,tt=0,lastImp=-9;
+ function impact(x,z,Rd,c){const L=lv();if(!L||Rd<8||tt-lastImp<(L>1?.12:.35))return;
+  for(let i=IMP.length-1;i>=0;i--){const m=IMP[i];if(tt-m.t>2.5){IMP.splice(i,1);continue}if(Math.hypot(m.x-x,m.z-z)<Math.max(m.R,Rd)*.6)return}
+  IMP.push({x,z,R:Rd,t:tt});lastImp=tt;
+  if(nCr<(L>1?5:2)){nCr++;const cr=UFX.cracks(x,z,Rd,c),life=2.8;UFX.run(life,t=>{cr.set(Math.min(1,t/.16),Math.max(0,1.35-t*.85),t>life-1?Math.max(0,life-t):1)},()=>{nCr--;cr.kill()})}
+  UFX.burst(x,z,Math.min(L>1?12:8,3+Rd*.3),Rd*.45+6,10+Rd*.25,.32+Rd*.012,1.8);
+  if(!(window.FX3ND>performance.now()))UFX.dustRing(x,z,L>1?8:6,Rd*.5+5,(L>1?3:2.2)+Rd*.1,0x6a6480,L>1?1.4:1.1,1)}
+ {const _ki=killIn;killIn=function(x,z,r){const q=_ki.apply(this,arguments);try{if(r>=7)impact(x,z,Math.min(r,24),CCOL[(CTX&&CTX.o?CTX.o.cl:cls)||0])}catch(e){}return q}}
+
+ // ---------- мечник, обычный удар: светящийся полумесяц летит вместе с волной ----------
+ try{const sp=CLS[1].sp,o0=sp[10];if(typeof o0==='function'){const CRF='varying vec2 u;uniform vec3 c;uniform float o;void main(){float d1=length(u-vec2(0.,-.35)),d2=length(u-vec2(0.,-.62));float a=smoothstep(1.,.93,d1)*smoothstep(.97,1.07,d2)*smoothstep(1.,.5,abs(u.x));if(a<.01)discard;float e=smoothstep(.84,1.,d1);gl_FragColor=vec4(mix(c,vec3(1.),e*.85)*a*o*1.7,1.);}';
+   sp[10]=function(){const dem=(CS().demon||0)>0,f=fwd(),p0=CP().position.clone();const r=o0.apply(this,arguments);try{if(!dem&&lv()){
+     const mat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:2,blending:AB,uniforms:{c:{value:new T.Color(0x80e0ff)},o:{value:1}},vertexShader:VQ,fragmentShader:CRF}),g=new T.Group(),m=noSh(new T.Mesh(QG,mat));
+     m.rotation.x=Math.PI/2;g.add(m);g.rotation.y=Math.atan2(f.x,f.z);g.position.set(p0.x+f.x*2.5,1.8,p0.z+f.z*2.5);S.add(g);let t=0;
+     fx.push(dt=>{t+=dt;g.position.x+=f.x*55*dt;g.position.z+=f.z*55*dt;const s=5.5+t*5;g.scale.set(s,s,s);mat.uniforms.o.value=Math.min(1,t/.04)*Math.max(0,1-t/.5);return t<.5},()=>{S.remove(g);mat.dispose()})}}catch(e){console.error('fx3 slash',e)}return r};sp[10]._ufx=o0}}catch(e){console.error('fx3 slash',e)}
+
+ // ---------- каст: руна вспыхивает под героем, вихрь искр, короткий столб силы ----------
+ {const _c2=castFX;castFX=function(o,i){const r=_c2.apply(this,arguments);try{if(i>8)return r;const p=o.g.position,c=CCOL[o.cl||0],x=p.x,z=p.z;
+   const m=flat(runeT,c,0,1);m.position.set(x,.12,z);S.add(m);let t=0;const rs=rnd()*6;star(x,3.2,z,c,7,.3);
+   fx.push(dt=>{t+=dt;const k=t/.75,s=2+7*(1-Math.pow(1-Math.min(k,1),3));m.scale.set(s,s,1);m.rotation.z=rs+t*2.4;m.material.opacity=Math.min(1,t/.08)*(1-k)*.95;
+    if(t<.4&&lv())for(let j=0;j<3;j++){const a=t*14+j*2.09,rr=2.6-t*3;emit(x+Math.cos(a)*rr,.3+t*9,z+Math.sin(a)*rr,-Math.sin(a)*6,9,Math.cos(a)*6,.45,j?c:0xffffff,1.5,0)}
+    return k<1},()=>{S.remove(m);m.material.dispose()});
+   if(!lo())pillar(x,z,c,9,1.5,.5)}catch(e){console.error('fx3 cast',e)}return r}}
+
+ // ---------- руна под каждым героем (цвет класса, медленно вращается) ----------
+ const AU=[];
+ const aura=q=>{let a=AU.find(o=>o.q===q);if(!a){const m=flat(runeT,0xffffff,.3,3.6),g=flat(glowT,0xffffff,.22,5.2);m.renderOrder=g.renderOrder=-3;S.add(m,g);a={q,m,g};AU.push(a)}return a};
+
+ // ---------- деревья: ярусные ели со стволом вместо простых конусов ----------
+ try{const col=(r,g,b)=>new T.Color(r,g,b),P=[[new T.CylinderGeometry(.3,.5,2.6,6),MX(0,1.3,0,0,0,1,1,1),col(1.9,.8,.5)]];
+  [[2.7,3.6,3.1,.72],[2.15,3.2,4.9,.9],[1.6,2.9,6.6,1.12],[1.02,2.5,8.2,1.45]].forEach(([r,h,y,l],k)=>P.push([new T.ConeGeometry(r,h,7),MX(0,y,0,(k&1?.05:-.04),(k&1?-.04:.05),1,1,1),col(l*.95,l,l*(1+k*.05))]));
+  const G=mergeG(P);G.computeVertexNormals();TM.geometry.dispose();TM.geometry=G;TM.material.vertexColors=true;TM.material.flatShading=true;TM.material.roughness=.85;TM.material.emissive.set(0x04100c);TM.material.needsUpdate=true;
+  for(let i=0;i<NT;i++){if(tdead[i])continue;TM.getMatrixAt(i,_m);_m.decompose(_p,_q,_s);D.position.copy(_p);D.rotation.set(0,rnd()*6,0);D.scale.set(_s.x*(.9+rnd()*.25),_s.y*(.9+rnd()*.35),_s.z*(.9+rnd()*.25));D.updateMatrix();TM.setMatrixAt(i,D.matrix);
+   TM.setColorAt(i,i%6===0?_c.setHSL(.5,.5,.3):_c.setHSL(.34+rnd()*.09,.5,.2+rnd()*.1))}
+  TM.instanceMatrix.needsUpdate=true;TM.instanceColor.needsUpdate=true}catch(e){console.error('fx3 trees',e)}
+
+ // ---------- кристаллы: световые пятна на земле вокруг каждого ----------
+ let CG=null;try{const CR=S.children.find(o=>o.isInstancedMesh&&o.geometry&&o.geometry.type==='OctahedronGeometry'&&o.instanceColor);
+  if(CR){const n=CR.count;CG=noSh(new T.InstancedMesh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2),new T.MeshBasicMaterial({map:glowT,transparent:true,opacity:.5,blending:AB,depthWrite:false}),n));
+   for(let i=0;i<n;i++){CR.getMatrixAt(i,_m);_m.decompose(_p,_q,_s);CR.getColorAt(i,_c);D.position.set(_p.x,.09,_p.z);D.rotation.set(0,0,0);D.scale.setScalar(5+_s.y*3.2);D.updateMatrix();CG.setMatrixAt(i,D.matrix);CG.setColorAt(i,_c)}
+   CG.renderOrder=-3;S.add(CG)}}catch(e){console.error('fx3 crystals',e)}
+
+ // ---------- горы на горизонте (два слоя силуэтов с лунной кромкой) ----------
+ let MT=null;try{MT=noSh(new T.Mesh(new T.CylinderGeometry(9,9,7,72,1,true),new T.ShaderMaterial({uniforms:{hz:{value:S.fog.color}},side:T.BackSide,depthWrite:false,fog:false,
+  vertexShader:'varying vec3 vD;void main(){vD=position;vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position=p.xyww;}',
+  fragmentShader:NZ+`uniform vec3 hz;varying vec3 vD;
+float rg(float a,float f,float s){vec2 d=vec2(cos(a),sin(a))*f;return nz(d+s)*.58+nz(d*2.3+s*2.)*.28+nz(d*5.1+s)*.14;}
+void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),1.4),h2=.02+.15*pow(rg(a,5.,9.3),1.3);
+ if(y>max(h1,h2))discard;bool nr=y<h2;vec3 c=nr?hz*.40:hz*.66;
+ float rim=nr?smoothstep(.012,0.,h2-y):smoothstep(.014,0.,h1-y);c+=vec3(.34,.28,.6)*rim*(nr?.3:.55);
+ c=mix(c,hz,smoothstep(.035,-.015,y));gl_FragColor=vec4(c,1.);}`})));MT.renderOrder=-999;S.add(MT)}catch(e){console.error('fx3 mountains',e)}
+
+ // ---------- аниме-линии скорости по краям экрана при больших взрывах (без тряски камеры) ----------
+ const SL=document.createElement('div');SL.style.cssText='position:fixed;inset:-20%;pointer-events:none;opacity:0;mix-blend-mode:screen;'+
+  'background:repeating-conic-gradient(from 0deg,rgba(255,255,255,0) 0deg 2.1deg,rgba(255,255,255,.75) 2.5deg 2.8deg,rgba(255,255,255,0) 3.2deg 7deg),repeating-conic-gradient(from 1.3deg,rgba(255,255,255,0) 0deg 4.6deg,rgba(255,255,255,.5) 5deg 5.2deg,rgba(255,255,255,0) 5.6deg 11.3deg);'+
+  '-webkit-mask-image:radial-gradient(circle,transparent 30%,#000 62%);mask-image:radial-gradient(circle,transparent 30%,#000 62%)';
+ try{const W=document.createElement('div');W.style.cssText='position:fixed;inset:0;overflow:hidden;pointer-events:none;contain:strict';W.appendChild(SL);SL.style.position='absolute';R.domElement.insertAdjacentElement('afterend',W)}catch(e){}
+
+ // ---------- циферблат «Цель всей жизни»: римские цифры, деления, двойной обод; большие фигурные стрелки ----------
+ dialTex=function(){const N=1024,c=cvs(N),x=c.getContext('2d');x.translate(N/2,N/2);
+  x.fillStyle='rgba(4,10,18,.2)';x.beginPath();x.arc(0,0,500,0,PI2);x.fill();x.shadowColor='#7fe9ff';x.shadowBlur=14;x.strokeStyle='#c8f8ff';
+  for(const[r,w]of[[498,12],[470,3],[352,4],[338,2],[96,4]]){x.lineWidth=w;x.beginPath();x.arc(0,0,r,0,PI2);x.stroke()}
+  for(let k=0;k<60;k++){x.save();x.rotate(k/60*PI2);x.fillStyle='#e8ffff';if(k%5)x.fillRect(-2,-466,4,18);else{x.beginPath();x.moveTo(0,-468);x.lineTo(9,-440);x.lineTo(0,-412);x.lineTo(-9,-440);x.fill()}x.restore()}
+  const RN=['XII','I','II','III','IIII','V','VI','VII','VIII','IX','X','XI'];x.textAlign='center';x.textBaseline='middle';x.shadowColor='#ffd070';x.shadowBlur=18;x.fillStyle='#fff0c0';x.font='bold 92px Georgia,serif';
+  for(let k=0;k<12;k++){x.save();x.rotate(k/12*PI2);x.fillText(RN[k],0,-294);x.restore()}
+  x.shadowColor='#7fe9ff';x.shadowBlur=10;x.strokeStyle='rgba(200,248,255,.55)';x.lineWidth=2;for(let k=0;k<12;k++){x.save();x.rotate(k/12*PI2);x.beginPath();x.moveTo(0,-96);x.lineTo(0,-232);x.stroke();x.restore()}
+  return new T.CanvasTexture(c)};
+ function hand(len,w,mat,par){const G=new T.Group(),s=new T.Shape(),P=[[0,len],[w*.95,len*.74],[w*.34,len*.69],[w*.5,len*.12],[w*1.5,0],[w*.5,-len*.05],[w*.3,-len*.16],[0,-len*.24]];
+  s.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)s.lineTo(P[i][0],P[i][1]);for(let i=P.length-2;i>0;i--)s.lineTo(-P[i][0],P[i][1]);s.lineTo(0,len);
+  G.add(new T.Mesh(new T.ShapeGeometry(s),mat));const r=new T.Mesh(new T.TorusGeometry(w*1.1,w*.16,6,20),mat);r.position.y=len*.42;G.add(r);const m2=mat.clone();
+  G.position.z=1.6;par.add(G);return G}
+
+ // ---------- против фризов: шейдеры эффектов собираются заранее (в меню) и больше никогда не пересобираются ----------
+ let pinT=0,warmG=null,warmT=4;
+ const pin=()=>{try{const ps=R.info.programs;if(ps)for(const p of ps)if(!p._pin){p._pin=1;p.usedTimes++}}catch(e){}};
+ try{warmG=new T.Group();warmG.position.set(0,-300,0);warmG.scale.setScalar(.001);const wm=m=>{const o=noSh(new T.Mesh(QG,m));warmG.add(o)};
+  wm(new T.ShaderMaterial({transparent:true,depthWrite:false,blending:AB,uniforms:{c:{value:new T.Color()},o:{value:0},k:{value:0},sd:{value:0}},vertexShader:VQ,fragmentShader:SHF}));
+  wm(new T.ShaderMaterial({transparent:true,depthWrite:false,side:2,blending:AB,uniforms:{c:{value:new T.Color()},o:{value:0},t:{value:0},hh:{value:1}},vertexShader:PV,fragmentShader:PF}));
+  for(const[a,e]of[[0,1.2],[0,1.3],[1,1.3],[1,1.5],[1,1.6]])wm(FM(0,a,e));wm(am(0,0));
+  S.add(warmG);const mg=magic(new T.Vector3(0,-300,0),[{r:.001,c:0,n:6,s:1,dy:0,sty:0}],'g'),ck=UFX.cracks(0,0,.001,0,{y:-300}),sh=UFX.shell(0,-300,0,0);sh.set(.001,0);
+  const cu=new T.Mesh(QG,new T.MeshBasicMaterial({map:glowT,transparent:true,blending:AB,depthWrite:false}));warmG.add(cu);
+  warmG.userData.end=()=>{try{mg.end();ck.kill();sh.kill()}catch(e){}}}catch(e){console.error('fx3 warm',e)}
+
+ // ---------- покадровое обновление ----------
+ function tick(dt){tt+=dt;hitN=0;if((pinT-=.016)<=0){pinT=1;pin()}if(warmG&&(warmT-=.016)<=0){pin();try{warmG.userData.end();S.remove(warmG);warmG.children.forEach(o=>o.material.dispose())}catch(e){}warmG=null}spdCool=Math.max(0,spdCool-dt);
+  if(spd>0){spd=Math.max(0,spd-dt*3.2);SL.style.opacity=(spd*spd*.42).toFixed(3)}else if(SL.style.opacity!=='0')SL.style.opacity='0';
+  if(MT)MT.position.copy(C.position);
+  if(CG)CG.material.opacity=.42+.12*Math.sin(tt*1.7);
+  let any=false;for(let i=0;i<NH;i++){const h=HL[i];if(h.t<=0)continue;any=true;h.t-=dt;if(h.t<=0){_m.makeScale(0,0,0);HM.setMatrixAt(i,_m);continue}
+   const k=1-h.t/h.T,s=h.s*(.35+.65*Math.sin(Math.min(1,k*1.6)*Math.PI*.5))*(1-k*.3);_q.setFromAxisAngle(_z,h.r+k*.8).premultiply(C.quaternion);_p.set(h.x,h.y,h.z);_s.set(s,s,s);_m.compose(_p,_q,_s);HM.setMatrixAt(i,_m);HM.setColorAt(i,_c.set(h.c).multiplyScalar((1-k)*(1-k)*1.6))}
+  if(any){HM.instanceMatrix.needsUpdate=true;HM.instanceColor.needsUpdate=true}
+  for(const a of AU)a.m.visible=a.g.visible=false;
+  for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
+   a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
+ {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
+ return{star,tick,hand}})();
+// ===== FX3-END =====
 
 loop();
 </script></body></html>
