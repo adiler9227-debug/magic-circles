@@ -54,6 +54,7 @@ body.cls1 #bar button[data-i="10"]{order:-3}
 body.cls3 #bar button[data-i="8"],body.cls4 #bar button[data-i="7"],body.cls4 #bar button[data-i="8"]{display:none}body.cls4 #bar button[data-i="6"]{border-color:#ff60ff;box-shadow:0 0 12px #a040ff}
 #tb #kb{display:none}body.cls3 #tb #kb{display:flex}
 body.cls2 #bar button:not([data-i="0"]):not([data-i="1"]):not([data-i="2"]):not([data-i="3"]):not([data-i="4"]):not([data-i="5"]):not([data-i="6"]):not([data-i="7"]):not([data-i="8"]):not([data-i="9"]):not([data-i="10"]){display:none}
+#bar button.ulk{filter:grayscale(1) brightness(.55)}#bar button.ulk::after{content:attr(data-lk);position:absolute;inset:auto 0 -2px 0;font:800 11px system-ui;color:#ffd060;text-shadow:0 0 3px #000;text-align:center;pointer-events:none}
 </style></head><body>
 <div id="hud"><div id="md"></div><div id="fps"></div><div id="kills"></div><div id="hpw"><div id="hpb"></div><span id="hpt"></span></div><div id="lv"></div><div id="st" style="color:#7cff9a;font-weight:700"></div></div>
 <div id="tb"><button id="rb" title="Сброс: враги, откаты, манекен">↻</button><button id="lb" title="Поднять кнопки выше/ниже">⇧</button><button id="sb" title="Скрыть/показать заклинания">✦</button><button id="fb" title="Полный экран">⛶</button><button id="kb" title="Скин Коробаса (T)">🎨</button><button id="mb" title="Меню (M)">☰</button></div>
@@ -815,7 +816,7 @@ function pHurt(q,d,src,x,z){if(q.wcI&&q.wcI>performance.now()/1000)return;if(q.b
  if(q.hp<=0)pDie(q,src)}
 function pDie(q,src){if(q===ME&&net.on&&src&&src!==ME&&src.nid!=null)netSend({t:'k',to:src.nid});if(q===ME&&(mode==='run'||mode==='duel'))deaths++;q.hp=0;q.dead=RESPAWN;q.g.visible=false;q.vw.visible=q.vd.visible=false;const p=q.g.position;
  for(let k=0;k<120;k++)emit(p.x,3,p.z,(rnd()-.5)*24,rnd()*16,(rnd()-.5)*24,1.2,k&1?0xff3040:0xffd060,2.2,-10);shock(p.x,p.z,0xff3040,14,.8);
- if(src&&src!==q){src.kills++;src.lvl++;src.maxhp=100+HP_PER_LVL*src.lvl;src.hp=Math.min(src.maxhp,src.hp+q.maxhp*STEAL_HEAL+HP_PER_LVL);const sp=src.g.position;shock(sp.x,sp.z,0xffd060,10,.8);if(src===ME)sNovaUp(.5)}}
+ if(src&&src!==q){src.kills++;if(src===ME&&pvpOn())pkAdd();src.lvl++;src.maxhp=100+HP_PER_LVL*src.lvl;src.hp=Math.min(src.maxhp,src.hp+q.maxhp*STEAL_HEAL+HP_PER_LVL);const sp=src.g.position;shock(sp.x,sp.z,0xffd060,10,.8);if(src===ME)sNovaUp(.5)}}
 function pRespawn(q){q.hold=0;q.dash=0;q.lvl=0;q.kills=0;q.maxhp=100;q.hp=100;q.dead=0;q.wall=q.dome=0;q.g.visible=true;if(q===ME)cd.fill(0)}
 function wallBlocks(q,x,z){const rx=q.g.position.x-q.wp.x,rz=q.g.position.z-q.wp.z;return rx*q.wf.x+rz*q.wf.z<0&&(x-q.wp.x)*q.wf.x+(z-q.wp.z)*q.wf.z>0&&Math.abs(rx*q.wf.z-rz*q.wf.x)<WS/2*q.ws+4}
 function domeCov(q){return q.dome>0&&Math.hypot(q.g.position.x-q.dx,q.g.position.z-q.dz)<q.dr+1}
@@ -875,7 +876,7 @@ function startMode(m){if(m!=='duel'&&net.on){net.on=false;try{net.dc.close();net
  mode=m;paused=false;started=true;helpE.style.display='none';
  document.body.classList.toggle('m-test',m==='test');document.body.classList.toggle('m-run',m==='run');
  kills=0;surv=0;waveN=1;deaths=0;wave=0;cd.fill(0);
- CP().position.set(0,0,0);ME.kx=ME.kz=0;ME.lvl=0;ME.kills=0;ME.maxhp=100;ME.hp=100;ME.dead=0;ME.wall=ME.dome=0;ME.g.visible=true;
+ CP().position.set(0,0,0);ME.kx=ME.kz=0;ME.lvl=0;ME.kills=0;ME.pk=0;ME.maxhp=100;ME.hp=100;ME.dead=0;ME.wall=ME.dome=0;ME.g.visible=true;
  DU.kx=DU.kz=0;DU.wall=DU.dome=0;
  if(m==='test'){DU.dead=0;DU.lvl=0;DU.kills=0;DU.maxhp=100;DU.hp=100;DU.g.visible=true;DU.g.position.set(0,0,-26)}
  else if(m==='duel'){DU.dead=0;DU.g.visible=true;DU.lvl=0;DU.kills=0;DU.maxhp=100;DU.hp=100}else{DU.dead=1e9;DU.g.visible=false;DU.vw.visible=DU.vd.visible=false}
@@ -2053,23 +2054,29 @@ const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
 function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:o.cl===3?.5:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
-function cast(i){if(!started||ME.dead>0)return;if(cls===3&&i===8)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
+const ULTS=[6,7,8,7,6],PK_NEED=3;let ulkS='';
+function pvpOn(){return mode==='duel'&&!!PVP}
+function ulkMsg(t){toastE.textContent=t;toastE.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toastE.style.opacity=0,1800)}
+function PVPLOCK(i){if(!pvpOn()||i!==ULTS[cls]||(ME.pk||0)>=PK_NEED)return false;ulkMsg('🔒 Ульта откроется после '+PK_NEED+' убийств ('+(ME.pk||0)+'/'+PK_NEED+')');return true}
+function pkAdd(){ME.pk=(ME.pk||0)+1;if(ME.pk===PK_NEED)ulkMsg('✅ Ульта открыта!')}
+function ulkUpd(){const lk=pvpOn()&&(ME.pk||0)<PK_NEED,k=lk?cls+':'+(ME.pk||0):'';if(k===ulkS)return;ulkS=k;btn.forEach((b,i)=>{const on=lk&&i===ULTS[cls];b.classList.toggle('ulk',on);if(on)b.dataset.lk='🔒'+(ME.pk||0)+'/'+PK_NEED})}
+function cast(i){if(!started||ME.dead>0)return;if(PVPLOCK(i))return;if(cls===3&&i===8)return;if(cls===4&&(i===7||i===8))return;if(BLK.frz()>0)return;if(ME.hold>0&&cls===1&&i===3)return;const two=cls===1&&i===9&&ME.VC&&ME.VC.sealed&&!ME.VC.req;if(cd[i]>0&&!two)return;if(!two)cd[i]=cdFor(i);mage.cast&&mage.cast();toast(i);
  netSend({t:'c',c:cls,k:korSk,i,x:P.position.x,z:P.position.z,y:yaw});doCast(ME,i)}
 const ICE={iceServers:[]},$=id=>document.getElementById(id),nst=t=>{const e=$('nst');if(e)e.textContent=t},shw=(id,v)=>$(id).style.display=v?'block':'none';
 // ===== КООП: босс (один на всех, ведёт игрок с наименьшим номером), раунд 3 мин =====
-let CO=null,PVP=0;const COOPM=()=>mode==='duel'&&!PVP,BI=NE-1,BHP=1500,mkD=(id,css)=>{let e=$(id);if(!e){e=document.createElement('div');e.id=id;e.style.cssText=css;document.body.appendChild(e)}return e};
+let CO=null,PVP=0;const COOPM=()=>mode==='duel'&&!PVP,BI=NE-1,BHP=3000,mkD=(id,css)=>{let e=$(id);if(!e){e=document.createElement('div');e.id=id;e.style.cssText=css;document.body.appendChild(e)}return e};
 const auth=()=>!RP.some(d=>d.nid!=null&&d.nid<net.slot);
 function coopInit(){CO=PVP?null:{bk:0,bwOn:0,t:0,bossOn:0,end:0,bt:0,bw:0,bc:1,ba:0,bx:0,bz:0,ns:0,res:{},sec:-1};al[BI]=0;mkD('co','position:fixed;top:6px;left:50%;transform:translateX(-50%);color:#fff;font:700 22px sans-serif;z-index:9;text-shadow:0 0 6px #000;pointer-events:none').style.display='block';mkD('bb','position:fixed;top:38px;left:20vw;width:60vw;height:14px;background:#0008;border:2px solid #fff;z-index:9;display:none;pointer-events:none').innerHTML='<div id="bbi" style="height:100%;width:100%;background:#d11"></div>';$('bb').style.display='none';mkD('res','position:fixed;inset:0;background:#000b;color:#fff;font:18px sans-serif;z-index:20;display:none;text-align:center;padding-top:12vh').style.display='none'}
 function coopHide(){['co','bb','res','net'].forEach(i=>{const e=$(i);if(e)e.style.display='none'});if(CO)CO.end=1}
 function bossSpawn(x,z,h){CO.bossOn=1;ex[BI]=CO.bx=x;ez[BI]=CO.bz=z;hpv[BI]=h;im[BI]=0;al[BI]=1;fl_[BI]=0;EM.setColorAt(BI,new THREE.Color(0xcc1010));EM.instanceColor.needsUpdate=true;$('bb').style.display='block';$('bbi').style.width=Math.max(0,h/BHP*100)+'%';shock(x,z,0xff2020,30,1.2)}
 function bossGone(){al[BI]=0;D.position.set(0,-9,0);D.scale.setScalar(0);D.updateMatrix();EM.setMatrixAt(BI,D.matrix);for(let k=0;k<150;k++)emit(ex[BI],3,ez[BI],(rnd()-.5)*30,rnd()*20,(rnd()-.5)*30,1.3,k&1?0xff3040:0xffd060,2.4,-10)}
-function coopTick(dt){if(mode==='duel'&&PVP){const e=$('co');if(e){e.style.display='block';e.textContent='⚔ Убийств: '+ME.kills+' · Смертей: '+deaths}return}if(mode!=='duel'||!CO||CO.end)return;CO.t+=dt;CO.bt-=dt;
+function coopTick(dt){ulkUpd();if(mode==='duel'&&PVP){const e=$('co');if(e){e.style.display='block';const pk=ME.pk||0;e.textContent='⚔ Убийств: '+pk+' · Смертей: '+deaths+' · '+(pk>=PK_NEED?'✅ Ульта открыта':'🔒 Ульта: '+pk+'/'+PK_NEED)}return}if(mode!=='duel'||!CO||CO.end)return;CO.t+=dt;CO.bt-=dt;
  if(ME.dead<=0)ME.hp=Math.min(ME.maxhp,ME.hp+3*dt);
- const sec=Math.max(0,Math.ceil(180-CO.t));if(sec!==CO.sec){CO.sec=sec;$('co').textContent=(CO.bossOn?'👹 БОСС · ':'')+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')+' · убито '+kills}
- if(auth()){if(!CO.bossOn&&CO.t>=120)bossSpawn(0,0,BHP);
-  if(CO.t>=180){netSend({t:'E',w:0});endRound(false);return}
+ const sec=Math.max(0,Math.ceil(240-CO.t));if(sec!==CO.sec){CO.sec=sec;$('co').textContent=(CO.bossOn?'👹 БОСС · ':'')+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')+' · убито '+kills}
+ if(auth()){if(!CO.bossOn&&CO.t>=40)bossSpawn(0,0,BHP);
+  if(CO.t>=240){netSend({t:'E',w:0});endRound(false);return}
   CO.ns-=dt;if(CO.ns<=0){CO.ns=.1;netSend({t:'B',tm:CO.t,on:CO.bossOn,x:ex[BI],z:ez[BI],h:hpv[BI],w:CO.bw>0?1:0,a:CO.ba})}}
- else if(CO.t>=188)endRound(false)}
+ else if(CO.t>=248)endRound(false)}
 function bossHit(d,thr,rn){if(!CO||CO.end||!al[BI])return;if(!rn&&net.on&&CTX&&CTX.o&&CTX.o!==ME)return;if(thr){if(CO.bt>0)return;CO.bt=.2}if(!rn&&CTX){CTX.bd=CTX.bd||0;const cap=CTX.dmg*15-CTX.bd;if(cap<=0)return;d=Math.min(d,CTX.dmg*5,cap);CTX.bd+=d}if(!rn&&net.on&&!auth())netSend({t:'BD',d});hpv[BI]-=d;$('bbi').style.width=Math.max(0,hpv[BI]/BHP*100)+'%';
  if(hpv[BI]<=0){if(auth()){bossGone();netSend({t:'E',w:1});endRound(true)}else hpv[BI]=1}}
 function bossStrike(x,z,a){if(CO)CO.bk=.4;shock(x+Math.sin(a)*4,z+Math.cos(a)*4,0xff2020,10,.5);shock(x,z,0xffa030,14,.7);const q=CP().position,dx=q.x-x,dz=q.z-z,d=Math.hypot(dx,dz)||1;if(ME.dead<=0&&d<8){pHurt(ME,25,undefined,x,z);ME.kx=dx/d*48;ME.kz=dz/d*48}}
@@ -2111,7 +2118,7 @@ function onNet(m){const D=RP.find(d=>d.nid===m.f);if(!D)return;if(m.t==='s'){D.t
  else if(m.t==='K'){if(isHost()&&al[m.i])kill(m.i,1)}
   else if(m.t==='BD'){if(auth())bossHit(+m.d||0,0,1)}
   else if(m.t==='N'){if(!isCli())return;const tn=performance.now()/1000,sn=NSY.sn,a=m.a;sn.fill(0);for(let k=0;k<a.length;k+=3){const i=a[k];if(i<0||i>=NE-1)continue;sn[i]=1;NSY.tx[i]=a[k+1]/10;NSY.tz[i]=a[k+2]/10;if(!al[i]&&tn-NSY.kt[i]>1.5){hpv[i]=30;est[i]=0;fl_[i]=0;im[i]=i%16==0?1:0;EM.setColorAt(i,im[i]?EC2:EC1);EM.instanceColor.needsUpdate=true;al[i]=1;ex[i]=NSY.tx[i];ez[i]=NSY.tz[i]}}for(let i=0;i<NE-1;i++)if(al[i]&&!sn[i]&&!fl_[i])hideE(i)}
-  else if(m.t==='r'){if(CO){CO.res[m.f]=[m.k,m.d];renderRes()}}else if(m.t==='B'){if(CO&&!CO.end&&!auth()){CO.t=m.tm;CO.bx=m.x;CO.bz=m.z;CO.ba=m.a;if(m.w){if(!CO.bwOn){CO.bwOn=1;CO.bw=.9}}else{CO.bwOn=0;CO.bw=0}if(m.on){if(!CO.bossOn)bossSpawn(m.x,m.z,m.h);else{hpv[BI]=m.h;$('bbi').style.width=Math.max(0,m.h/BHP*100)+'%'}}}}else if(m.t==='S'){if(CO&&!CO.end)bossStrike(m.x,m.z,m.a)}else if(m.t==='E'){if(CO&&!CO.end){if(m.w)bossGone();endRound(!!m.w)}}else if(m.t==='k'){if(m.to===net.slot){ME.kills++;ME.lvl++;ME.maxhp=100+HP_PER_LVL*ME.lvl;ME.hp=Math.min(ME.maxhp,ME.hp+D.maxhp*STEAL_HEAL+HP_PER_LVL)}else{const K2=RP.find(d=>d.nid===m.to);if(K2)K2.kills++}}}
+  else if(m.t==='r'){if(CO){CO.res[m.f]=[m.k,m.d];renderRes()}}else if(m.t==='B'){if(CO&&!CO.end&&!auth()){CO.t=m.tm;CO.bx=m.x;CO.bz=m.z;CO.ba=m.a;if(m.w){if(!CO.bwOn){CO.bwOn=1;CO.bw=.9}}else{CO.bwOn=0;CO.bw=0}if(m.on){if(!CO.bossOn)bossSpawn(m.x,m.z,m.h);else{hpv[BI]=m.h;$('bbi').style.width=Math.max(0,m.h/BHP*100)+'%'}}}}else if(m.t==='S'){if(CO&&!CO.end)bossStrike(m.x,m.z,m.a)}else if(m.t==='E'){if(CO&&!CO.end){if(m.w)bossGone();endRound(!!m.w)}}else if(m.t==='k'){if(m.to===net.slot){ME.kills++;if(pvpOn())pkAdd();ME.lvl++;ME.maxhp=100+HP_PER_LVL*ME.lvl;ME.hp=Math.min(ME.maxhp,ME.hp+D.maxhp*STEAL_HEAL+HP_PER_LVL)}else{const K2=RP.find(d=>d.nid===m.to);if(K2)K2.kills++}}}
 const nsend=o=>{if(net.ws&&net.ws.readyState===1)net.ws.send(JSON.stringify(o))};
 $('md1').onclick=()=>{helpE.style.display='none';$('net').style.display='block';view(0);if(net.on)net.on=false;nsend({t:'leave'});wsOpen()};
 $('nb').onclick=()=>{nsend({t:'leave'});$('net').style.display='none';helpE.style.display=''};
