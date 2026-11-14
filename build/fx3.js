@@ -169,7 +169,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
   const t=new T.CanvasTexture(c);t.anisotropy=Math.min(4,R.capabilities.getMaxAnisotropy());return t},LT=[layT(0),layT(1),layT(2)],LSP=[.55,-1.05,1.7];
  const NSL=isTouch?9:16,SLS=[];for(let i=0;i<NSL;i++){const g=new T.Group();g.rotation.x=-Math.PI/2;g.visible=false;const m=LT.map(tx=>{const o=noSh(new T.Mesh(QG,new T.MeshBasicMaterial({map:tx,transparent:true,opacity:0,blending:AB,depthWrite:false,side:2})));g.add(o);return o});S.add(g);SLS.push({g,m,t:0,T:0,R:1,d:0,on:0,n:3,r0:0})}
  let sli=0;
- function seal(x,y,z,Rd,c,life,delay,n){if(!lv())return;const q=SLS[sli];sli=(sli+1)%NSL;q.on=1;q.t=0;q.T=life;q.R=Rd;q.d=delay||0;q.n=n||3;q.g.position.set(x,y,z);q.g.visible=false;q.r0=rnd()*6;for(const o of q.m)o.material.color.setHex(c)}
+ function seal(x,y,z,Rd,c,life,delay,n){if(!lv())return;const q=SLS[sli];sli=(sli+1)%NSL;q.on=1;q.t=0;q.T=life;q.R=Rd;q.d=delay||0;q.n=n||3;q.g.position.set(x,y,z);q.g.visible=false;q.r0=rnd()*6;for(const o of q.m)o.material.color.setHex(c);try{const sk=window.FX3SK&&window.FX3SK()[c===0xffd060?"fire":c===0xa040ff?"void":"arcane"];q.m[2].material.map=sk||LT[2]}catch(e){}}
  function updSeals(dt){for(const q of SLS){if(!q.on)continue;if(q.d>0){q.d-=dt;continue}q.t+=dt;const k=q.t/q.T;if(k>=1){q.on=0;q.g.visible=false;continue}q.g.visible=true;
    const e=Math.min(1,q.t/.28),b=1+2.2*Math.pow(e-1,3)+1.2*Math.pow(e-1,2),f=k>.6?(1-k)/.4:1;
    for(let i=0;i<3;i++){const o=q.m[i];o.visible=i<q.n;if(!o.visible)continue;const s=q.R*b;o.scale.set(s,s,1);o.rotation.z=q.r0*(i+1)+q.t*LSP[i];o.position.z=i*.04;o.material.opacity=Math.min(1,q.t/.07)*f*(i===2?.75:.95)}}}
@@ -203,6 +203,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
  // ---------- модуль VFX (разломы пространства): один на всю игру, без тряски камеры, текстуры разломов готовятся заранее ----------
  let VX=null,lastRift=-9;try{if(typeof VFX!=='undefined'){VX=new VFX(S,C);VX.shake=()=>{};try{if(window.VFX_SKINS)VX.loadSkins(window.VFX_SKINS)}catch(e){}
    const pool=[0,1,2].map(()=>{const t=VX._riftTex();t.mask.dispose=t.edge.dispose=()=>{};return t});let pi2=0;VX._riftTex=()=>pool[pi2++%3]}}catch(e){console.error('fx3 vfx',e);VX=null}
+ window.FX3SK=()=>VX?VX.skins:null;
  function rift(x,z,sc,life){if(!VX||!lv())return false;try{const yw=Math.atan2(C.position.x-x,C.position.z-z);VX.riftOne(new T.Vector3(x,0,z),sc,yw,(rnd()-.5)*.5,life||2);return true}catch(e){return false}}
  // разломы в умениях-«разломах»: Рассечение пространства и Мировой разрез (маг), Клетка Пустоты (мечник)
  const riftWrap=(c,name,fn)=>{try{const sp=CLS[c].sp,k=sp.findIndex(f=>f&&(f.name===name||(f._ufx&&f._ufx.name===name)));if(k<0)return;const o0=sp[k];sp[k]=function(){const r=o0.apply(this,arguments);try{fn()}catch(e){}return r};sp[k]._ufx=o0._ufx||o0}catch(e){}};
