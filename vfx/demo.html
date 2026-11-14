@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VFX — эффекты умений</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#0b0820;font-family:system-ui,sans-serif;color:#fff}
+#hud{position:fixed;left:0;right:0;bottom:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;pointer-events:none}
+#hud button{pointer-events:auto;border:1px solid #ffffff55;background:#1a1440cc;color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px)}
+#hud button:hover{background:#3a2c8acc}#tip{position:fixed;top:12px;left:0;right:0;text-align:center;font-size:14px;opacity:.75;pointer-events:none}</style></head><body>
+<div id="tip">Клик по земле — применить выбранное умение · клавиши 1–4</div>
+<div id="hud"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="vfx.js"></script><script src="skins.js"></script>
+<script>
+const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);document.body.appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0x0b0820);S.fog=new THREE.FogExp2(0x0b0820,.016);
+const C=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,300);
+S.add(new THREE.HemisphereLight(0x8070ff,0x201040,1.1));
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0x17123a,roughness:.9}));ground.rotation.x=-Math.PI/2;S.add(ground);
+const grid=new THREE.GridHelper(300,100,0x3a2f7a,0x1c1646);grid.position.y=.01;S.add(grid);
+const hero=new THREE.Group();const body=new THREE.Mesh(new THREE.CylinderGeometry(.5,.7,2,10),new THREE.MeshStandardMaterial({color:0x6a5acd,emissive:0x1a1060}));body.position.y=1;hero.add(body);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.45,12,10),new THREE.MeshStandardMaterial({color:0xe8d8ff,emissive:0x302060}));head.position.y=2.4;hero.add(head);S.add(hero);
+const fx=new VFX(S,C);fx.loadSkins(window.VFX_SKINS);window.__vfx=fx;
+const kinds=[['arcane','1 · Аркан'],['fire','2 · Огонь'],['lightning','3 · Молния'],['void','4 · Пустота'],['rift','5 · Разломы']];let cur='arcane',manual=false;
+const hud=document.getElementById('hud');kinds.forEach(([k,n])=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>{manual=true;cur=k;fx.cast(k,new THREE.Vector3(0,0,0))};hud.appendChild(b)});
+addEventListener('keydown',e=>{const i=+e.key-1;if(kinds[i]){manual=true;cur=kinds[i][0];fx.cast(cur,new THREE.Vector3(0,0,0))}});
+const ray=new THREE.Raycaster(),m=new THREE.Vector2();
+R.domElement.addEventListener('pointerdown',e=>{manual=true;m.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(m,C);const p=new THREE.Vector3();if(ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){hero.position.set(p.x,0,p.z);fx.cast(cur,p)}});
+addEventListener('resize',()=>{R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()});
+let last=performance.now(),auto=0,ai=0;
+(function loop(now){requestAnimationFrame(loop);const dt=(now-last)/1000;last=now;
+ const t=now/1000;C.position.set(Math.sin(t*.12)*3,8.5,17);C.lookAt(0,2.5,0);
+ if(!manual&&(auto-=dt)<=0){auto=4.5;fx.cast(kinds[ai++%5][0],new THREE.Vector3(0,0,0))}
+ fx.update(dt);R.render(S,C);fx.restore()})(last);
+</script></body></html>

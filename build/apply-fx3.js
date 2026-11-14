@@ -1,9 +1,9 @@
-// Сборка v4: берёт чистый index.html из git (ветка graphics-v2, коммит 74f5fe4), ставит новых героев (heroes4.js),
+// Сборка v4: берёт чистый index.html из git (ветка graphics-v2, коммит 66b07f4), ставит новых героев (heroes4.js),
 // точечные правки умений и модуль эффектов (fx3.js). Можно запускать сколько угодно раз.
 // Запуск: node build/apply-fx3.js
 const fs=require('fs'),path=require('path'),vm=require('vm'),cp=require('child_process');
 const root=path.join(__dirname,'..'),fp=path.join(root,'index.html');
-let h=cp.execSync('git show 74f5fe43e0e5002aef8b08408a1b456aa6055592:index.html',{cwd:root,maxBuffer:64*1024*1024}).toString('utf8');
+let h=cp.execSync('git show 66b07f4:index.html',{cwd:root,maxBuffer:64*1024*1024}).toString('utf8');
 const rd=n=>fs.readFileSync(path.join(__dirname,n),'utf8').trim().replace(/\r\n/g,'\n');
 const R=(a,b,name)=>{const n=h.split(a).length-1;if(n!==1)throw new Error('якорь «'+(name||a.slice(0,50))+'» найден '+n+' раз');h=h.replace(a,()=>b)};
 
@@ -38,6 +38,24 @@ R('tooth(q*w,-.045,z,0,1.15-u*.3,0)','tooth(q*w*.8,BY(q*w*.8,z)+.001,z,0,1.15-u*
 
 // --- 6б. Шинра Тенсей: музыка включается через 4 секунды после активации (была на 13-й секунде, почти в конце) ---
 R('if(!m2&&t>=13){m2=1;','if(!m2&&t>=4){m2=1;','шинра музыка');
+
+// --- 6в. ульты: у остальных игроков нет заморозки, чужая камера и фильтр экрана не трогаются ---
+R('BLK.setFrz(WT.stop);ME.hold=Math.max(ME.hold||0,WT.stop);','BLK.setFrz(WT.stop);if(o===ME)ME.hold=Math.max(ME.hold||0,WT.stop);','разрез hold');
+R('BLK.setFrz(T0);ME.hold=Math.max(ME.hold||0,T0);if(o===ME)ME.hold=TE;','BLK.setFrz(T0);if(o===ME)ME.hold=TE;','шинра hold');
+R('const wcFil=f=>{try{','const wcFil=f=>{if(f&&CTX&&CTX.o&&CTX.o!==ME)return;try{','фильтр');
+R('window.FOGK=Math.max(1,C.z*.9);','if(mine)window.FOGK=Math.max(1,C.z*.9);','туман акулы');
+// АТОМНЫЙ: камера, заморозка и фильтр экрана только у того, кто его применил
+{const a=h.indexOf('function atomic(){'),e=h.indexOf('CAM.z=1;CAM.y=0;CAM.sh=0;FRZ=0;',a);if(a<0||e<0)throw new Error('atomic не найден');let t=h.slice(a,e+31);const n0=t.length;
+ t=t.replace(/mine=o===ME;\s*FRZ=T3_\+\.15;ME\.hold=Math\.max\(ME\.hold\|\|0,T3_\+\.15\);if\(mine\)ME\.hold=T3_\+1;/,'mine=o===ME,CM=mine?CAM:{z:1,y:0,sh:0};if(mine){FRZ=T3_+.15;ME.hold=T3_+1}');if(t.length===n0)throw new Error('atomic шапка');
+ t=t.split('CAM.').join('CM.').replace('CM=mine?CM:','CM=mine?CAM:').split('cfil(').join('(mine?cfil:()=>{})(').replace('FRZ=Math.max(0,FRZ-dt);','if(mine)FRZ=Math.max(0,FRZ-dt);').replace('CM.sh=0;FRZ=0;','CM.sh=0;if(mine)FRZ=0;');h=h.slice(0,a)+t+h.slice(e+31)}
+// --- 6г. Мировой разрез: молния идёт по цепочке через всех персонажей на карте ---
+R('left=cand.slice();while(left.length&&chain.length<1){','left=cand.some(c=>c.p)?cand.filter(c=>c.p):cand.slice();const CHN=Math.max(1,left.filter(c=>c.p).length);while(left.length&&chain.length<CHN){','разрез цепь');
+R('cand.push({x:q.g.position.x,z:q.g.position.z});','cand.push({x:q.g.position.x,z:q.g.position.z,p:1});','разлом игроки');
+R('let tg=null,bd=1e9;cand.forEach(','let tg=null,bd=1e9;(cand.some(c=>c.p)?cand.filter(c=>c.p):cand).forEach(','разлом цель');
+
+// --- 6д. Шинра Тенсей: дальность волны x2; подключение модуля VFX ---
+R('fall:1.6,R:390,','fall:1.6,R:780,','шинра радиус');
+R('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>','<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>\n<script src="vfx/vfx.js"></script>\n<script src="vfx/skins.js"></script>','vfx скрипты');
 
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}

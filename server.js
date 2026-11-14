@@ -1,7 +1,7 @@
 // Сервер игры: раздаёт index.html, ведёт список «кто онлайн» и комнаты (до 4 игроков), пересылает сообщения в бою.
 const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
 const PORT=process.env.PORT||3000,MAX=4,rooms=new Map(),all=new Set();let uid=0,pn=0;
-const FILES={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/manifest.json':['manifest.json','application/manifest+json'],'/sw.js':['sw.js','text/javascript'],'/icon-192.png':['icon-192.png','image/png'],'/icon-512.png':['icon-512.png','image/png']};
+const FILES={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/manifest.json':['manifest.json','application/manifest+json'],'/sw.js':['sw.js','text/javascript'],'/icon-192.png':['icon-192.png','image/png'],'/icon-512.png':['icon-512.png','image/png'],'/vfx/vfx.js':['vfx/vfx.js','text/javascript'],'/vfx/skins.js':['vfx/skins.js','text/javascript'],'/bh.glb':['bh.glb','model/gltf-binary']};
 // файлы отдаются сжатыми (gzip) и с ETag: повторный заход — почти мгновенно (ответ 304)
 const zlib=require('zlib'),CACHE={};
 function getFile(name,cb){const fp=path.join(__dirname,name);fs.stat(fp,(e,st)=>{if(e)return cb(e);const c=CACHE[name];if(c&&c.m===st.mtimeMs&&c.s===st.size)return cb(null,c);
