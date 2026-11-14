@@ -1,6 +1,6 @@
 // ===== FX3-BEGIN: графика v4 — красивые ударные волны, столбы света, искры-звёзды, вспышки попаданий, руны под героями, ёлки, горы, цвет =====
 // Тайминги умений и звук не тронуты: меняются только общие «кирпичики» (shock, pillar, kill, castFX) и окружение.
-const FX3=(()=>{const T=THREE,lv=()=>GFX.tier===0?0:isTouch?1:2,lo=()=>lv()<2;
+const FX3=(()=>{const T=THREE,lv=()=>GFX.tier,lo=()=>GFX.tier<2;
  const NZ='float h1(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h1(i),h1(i+vec2(1,0)),f.x),mix(h1(i+vec2(0,1)),h1(i+vec2(1,1)),f.x),f.y);}\n';
  const noSh=m=>{m.userData.noShadow=true;m.frustumCulled=false;return m};
  // ---------- текстуры: мягкое свечение, звезда-вспышка, рунный круг ----------
@@ -167,7 +167,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
   else{ring(.56,3);ring(.2,3);ring(.12,2);for(const off of[0,1]){x.lineWidth=3;x.beginPath();for(let k=0;k<=3;k++){const a=off*Math.PI+k*PI2/3-Math.PI/2,r=.56*C0;k?x.lineTo(Math.cos(a)*r,Math.sin(a)*r):x.moveTo(Math.cos(a)*r,Math.sin(a)*r)}x.stroke()}
    for(let i=0;i<6;i++){const a=i/6*PI2+Math.PI/6;x.lineWidth=2;x.beginPath();x.moveTo(Math.cos(a)*.2*C0,Math.sin(a)*.2*C0);x.lineTo(Math.cos(a)*.56*C0,Math.sin(a)*.56*C0);x.stroke();x.beginPath();x.arc(Math.cos(a)*.38*C0,Math.sin(a)*.38*C0,9,0,PI2);x.stroke()}}
   const t=new T.CanvasTexture(c);t.anisotropy=Math.min(4,R.capabilities.getMaxAnisotropy());return t},LT=[layT(0),layT(1),layT(2)],LSP=[.55,-1.05,1.7];
- const NSL=isTouch?9:16,SLS=[];for(let i=0;i<NSL;i++){const g=new T.Group();g.rotation.x=-Math.PI/2;g.visible=false;const m=LT.map(tx=>{const o=noSh(new T.Mesh(QG,new T.MeshBasicMaterial({map:tx,transparent:true,opacity:0,blending:AB,depthWrite:false,side:2})));g.add(o);return o});S.add(g);SLS.push({g,m,t:0,T:0,R:1,d:0,on:0,n:3,r0:0})}
+ const NSL=16,SLS=[];for(let i=0;i<NSL;i++){const g=new T.Group();g.rotation.x=-Math.PI/2;g.visible=false;const m=LT.map(tx=>{const o=noSh(new T.Mesh(QG,new T.MeshBasicMaterial({map:tx,transparent:true,opacity:0,blending:AB,depthWrite:false,side:2})));g.add(o);return o});S.add(g);SLS.push({g,m,t:0,T:0,R:1,d:0,on:0,n:3,r0:0})}
  let sli=0;
  function seal(x,y,z,Rd,c,life,delay,n){if(!lv())return;const q=SLS[sli];sli=(sli+1)%NSL;q.on=1;q.t=0;q.T=life;q.R=Rd;q.d=delay||0;q.n=n||3;q.g.position.set(x,y,z);q.g.visible=false;q.r0=rnd()*6;for(const o of q.m)o.material.color.setHex(c);try{const sk=window.FX3SK&&window.FX3SK()[c===0xffd060?"fire":c===0xa040ff?"void":"arcane"];q.m[2].material.map=sk||LT[2]}catch(e){}}
  function updSeals(dt){for(const q of SLS){if(!q.on)continue;if(q.d>0){q.d-=dt;continue}q.t+=dt;const k=q.t/q.T;if(k>=1){q.on=0;q.g.visible=false;continue}q.g.visible=true;
@@ -177,7 +177,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
  // ---------- искры-штрихи: быстрые светящиеся росчерки, вытянутые по скорости ----------
  const strT=(()=>{const c=document.createElement('canvas');c.width=16;c.height=64;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.7)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,16,64);
   const h=x.createLinearGradient(0,0,16,0);h.addColorStop(0,'rgba(0,0,0,1)');h.addColorStop(.5,'rgba(0,0,0,0)');h.addColorStop(1,'rgba(0,0,0,1)');x.globalCompositeOperation='destination-out';x.fillStyle=h;x.fillRect(0,0,16,64);return new T.CanvasTexture(c)})();
- const NST=isTouch?120:260,STM=noSh(new T.InstancedMesh(new T.PlaneGeometry(1,1).translate(0,-.5,0),new T.MeshBasicMaterial({map:strT,transparent:true,blending:AB,depthWrite:false,side:2}),NST)),
+ const NST=260,STM=noSh(new T.InstancedMesh(new T.PlaneGeometry(1,1).translate(0,-.5,0),new T.MeshBasicMaterial({map:strT,transparent:true,blending:AB,depthWrite:false,side:2}),NST)),
   sP=new Float32Array(NST*3),sV=new Float32Array(NST*3),sL=new Float32Array(NST),sL0=new Float32Array(NST),sW=new Float32Array(NST),sC=new Float32Array(NST*3),sG=new Float32Array(NST);let sti=0,stAct=0;
  for(let i=0;i<NST;i++){_m.makeScale(0,0,0);STM.setMatrixAt(i,_m);STM.setColorAt(i,_c.set(0))}STM.renderOrder=6;S.add(STM);
  const _x=new T.Vector3(),_y=new T.Vector3(),_w=new T.Vector3();
@@ -204,17 +204,44 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
  let VX=null,lastRift=-9;try{if(typeof VFX!=='undefined'){VX=new VFX(S,C);VX.shake=()=>{};try{if(window.VFX_SKINS)VX.loadSkins(window.VFX_SKINS)}catch(e){}
    const pool=[0,1,2].map(()=>{const t=VX._riftTex();t.mask.dispose=t.edge.dispose=()=>{};return t});let pi2=0;VX._riftTex=()=>pool[pi2++%3]}}catch(e){console.error('fx3 vfx',e);VX=null}
  window.FX3SK=()=>VX?VX.skins:null;
- function rift(x,z,sc,life){if(!VX||!lv())return false;try{const yw=Math.atan2(C.position.x-x,C.position.z-z);VX.riftOne(new T.Vector3(x,0,z),sc,yw,(rnd()-.5)*.5,life||2);return true}catch(e){return false}}
+ function rift(x,z,sc,life){return false;try{const yw=Math.atan2(C.position.x-x,C.position.z-z);VX.riftOne(new T.Vector3(x,0,z),sc,yw,(rnd()-.5)*.5,life||2);return true}catch(e){return false}}
  // разломы в умениях-«разломах»: Рассечение пространства и Мировой разрез (маг), Клетка Пустоты (мечник)
  const riftWrap=(c,name,fn)=>{try{const sp=CLS[c].sp,k=sp.findIndex(f=>f&&(f.name===name||(f._ufx&&f._ufx.name===name)));if(k<0)return;const o0=sp[k];sp[k]=function(){const r=o0.apply(this,arguments);try{fn()}catch(e){}return r};sp[k]._ufx=o0._ufx||o0}catch(e){}};
- riftWrap(0,'sever',()=>{const p=CP().position,f=fwd();for(const[d,sd,s]of[[16,0,1.7],[12,-11,1.1],[12,11,1.1]])rift(p.x+f.x*d-f.z*sd,p.z+f.z*d+f.x*sd,s,3)});
- riftWrap(0,'worldCut',()=>{const p=CP().position.clone(),f=fwd();if(VX)VX.after(2.1,()=>{for(const[d,sd,s]of[[20,0,2.4],[34,-16,1.5],[34,16,1.5]])rift(p.x+f.x*d-f.z*sd,p.z+f.z*d+f.x*sd,s,3.6)})});
- riftWrap(1,'sVoid',()=>{const p=CP().position,f=fwd();rift(p.x+f.x*10,p.z+f.z*10,1.4,2.6)});
 
  // ---------- DOOM: модель чёрной дыры вместо простого шара ----------
  let BHM=null;try{new T.GLTFLoader().load('bh.glb',g=>{try{const b=new T.Box3().setFromObject(g.scene),sz=b.getSize(new T.Vector3()),c=b.getCenter(new T.Vector3()),k=2.6/Math.max(sz.x,sz.y,sz.z);g.scene.position.sub(c).multiplyScalar(k);g.scene.scale.setScalar(k);
     g.scene.traverse(o=>{if(o.isMesh){o.userData.noShadow=true;o.frustumCulled=false;if(o.material){o.material.fog=false}}});const w=new T.Group();w.add(g.scene);BHM=w}catch(e){console.error('fx3 bh',e)}},undefined,()=>{})}catch(e){}
  try{const _h=hole;hole=function(){const r=_h.apply(this,arguments);try{if(BHM&&r&&r.g){const m=BHM.clone();r.g.children.forEach(c=>c.visible=false);r.g.add(m);let any=null;m.traverse(o=>{if(o.isMesh&&!any)any=o});if(any)any.onBeforeRender=()=>{m.rotation.y+=.012}}}catch(e){}return r}}catch(e){}
+
+ // ---------- сферы Блочного воина: синяя (притяжение), красная (отталкивание), фиолетовая (слияние) ----------
+ const GSG=new T.SphereGeometry(1,36,24),spiT=(()=>{const N=256,c=cvs(N),x=c.getContext('2d');x.translate(128,128);x.strokeStyle='#fff';x.lineCap='round';x.shadowColor='#fff';x.shadowBlur=6;x.lineWidth=5;
+  for(let a=0;a<4;a++){x.beginPath();for(let i=0;i<=60;i++){const k=i/60,r=8+k*112,th=a*Math.PI/2+k*4.2,px=Math.cos(th)*r,py=Math.sin(th)*r;i?x.lineTo(px,py):x.moveTo(px,py)}x.stroke()}
+  const g=x.createRadialGradient(0,0,20,0,0,126);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.7,'rgba(0,0,0,.25)');g.addColorStop(1,'rgba(0,0,0,1)');x.globalCompositeOperation='destination-out';x.shadowBlur=0;x.fillStyle=g;x.fillRect(-128,-128,256,256);return new T.CanvasTexture(c)})();
+ const GOV='varying vec3 vN,vV,vP;void main(){vP=position;vN=normalMatrix*normal;vec4 m=modelViewMatrix*vec4(position,1.);vV=-m.xyz;gl_Position=projectionMatrix*m;}';
+ const GOF=NZ+`varying vec3 vN,vV,vP;uniform float t,kd,o;
+void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(dot(N,V)),an=atan(p.z,p.x);
+ float sw=nz(vec2(cos(an)*2.+p.y*3.+t*(kd<.5?2.5:-2.),sin(an)*2.+p.y*4.-t*1.6)),hi=nz(vec2(cos(an)*9.+t*6.,sin(an)*9.+p.y*14.-t*4.));vec3 c;float a=1.;
+ if(kd<.5){c=mix(vec3(0.,.015,.09),vec3(.08,.45,1.3),pow(f,1.6))+vec3(.6,.95,1.4)*pow(f,5.)*1.6+vec3(.1,.6,1.2)*pow(sw,3.)*.9*(1.-f*.4);a=.96;}
+ else if(kd<1.5){c=mix(vec3(2.6,2.2,1.6),vec3(1.7,.1,.06),smoothstep(0.,.6,f))*(.6+.75*sw*sw)+vec3(1.4,.35,.2)*pow(f,4.)*1.4+vec3(1.,.5,.3)*pow(hi,7.)*2.;a=.95;}
+ else{c=mix(vec3(1.9,1.6,2.6),vec3(.75,.12,1.5),smoothstep(0.,.55,f))*(.55+.85*sw);c=mix(c,vec3(.04,0.,.1),smoothstep(.72,.95,f));c+=vec3(1.4,1.,2.)*pow(hi,8.)*2.5+vec3(.9,.5,1.6)*pow(f,7.)*1.2;a=.97;}
+ gl_FragColor=vec4(c*o,a*min(o,1.));}`;
+ const GC=[[0x2a8cff,0x9fe0ff],[0xff3020,0xffb080],[0xa040ff,0xf0c0ff]];
+ function gorb(kd,r){const g=new T.Group(),u={t:{value:rnd()*9},kd:{value:kd},o:{value:1}},mat=new T.ShaderMaterial({uniforms:u,vertexShader:GOV,fragmentShader:GOF,transparent:true,depthWrite:false,fog:false}),sp=noSh(new T.Mesh(GSG,mat));
+  const bb=(tex,c,o)=>{const m=noSh(new T.Mesh(QG,new T.MeshBasicMaterial({map:tex,color:c,transparent:true,opacity:o,blending:AB,depthWrite:false,fog:false})));g.add(m);return m};
+  const halo=bb(glowT,GC[kd][0],.6),arm=bb(kd===1?starT:spiT,GC[kd][1],.8),arm2=kd===2?bb(starT,0xffffff,.5):null,BB=[halo,arm,arm2].filter(Boolean);sp.renderOrder=5;g.add(sp);S.add(g);let acc=0,dead=0;
+  g.userData={set(s,dt,T2){s=Math.max(.01,s);const R0=r*s,pu=1+.06*Math.sin(T2*(kd===1?23:9));u.t.value+=dt;sp.scale.setScalar(R0*pu);
+    for(const m of BB)m.quaternion.copy(C.quaternion);halo.scale.setScalar(R0*(kd===2?3.4:3)*pu);
+    if(kd===1){arm.scale.setScalar(R0*(2.6+.5*Math.sin(T2*31)));arm.rotateZ(T2*.7)}else{arm.scale.setScalar(R0*2.5);arm.rotateZ((kd?-1:1)*T2*4.5)}
+    if(arm2){arm2.scale.setScalar(R0*(3+.6*Math.sin(T2*27)));arm2.rotateZ(-T2*1.3)}
+    if(!g.visible)return;const p=g.position;acc+=dt*(lo()?30:60);while(acc>1){acc--;const a=rnd()*PI2,b=Math.acos(rnd()*2-1),dx=Math.sin(b)*Math.cos(a),dy=Math.cos(b),dz=Math.sin(b)*Math.sin(a);
+     if(kd===0){const d=R0*(2.2+rnd()*1.6);emit(p.x+dx*d,p.y+dy*d,p.z+dz*d,-dx*d*2.6,-dy*d*2.6,-dz*d*2.6,.36,rnd()<.3?0xffffff:0x40a8ff,1.5,0)}
+     else if(kd===1){const v=R0*(4+rnd()*6);emit(p.x+dx*R0,p.y+dy*R0,p.z+dz*R0,dx*v,dy*v,dz*v,.3+rnd()*.25,rnd()<.3?0xffe0b0:0xff3020,1.6,0)}
+     else{const d=R0*(1.1+rnd()*.5);emit(p.x+dx*d,p.y+dy*d,p.z+dz*d,-dz*R0*3,dy*4,dx*R0*3,.4,rnd()<.4?0xffffff:0xb060ff,2,0)}}
+    if(kd===2&&rnd()<.5)sparks(p.x,p.y,p.z,1,R0*4,R0*2,0xc080ff,.3)},
+   kill(){if(dead)return;dead=1;S.remove(g);mat.dispose();for(const m of BB)m.material.dispose()}};return g}
+ function merge(x,y,z){star(x,y,z,0xffffff,70,.45);star(x,y,z,0xa040ff,110,.8);sparks(x,y,z,lo()?24:50,70,35,0xc080ff,.8);gflash(x,z,70,0xa040ff,.8);seal(x,.2,z,24,0xa040ff,1.5);
+  const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xe0c0ff,transparent:true,opacity:.9,blending:AB,depthWrite:false,fog:false,side:2})));m.position.set(x,y,z);S.add(m);let t=0;
+  fx.push(dt=>{t+=dt;const k=t/.45;m.scale.setScalar(2+38*Math.sqrt(Math.min(1,k)));m.material.opacity=.9*(1-Math.min(1,k))*(1-Math.min(1,k));return k<1},()=>{S.remove(m);m.material.dispose()})}
 
  // ---------- против фризов: шейдеры эффектов собираются заранее (в меню) и больше никогда не пересобираются ----------
  let pinT=0,warmG=null,warmT=4;
@@ -227,8 +254,19 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
   const cu=new T.Mesh(QG,new T.MeshBasicMaterial({map:glowT,transparent:true,blending:AB,depthWrite:false}));warmG.add(cu);
   warmG.userData.end=()=>{try{mg.end();ck.kill();sh.kill()}catch(e){}}}catch(e){console.error('fx3 warm',e)}
 
+ // ---------- качество графики: на телефоне по умолчанию как на компьютере; кнопка ◐ переключает Ультра / Высокое / Эконом ----------
+ const QN=['Эконом','Высокое','Ультра'];let qUser=null,qLow=0,qF=0,qT=0;
+ const qMsg=t=>{try{if(typeof ulkMsg==='function')ulkMsg(t)}catch(e){}};
+ function qSet(q,save){q=Math.max(0,Math.min(2,q|0));try{GFX.set(q);maxpr=Math.min(devicePixelRatio||1,q===2?2:isTouch?1.25:2);if(pr>maxpr||q===2){pr=q===2?Math.min(maxpr,isTouch?1.6:maxpr):Math.min(pr,maxpr);R.setPixelRatio(pr);setK()}}catch(e){console.error('fx3 quality',e)}
+  if(save){qUser=q;try{localStorage.setItem('mcq',String(q))}catch(e){}}if(QB)QB.title='Качество: '+QN[q]}
+ let QB=null;try{const sb=document.getElementById('sb');if(sb){QB=sb.cloneNode(false);QB.id='qb';QB.textContent='◐';sb.parentNode.insertBefore(QB,sb);QB.addEventListener('click',e=>{e.stopPropagation();const q=(GFX.tier+2)%3;qSet(q,1);qMsg('Качество графики: '+QN[q])})}}catch(e){}
+ try{let sv=null;try{sv=localStorage.getItem('mcq')}catch(e){}const forced=/[?&]q=\d/.test(location.search);if(!forced){if(sv!=null&&sv!=='')qSet(+sv,1);else if(isTouch)qSet(2,0)}}catch(e){}
+ // если выбор не сделан вручную и телефон не тянет (меньше 24 кадров 4 секунды подряд) — качество снижается на ступень
+ function qWatch(){const n=performance.now();if(!qT){qT=n;return}qF++;if(n-qT<1000)return;const fps=qF*1000/(n-qT);qF=0;qT=n;if(qUser!=null||!isTouch||GFX.tier===0||paused||document.hidden){qLow=0;return}
+  if(fps<24){if(++qLow>=4){qLow=0;const q=GFX.tier-1;qSet(q,0);qMsg('Качество снижено: '+QN[q]+' (кнопка ◐ вернёт)')}}else qLow=0}
+
  // ---------- покадровое обновление ----------
- function tick(dt){tt+=dt;hitN=0;if((pinT-=.016)<=0){pinT=1;pin()}if(warmG&&(warmT-=.016)<=0){pin();try{warmG.userData.end();S.remove(warmG);warmG.children.forEach(o=>o.material.dispose())}catch(e){}warmG=null}spdCool=Math.max(0,spdCool-dt);
+ function tick(dt){tt+=dt;hitN=0;qWatch();if((pinT-=.016)<=0){pinT=1;pin()}if(warmG&&(warmT-=.016)<=0){pin();try{warmG.userData.end();S.remove(warmG);warmG.children.forEach(o=>o.material.dispose())}catch(e){}warmG=null}spdCool=Math.max(0,spdCool-dt);
   if(spd>0){spd=Math.max(0,spd-dt*3.2);SL.style.opacity=(spd*spd*.42).toFixed(3)}else if(SL.style.opacity!=='0')SL.style.opacity='0';
   if(MT)MT.position.copy(C.position);updSeals(dt);updStreaks(dt);updGF(dt);if(VX)VX.update(dt);
   if(CG)CG.material.opacity=.42+.12*Math.sin(tt*1.7);
@@ -239,5 +277,5 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge}})();
 // ===== FX3-END =====

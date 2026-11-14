@@ -57,6 +57,11 @@ R('let tg=null,bd=1e9;cand.forEach(','let tg=null,bd=1e9;(cand.some(c=>c.p)?cand
 R('fall:1.6,R:390,','fall:1.6,R:780,','шинра радиус');
 R('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>','<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>\n<script src="vfx/vfx.js"></script>\n<script src="vfx/skins.js"></script>','vfx скрипты');
 
+// --- 6е. «Фиолетовый» Блочного воина: сначала синяя сфера, потом красная; новые сферы и вспышка слияния ---
+R('const PT={red:.5,blue:7.9,','const PT={red:7.9,blue:.5,','порядок сфер');
+R('const b=orb(0x2a8cff,0x1050ff,3),r=orb(0xff2a2a,0xff0040,3);','const b=FX3.gorb(0,3),r=FX3.gorb(1,3);','сферы');
+R('P=orb(0xa040ff,0x7a20ff,9.2);','P=FX3.gorb(2,9.2);FX3.merge(X,Y,Z);','слияние');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
