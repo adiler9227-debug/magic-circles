@@ -67,6 +67,13 @@ R('const ob=orb(c1,c2,2.2);let t=0,tk=0,X=0,Z=0,a0=0,st=0;','const ob=FX3.gorb(r
 R('ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}\n     const od=','ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}if(tick&&d<24)eH(i,dm_*.4);\n     const od=','красный урон');
 R('if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8,.5,X,Z,.4);return true}','if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8||(red&&Math.hypot(q.x-p.x,q.z-p.z)<24),.5,red?p.x:X,red?p.z:Z,.4);return true}','красный урон игрокам');
 
+// --- 6з. DOOM: вступление (вспышка пространства, молнии), дыра появляется на 0.6 с и резко растёт, она больше, область шире; ударная волна с уроном — когда дыра схлопнулась ---
+R('T.y=15;sHole();','T.y=15;sHole();try{FX3.doomIn(T.x,T.y,T.z)}catch(e){}','doom вступление');
+R('AT.r=75;AT.s=26;AT.k=6;','AT.r=100;AT.s=30;AT.k=9;','doom область');
+R('if(qd<75&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/75)*1.5))','if(qd<100&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/100)*1.5))','doom притяжение игроков');
+R('H.g.scale.setScalar(Math.max(.01,t<5?Math.min(t/1.2,1)*7+Math.sin(t*3)*.3:Math.max(0,7*(1-(t-5)/.5))));','{const g0=Math.min(1,Math.max(0,(t-.6)/.28));H.g.scale.setScalar(Math.max(.01,t<5?g0*(10+2.5*Math.sin(g0*Math.PI))+Math.sin(t*3)*.3:Math.max(0,10*(1-(t-5)/.4))))}','doom размер');
+R('else if(!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xc01020,90,1.4);shock(T.x,T.z,0x500008,70,1.8);curtain(T.x,T.z,30,60,0x8a0010,2);scorch(T.x,T.z,38,38,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,48)}','else if(t>=5.4&&!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xff3040,125,1.1);shock(T.x,T.z,0xc01020,110,1.5);shock(T.x,T.z,0x500008,85,1.9);curtain(T.x,T.z,36,60,0x8a0010,2);scorch(T.x,T.z,46,46,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,65)}','doom волна');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 

@@ -210,7 +210,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
 
  // ---------- DOOM: модель чёрной дыры вместо простого шара ----------
  let BHM=null;try{new T.GLTFLoader().load('bh.glb',g=>{try{const b=new T.Box3().setFromObject(g.scene),sz=b.getSize(new T.Vector3()),c=b.getCenter(new T.Vector3()),k=2.6/Math.max(sz.x,sz.y,sz.z);g.scene.position.sub(c).multiplyScalar(k);g.scene.scale.setScalar(k);
-    g.scene.traverse(o=>{if(o.isMesh){o.userData.noShadow=true;o.frustumCulled=false;if(o.material){o.material.fog=false}}});const w=new T.Group();w.add(g.scene);BHM=w}catch(e){console.error('fx3 bh',e)}},undefined,()=>{})}catch(e){}
+    g.scene.traverse(o=>{if(o.isMesh){o.userData.noShadow=true;o.frustumCulled=false;if(o.material){const mt=o.material;mt.fog=false;if(mt.color)mt.color.setRGB(1,.22,.16);if(mt.emissive&&(mt.emissiveMap||mt.emissive.getHex()))mt.emissive.setRGB(1,.12,.08)}}});const w=new T.Group();w.add(g.scene);BHM=w}catch(e){console.error('fx3 bh',e)}},undefined,()=>{})}catch(e){}
  try{const _h=hole;hole=function(){const r=_h.apply(this,arguments);try{if(BHM&&r&&r.g){const m=BHM.clone();r.g.children.forEach(c=>c.visible=false);r.g.add(m);let any=null;m.traverse(o=>{if(o.isMesh&&!any)any=o});if(any)any.onBeforeRender=()=>{m.rotation.y+=.012}}}catch(e){}return r}}catch(e){}
 
  // ---------- сферы Блочного воина: синяя (притяжение), красная (отталкивание), фиолетовая (слияние) ----------
@@ -242,6 +242,15 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
  function merge(x,y,z){star(x,y,z,0xffffff,70,.45);star(x,y,z,0xa040ff,110,.8);sparks(x,y,z,lo()?24:50,70,35,0xc080ff,.8);gflash(x,z,70,0xa040ff,.8);seal(x,.2,z,24,0xa040ff,1.5);
   const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xe0c0ff,transparent:true,opacity:.9,blending:AB,depthWrite:false,fog:false,side:2})));m.position.set(x,y,z);S.add(m);let t=0;
   fx.push(dt=>{t+=dt;const k=t/.45;m.scale.setScalar(2+38*Math.sqrt(Math.min(1,k)));m.material.opacity=.9*(1-Math.min(1,k))*(1-Math.min(1,k));return k<1},()=>{S.remove(m);m.material.dispose()})}
+
+ // ---------- DOOM, вступление: на миг вспыхивает искажённое пространство, потом молнии и искры, и только потом появляется дыра ----------
+ function doomIn(x,y,z){const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xff2030,transparent:true,opacity:.85,blending:AB,depthWrite:false,fog:false,side:2}))),
+   k0=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0,transparent:true,opacity:.9,depthWrite:false,fog:false})));m.position.set(x,y,z);k0.position.set(x,y,z);S.add(m,k0);star(x,y,z,0xffffff,60,.14);let t=0,bt=0;
+  const P=new T.Vector3(x,y,z),Q=new T.Vector3(),bolt=typeof BLK!=='undefined'&&BLK.H&&BLK.H.bolt;
+  fx.push(dt=>{t+=dt;const k=Math.min(1,t/.14);m.scale.setScalar(4+30*k);m.material.opacity=.85*(1-k);k0.scale.setScalar(2+22*k);k0.material.opacity=.9*(1-k)*(1-k);m.visible=k0.visible=k<1;
+   if(t>.1&&t<.6){bt+=dt;if(bt>.035){bt=0;const n=lo()?2:4;for(let i=0;i<n;i++){const a=rnd()*PI2,e=(rnd()-.5)*1.6,r=14+rnd()*20;Q.set(x+Math.cos(a)*r,y+e*r*.6,z+Math.sin(a)*r);if(bolt)try{bolt(P,Q,i&1?0xff3040:0xffd0d0,.09,1.6)}catch(e2){}}
+     sparks(x,y,z,lo()?5:10,60,30,0xff3040,.35)}}
+   return t<.6},()=>{S.remove(m,k0);m.material.dispose();k0.material.dispose()})}
 
  // ---------- против фризов: шейдеры эффектов собираются заранее (в меню) и больше никогда не пересобираются ----------
  let pinT=0,warmG=null,warmT=4;
@@ -277,5 +286,5 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash,gorb,merge}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn}})();
 // ===== FX3-END =====

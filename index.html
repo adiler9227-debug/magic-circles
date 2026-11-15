@@ -769,17 +769,17 @@ function predator(){const f=fwd(),T=CP().position.clone().addScaledVector(f,22);
    if(vic&&vic.dead<=0&&!vic.dash){const p=vic.g.position;if(Math.hypot(p.x-T.x,p.z-T.z)<15){hold=1;cx=p.x;cz=p.z;end=4.4;if(vic===ME&&net.on)ME.hold=2.5}}
    for(let k=0;k<220;k++){const d=CP().position,dx=d.x-T.x,dz=d.z-T.z;emit(T.x+(rnd()-.5)*10,1+rnd()*3,T.z+(rnd()-.5)*10,dx/1.1+(rnd()-.5)*6,(rnd()-.2)*14,dz/1.1+(rnd()-.5)*6,1.1,k&1?0x40ff90:0xc080ff,2,0)}}
   return t<end},()=>{m.end();S.remove(pit);pm2.dispose();teeth.forEach(o=>S.remove(o));TMt.dispose()})}
-function blackHole(){const f=fwd(),T=CP().position.clone().addScaledVector(f,38);T.y=15;sHole();
+function blackHole(){const f=fwd(),T=CP().position.clone().addScaledVector(f,38);T.y=15;sHole();try{FX3.doomIn(T.x,T.y,T.z)}catch(e){}
  const m=magic(new THREE.Vector3(T.x,.05,T.z),stack(7,38,10,3,[0x9a0010,0x3a0006,0xd01828],[7,5,9],[1,2,3]),'g'),H=hole(T.x,T.y,T.z,.1);
- AT.on=1;AT.x=T.x;AT.z=T.z;AT.r=75;AT.s=26;AT.k=6;const O4=CTX&&CTX.o;let t=0,x=0;
+ AT.on=1;AT.x=T.x;AT.z=T.z;AT.r=100;AT.s=30;AT.k=9;const O4=CTX&&CTX.o;let t=0,x=0;
  const NS2=70,SGm2=new THREE.TetrahedronGeometry(1),SMt2=new THREE.MeshBasicMaterial({color:0}),IM2=new THREE.InstancedMesh(SGm2,SMt2,NS2),sa=[],sr=[],sh=[],O2=new THREE.Object3D();
  for(let i=0;i<NS2;i++){sa[i]=rnd()*PI2;sr[i]=8+rnd()*45;sh[i]=(rnd()-.5)*14}IM2.frustumCulled=false;S.add(IM2);
  fx.push(dt=>{t+=dt;m.set(t,fade(t,.5,5.2,5.8));
-  if(t<5&&O4&&O4!==ME&&net.on&&ME.dead<=0&&!ME.dash){const p=ME.g.position,qx=T.x-p.x,qz=T.z-p.z,qd=Math.hypot(qx,qz)||1;if(qd<75&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/75)*1.5));p.x+=qx/qd*sp;p.z+=qz/qd*sp}}
+  if(t<5&&O4&&O4!==ME&&net.on&&ME.dead<=0&&!ME.dash){const p=ME.g.position,qx=T.x-p.x,qz=T.z-p.z,qd=Math.hypot(qx,qz)||1;if(qd<100&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/100)*1.5));p.x+=qx/qd*sp;p.z+=qz/qd*sp}}
   IM2.visible=t<5;for(let i=0;i<NS2;i++){sa[i]+=dt*(30/(sr[i]+4));sr[i]-=dt*(6+(50-sr[i])*.08);if(sr[i]<3){sr[i]=40+rnd()*15;sh[i]=(rnd()-.5)*14}const q=Math.min(1,sr[i]/12);O2.position.set(T.x+Math.cos(sa[i])*sr[i],T.y+sh[i]*q,T.z+Math.sin(sa[i])*sr[i]);O2.rotation.set(t*3+i,t*2,0);O2.scale.setScalar(.6+q*.9);O2.updateMatrix();IM2.setMatrixAt(i,O2.matrix)}IM2.instanceMatrix.needsUpdate=true;
-  H.g.scale.setScalar(Math.max(.01,t<5?Math.min(t/1.2,1)*7+Math.sin(t*3)*.3:Math.max(0,7*(1-(t-5)/.5))));H.d1.rotation.z=t*5;H.d2.rotation.z=-t*3;
+  {const g0=Math.min(1,Math.max(0,(t-.6)/.28));H.g.scale.setScalar(Math.max(.01,t<5?g0*(10+2.5*Math.sin(g0*Math.PI))+Math.sin(t*3)*.3:Math.max(0,10*(1-(t-5)/.4))))}H.d1.rotation.z=t*5;H.d2.rotation.z=-t*3;
   if(t<5)for(let k=0;k<50;k++){const a=rnd()*PI2,r=10+rnd()*45,c=Math.cos(a),s=Math.sin(a);emit(T.x+c*r,T.y+(rnd()-.5)*6,T.z+s*r,-c*r*.9-s*18,(rnd()-.5)*4,-s*r*.9+c*18,1,k&1?0x9a0814:0x3a0208,1.6,0)}
-  else if(!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xc01020,90,1.4);shock(T.x,T.z,0x500008,70,1.8);curtain(T.x,T.z,30,60,0x8a0010,2);scorch(T.x,T.z,38,38,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,48)}
+  else if(t>=5.4&&!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xff3040,125,1.1);shock(T.x,T.z,0xc01020,110,1.5);shock(T.x,T.z,0x500008,85,1.9);curtain(T.x,T.z,36,60,0x8a0010,2);scorch(T.x,T.z,46,46,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,65)}
   return t<5.8},()=>{AT.on=0;m.end();H.end();S.remove(IM2);SGm2.dispose();SMt2.dispose()})}
 function storm(){const f=fwd(),T=CP().position.clone().addScaledVector(f,36);T.y=0;play('storm',1.92)||sRain();
  const sp=T.clone();sp.y=55;const m=magic(sp,stack(8,86,24,10,[0x2070ff,0x60c0ff,0xd0f0ff,0x0a1a60],[11,7,9,5],[1,3,2,0]),'g');let t=0,acc=0,ab=0;
@@ -2702,7 +2702,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
 
  // ---------- DOOM: модель чёрной дыры вместо простого шара ----------
  let BHM=null;try{new T.GLTFLoader().load('bh.glb',g=>{try{const b=new T.Box3().setFromObject(g.scene),sz=b.getSize(new T.Vector3()),c=b.getCenter(new T.Vector3()),k=2.6/Math.max(sz.x,sz.y,sz.z);g.scene.position.sub(c).multiplyScalar(k);g.scene.scale.setScalar(k);
-    g.scene.traverse(o=>{if(o.isMesh){o.userData.noShadow=true;o.frustumCulled=false;if(o.material){o.material.fog=false}}});const w=new T.Group();w.add(g.scene);BHM=w}catch(e){console.error('fx3 bh',e)}},undefined,()=>{})}catch(e){}
+    g.scene.traverse(o=>{if(o.isMesh){o.userData.noShadow=true;o.frustumCulled=false;if(o.material){const mt=o.material;mt.fog=false;if(mt.color)mt.color.setRGB(1,.22,.16);if(mt.emissive&&(mt.emissiveMap||mt.emissive.getHex()))mt.emissive.setRGB(1,.12,.08)}}});const w=new T.Group();w.add(g.scene);BHM=w}catch(e){console.error('fx3 bh',e)}},undefined,()=>{})}catch(e){}
  try{const _h=hole;hole=function(){const r=_h.apply(this,arguments);try{if(BHM&&r&&r.g){const m=BHM.clone();r.g.children.forEach(c=>c.visible=false);r.g.add(m);let any=null;m.traverse(o=>{if(o.isMesh&&!any)any=o});if(any)any.onBeforeRender=()=>{m.rotation.y+=.012}}}catch(e){}return r}}catch(e){}
 
  // ---------- сферы Блочного воина: синяя (притяжение), красная (отталкивание), фиолетовая (слияние) ----------
@@ -2734,6 +2734,15 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
  function merge(x,y,z){star(x,y,z,0xffffff,70,.45);star(x,y,z,0xa040ff,110,.8);sparks(x,y,z,lo()?24:50,70,35,0xc080ff,.8);gflash(x,z,70,0xa040ff,.8);seal(x,.2,z,24,0xa040ff,1.5);
   const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xe0c0ff,transparent:true,opacity:.9,blending:AB,depthWrite:false,fog:false,side:2})));m.position.set(x,y,z);S.add(m);let t=0;
   fx.push(dt=>{t+=dt;const k=t/.45;m.scale.setScalar(2+38*Math.sqrt(Math.min(1,k)));m.material.opacity=.9*(1-Math.min(1,k))*(1-Math.min(1,k));return k<1},()=>{S.remove(m);m.material.dispose()})}
+
+ // ---------- DOOM, вступление: на миг вспыхивает искажённое пространство, потом молнии и искры, и только потом появляется дыра ----------
+ function doomIn(x,y,z){const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xff2030,transparent:true,opacity:.85,blending:AB,depthWrite:false,fog:false,side:2}))),
+   k0=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0,transparent:true,opacity:.9,depthWrite:false,fog:false})));m.position.set(x,y,z);k0.position.set(x,y,z);S.add(m,k0);star(x,y,z,0xffffff,60,.14);let t=0,bt=0;
+  const P=new T.Vector3(x,y,z),Q=new T.Vector3(),bolt=typeof BLK!=='undefined'&&BLK.H&&BLK.H.bolt;
+  fx.push(dt=>{t+=dt;const k=Math.min(1,t/.14);m.scale.setScalar(4+30*k);m.material.opacity=.85*(1-k);k0.scale.setScalar(2+22*k);k0.material.opacity=.9*(1-k)*(1-k);m.visible=k0.visible=k<1;
+   if(t>.1&&t<.6){bt+=dt;if(bt>.035){bt=0;const n=lo()?2:4;for(let i=0;i<n;i++){const a=rnd()*PI2,e=(rnd()-.5)*1.6,r=14+rnd()*20;Q.set(x+Math.cos(a)*r,y+e*r*.6,z+Math.sin(a)*r);if(bolt)try{bolt(P,Q,i&1?0xff3040:0xffd0d0,.09,1.6)}catch(e2){}}
+     sparks(x,y,z,lo()?5:10,60,30,0xff3040,.35)}}
+   return t<.6},()=>{S.remove(m,k0);m.material.dispose();k0.material.dispose()})}
 
  // ---------- против фризов: шейдеры эффектов собираются заранее (в меню) и больше никогда не пересобираются ----------
  let pinT=0,warmG=null,warmT=4;
@@ -2769,7 +2778,7 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash,gorb,merge}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn}})();
 // ===== FX3-END =====
 
 loop();
