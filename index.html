@@ -775,11 +775,11 @@ function blackHole(){const f=fwd(),T=CP().position.clone().addScaledVector(f,38)
  const NS2=70,SGm2=new THREE.TetrahedronGeometry(1),SMt2=new THREE.MeshBasicMaterial({color:0}),IM2=new THREE.InstancedMesh(SGm2,SMt2,NS2),sa=[],sr=[],sh=[],O2=new THREE.Object3D();
  for(let i=0;i<NS2;i++){sa[i]=rnd()*PI2;sr[i]=8+rnd()*45;sh[i]=(rnd()-.5)*14}IM2.frustumCulled=false;S.add(IM2);
  fx.push(dt=>{t+=dt;m.set(t,fade(t,.5,5.2,5.8));
-  if(t<5&&O4&&O4!==ME&&net.on&&ME.dead<=0&&!ME.dash){const p=ME.g.position,qx=T.x-p.x,qz=T.z-p.z,qd=Math.hypot(qx,qz)||1;if(qd<100&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/100)*1.5));p.x+=qx/qd*sp;p.z+=qz/qd*sp}}
+  if(t<5&&O4&&O4!==ME&&net.on&&ME.dead<=0&&!ME.dash){const p=ME.g.position,qx=T.x-p.x,qz=T.z-p.z,qd=Math.hypot(qx,qz)||1;if(qd<100&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/100)*1.5));p.x+=qx/qd*sp;p.z+=qz/qd*sp}H.dk=(H.dk||0)+dt;if(qd<100&&H.dk>.25){H.dk=0;pHurt(ME,ME.maxhp*.0099,O4)}}
   IM2.visible=t<5;for(let i=0;i<NS2;i++){sa[i]+=dt*(30/(sr[i]+4));sr[i]-=dt*(6+(50-sr[i])*.08);if(sr[i]<3){sr[i]=40+rnd()*15;sh[i]=(rnd()-.5)*14}const q=Math.min(1,sr[i]/12);O2.position.set(T.x+Math.cos(sa[i])*sr[i],T.y+sh[i]*q,T.z+Math.sin(sa[i])*sr[i]);O2.rotation.set(t*3+i,t*2,0);O2.scale.setScalar(.6+q*.9);O2.updateMatrix();IM2.setMatrixAt(i,O2.matrix)}IM2.instanceMatrix.needsUpdate=true;
   {const g0=Math.min(1,Math.max(0,(t-.6)/.28));H.g.scale.setScalar(Math.max(.01,t<5?g0*(10+2.5*Math.sin(g0*Math.PI))+Math.sin(t*3)*.3:Math.max(0,10*(1-(t-5)/.4))))}H.d1.rotation.z=t*5;H.d2.rotation.z=-t*3;
   if(t<5)for(let k=0;k<50;k++){const a=rnd()*PI2,r=10+rnd()*45,c=Math.cos(a),s=Math.sin(a);emit(T.x+c*r,T.y+(rnd()-.5)*6,T.z+s*r,-c*r*.9-s*18,(rnd()-.5)*4,-s*r*.9+c*18,1,k&1?0x9a0814:0x3a0208,1.6,0)}
-  else if(t>=5.4&&!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xff3040,125,1.1);shock(T.x,T.z,0xc01020,110,1.5);shock(T.x,T.z,0x500008,85,1.9);curtain(T.x,T.z,36,60,0x8a0010,2);scorch(T.x,T.z,46,46,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,65)}
+  else if(t>=5.4&&!x){x=1;AT.on=0;try{FX3.doomOut(T.x,T.y,T.z)}catch(e){}sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xff3040,125,1.1);shock(T.x,T.z,0xc01020,110,1.5);shock(T.x,T.z,0x500008,85,1.9);curtain(T.x,T.z,36,60,0x8a0010,2);scorch(T.x,T.z,46,46,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,65)}
   return t<5.8},()=>{AT.on=0;m.end();H.end();S.remove(IM2);SGm2.dispose();SMt2.dispose()})}
 function storm(){const f=fwd(),T=CP().position.clone().addScaledVector(f,36);T.y=0;play('storm',1.92)||sRain();
  const sp=T.clone();sp.y=55;const m=magic(sp,stack(8,86,24,10,[0x2070ff,0x60c0ff,0xd0f0ff,0x0a1a60],[11,7,9,5],[1,3,2,0]),'g');let t=0,acc=0,ab=0;
@@ -1857,7 +1857,7 @@ function worldCut(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g
  const usnd=typeof SND!=='undefined'&&SND.wcut&&typeof play==='function'?play('wcut',1.3*v):false;if(!usnd){tone(80,40,WT.stop,'sawtooth',.12*v,0,4);nz2(WT.stop,.2*v,300,4000,'bandpass')}
  // цели: все игроки (кроме своих в совместной игре) и до 9 ближайших монстров, по цепочке «молнией»
  const cand=[];const coopM=typeof COOPM==='function'?COOPM():mode==='duel';
- for(const q of players)if(q!==o&&q.dead<=0&&q.g.visible&&!coopM)cand.push({x:q.g.position.x,z:q.g.position.z,p:1});
+ for(const q of players)if(q!==o&&q.dead<=0&&q.g.visible&&!coopM)cand.push({x:q.g.position.x,z:q.g.position.z,p:1,q});
  const en=[];forE((i,x,z)=>en.push({x,z,d:Math.hypot(x-O.x,z-O.z)+(isB(i)?-1e4:0)}));en.sort((a,b)=>a.d-b.d);en.slice(0,9).forEach(e=>cand.push(e));
  const chain=[];let cur=O,left=cand.some(c=>c.p)?cand.filter(c=>c.p):cand.slice();const CHN=Math.max(1,left.filter(c=>c.p).length);while(left.length&&chain.length<CHN){let bi=0,bd=1e9;left.forEach((c,i)=>{const d=Math.hypot(c.x-cur.x,c.z-cur.z);if(d<bd){bd=d;bi=i}});cur=left.splice(bi,1)[0];chain.push(cur)}
  if(!chain.length)chain.push({x:O.x+F.x*30,z:O.z+F.z*30});
@@ -1874,19 +1874,19 @@ function worldCut(){const o=CS(),g=CP(),F=fwd(),dm_=DMG(),v=kv(o),M=MO(o),O={x:g
   if(t<WT.stop+WT.after*.7){C.z+=(4.6-C.z)*k;C.y+=(60-C.y)*k}else{C.z+=(1-C.z)*k*1.5;C.y+=(0-C.y)*k*1.5}
   if(t>.3&&t<WT.stop+1.4)wcCap(1,'世界を断つ斬撃<div style="font:700 clamp(14px,3.5vw,30px) system-ui;letter-spacing:.3em;margin-top:6px;color:#ffd0d0">МИРОВОЙ РАЗРЕЗ</div>');else if(t>=WT.stop+1.4)wcCap(0);
   aura.scale.set(3+Math.sin(T*20)*.4+(t<WT.stop?t:0)*2,40+(t<WT.stop?t*30:0),3+Math.sin(T*20)*.4+(t<WT.stop?t:0)*2);aura.material.opacity=t<WT.stop?.35*Math.min(1,t*2):Math.max(0,.35-(t-WT.stop)*.3);
-  if(t<WT.stop){const q=t/WT.stop;wcFil('saturate('+(1-.8*q)+') contrast('+(1+.4*q)+') sepia('+(.5*q)+') hue-rotate('+(-25*q)+'deg) brightness(.9)');lite(O.x,10,O.z,0xff1010,1+q*3);
+  if(t<WT.stop){chain.forEach(c=>{if(c.q&&c.q.dead<=0){c.x=c.q.g.position.x;c.z=c.q.g.position.z}});marks.forEach(m=>m.r.position.set(m.c.x,.3,m.c.z));const q=t/WT.stop;wcFil('saturate('+(1-.8*q)+') contrast('+(1+.4*q)+') sepia('+(.5*q)+') hue-rotate('+(-25*q)+'deg) brightness(.9)');lite(O.x,10,O.z,0xff1010,1+q*3);
    for(let n=0;n<10;n++){const a=rnd()*PI*2,r=6+rnd()*14;emit(O.x+Math.cos(a)*r,rnd()*14,O.z+Math.sin(a)*r,-Math.cos(a)*r*1.4,6,-Math.sin(a)*r*1.4,.6,n%3?0xff2020:0xffffff,2,0)}
    // захват целей: метки появляются по очереди, между ними бегут молнии
    marks.forEach((m,i)=>{if(t<m.t0)return;const e=Math.min(1,(t-m.t0)/.25);m.r.scale.setScalar(4+8*(1-e)+Math.sin(T*12)*.5);m.r.material.opacity=.95;if(e<1||rnd()<.25){const a=i?chain[i-1]:O;bolt(new V3(a.x,2,a.z),new V3(m.c.x,2,m.c.z),rnd()<.5?0xff2020:0xffffff,.12,2.2)}});
    return true}
-  if(!cut){cut=1;wcFil('');flash(1*v);sBoomB(1.8*v);tone(2400,60,1.4,'sawtooth',.25*v);nz2(1.6,.9*v,9000,200,'highpass');tone(40,18,3,'sine',.9*v);C.sh=5;
+  if(!cut){cut=1;{let pv2=O;lines.forEach((ln,i)=>{const c=chain[i];if(c.q&&c.q.dead<=0){c.x=c.q.g.position.x;c.z=c.q.g.position.z}const dx=c.x-pv2.x,dz=c.z-pv2.z,l=Math.hypot(dx,dz);if(l>=3){ln.D.x=dx/l;ln.D.z=dz/l}ln.P.x=(c.x+pv2.x)/2;ln.P.z=(c.z+pv2.z)/2;const an=Math.atan2(ln.D.x,ln.D.z);[ln.sheet,ln.glow,ln.glow2,ln.crack,ln.edge].forEach(m=>{m.position.x=ln.P.x;m.position.z=ln.P.z;m.rotation.y=an});pv2=c})}wcFil('');flash(1*v);sBoomB(1.8*v);tone(2400,60,1.4,'sawtooth',.25*v);nz2(1.6,.9*v,9000,200,'highpass');tone(40,18,3,'sine',.9*v);C.sh=5;
    lines.forEach(ln=>[ln.sheet,ln.glow,ln.glow2,ln.crack,ln.edge].forEach(m=>m.visible=true));marks.forEach(m=>{shock(m.c.x,m.c.z,0xff2020,30,.6);pillar(m.c.x,m.c.z,0xff3030,110,7,.8)});
-   forE((i,x,z)=>{if(lines.some(ln=>onLine(ln,x,z,isB(i)?10:7))){if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q=>lines.some(ln=>onLine(ln,q.x,q.z,6)),8,O.x,O.z,.01);
+   forE((i,x,z)=>{if(lines.some(ln=>onLine(ln,x,z,isB(i)?10:7))){if(isB(i))eH(i,dm_*15);else fKill(i)}});plT(q=>lines.some(ln=>onLine(ln,q.x,q.z,13)),8,O.x,O.z,.01);
    lines.forEach(ln=>{for(let n=0;n<14;n++){const s=(rnd()-.5)*L,x=ln.P.x+ln.D.x*s,z=ln.P.z+ln.D.z*s;cubes(x,.5,z,2,[0x6b6490,0x333333,0xff3030],14,.5,1.4,ln.D.z*(rnd()<.5?20:-20),-ln.D.x*(rnd()<.5?20:-20))}})}
   const q=t-WT.stop,e=Math.min(1,q/.08),f=q<WT.after-.6?1:Math.max(0,1-(q-WT.after+.6)/.6);
-  lines.forEach((ln,j)=>{ln.sheet.scale.set(.4,160*e,L);ln.sheet.position.y=80*e;ln.sheet.material.opacity=Math.max(0,1-q*1.2)*f;
-   ln.glow.scale.set(4+q*6,160*e,L);ln.glow.position.y=80*e;ln.glow.material.opacity=.5*Math.max(0,1-q*.7)*f;ln.glow2.scale.set(14+q*10,40,L);ln.glow2.position.y=20;ln.glow2.material.opacity=.25*f*(.7+.3*Math.sin(T*15+j));
-   ln.crack.scale.set(1.4+q*2.5,.1,L);ln.crack.position.y=.12;ln.crack.material.opacity=.95*f;ln.edge.scale.set(2.6+q*3.5,.11,L);ln.edge.position.y=.1;ln.edge.material.opacity=.8*f;
+  lines.forEach((ln,j)=>{ln.sheet.scale.set(1.4,160*e,L);ln.sheet.position.y=80*e;ln.sheet.material.opacity=Math.max(0,1-q*1.2)*f;
+   ln.glow.scale.set(13+q*8,160*e,L);ln.glow.position.y=80*e;ln.glow.material.opacity=.5*Math.max(0,1-q*.7)*f;ln.glow2.scale.set(28+q*10,40,L);ln.glow2.position.y=20;ln.glow2.material.opacity=.25*f*(.7+.3*Math.sin(T*15+j));
+   ln.crack.scale.set(5+q*3,.1,L);ln.crack.position.y=.12;ln.crack.material.opacity=.95*f;ln.edge.scale.set(8+q*4,.11,L);ln.edge.position.y=.1;ln.edge.material.opacity=.8*f;
    if(q<WT.after-.5){if(q>.3&&q<2.2){const s0=((q-.3)/1.9)*L/2;for(const sg of[-1,1])if(rnd()<.35){const s=s0*sg,x=ln.P.x+ln.D.x*s,z=ln.P.z+ln.D.z*s;pillar(x,z,rnd()<.6?0xff2020:0xffffff,60+rnd()*70,4+rnd()*5,.5);shock(x,z,0xff3030,18,.45)}}
     for(let n=0;n<(q<.8?4:1);n++){const s=(rnd()-.5)*L*.7,x=ln.P.x+ln.D.x*s,z=ln.P.z+ln.D.z*s,y=rnd()*60,a=rnd()*PI*2,r=10+rnd()*30;bolt(new V3(x,y,z),new V3(x+Math.cos(a)*r,Math.max(0,y+(rnd()-.5)*30),z+Math.sin(a)*r),rnd()<.6?0xff3030:0xffffff,.15,3)}
     for(let n=0;n<14;n++){const s=(rnd()-.5)*L,x=ln.P.x+ln.D.x*s,z=ln.P.z+ln.D.z*s,sd=rnd()<.5?1:-1,sp=20+rnd()*45;emit(x,rnd()*35,z,ln.D.z*sd*sp,(rnd()-.3)*20,-ln.D.x*sd*sp,.9,n%3?0xff2020:0xffffff,2.6,-6)}}});
@@ -2069,7 +2069,7 @@ document.getElementById('kb').onclick=korSwap;
 const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
-function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?1:o.cl===3?.5:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
+function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?(i===0?.45:1):o.cl===3?.5:o.cl===0?1.4:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
 const ULTS=[6,7,8,7,6],PK_NEED=3;let ulkS='';
 function pvpOn(){return mode==='duel'&&!!PVP}
 function ulkMsg(t){toastE.textContent=t;toastE.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toastE.style.opacity=0,1800)}
@@ -2744,6 +2744,11 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
      sparks(x,y,z,lo()?5:10,60,30,0xff3040,.35)}}
    return t<.6},()=>{S.remove(m,k0);m.material.dispose();k0.material.dispose()})}
 
+ // ---------- DOOM, финал: после схлопывания от центра расходится волна — прозрачный красный пузырь и чёрная кромка ----------
+ function doomOut(x,y,z){const mk=(c,o,ad)=>{const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:ad?AB:T.NormalBlending,depthWrite:false,fog:false,side:2})));m.position.set(x,y,z);m.userData.o=o;S.add(m);return m},
+   a=mk(0xff2030,.55,1),b=mk(0x0a0002,.6,0),c=mk(0xffd0d0,.35,1),L=[a,b,c];star(x,y,z,0xffffff,90,.3);star(x,y,z,0xff2030,150,.7);sparks(x,y,z,lo()?30:70,110,40,0xff3040,.9);gflash(x,z,80,0xff2030,1);let t=0;
+  fx.push(dt=>{t+=dt;const k=Math.min(1,t/.75),e=1-(1-k)*(1-k);a.scale.setScalar(4+66*e);b.scale.setScalar(3+58*e);c.scale.setScalar(5+72*e);for(const m of L)m.material.opacity=m.userData.o*(1-k)*(1-k*.5);return k<1},()=>{for(const m of L){S.remove(m);m.material.dispose()}})}
+
  // ---------- ниндзя: у каждого умения свой вид ----------
  const skWrap=(c,name,fn)=>{try{const sp=CLS[c].sp,k=sp.findIndex(f=>f&&(f.name===name||(f._ufx&&f._ufx.name===name)));if(k<0){console.warn('fx3: нет умения',name);return}const o0=sp[k];sp[k]=function(){try{fn()}catch(e){console.error('fx3 '+name,e)}return o0.apply(this,arguments)};sp[k]._ufx=o0._ufx||o0}catch(e){}};
  const BLT=(a,b,c,l,j)=>{try{BLK.H.bolt(a,b,c,l,j)}catch(e){}};
@@ -2805,7 +2810,7 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn,kunai,kunaiEnd}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn,doomOut,kunai,kunaiEnd}})();
 // ===== FX3-END =====
 
 loop();

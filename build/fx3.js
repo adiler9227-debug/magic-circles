@@ -252,6 +252,11 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
      sparks(x,y,z,lo()?5:10,60,30,0xff3040,.35)}}
    return t<.6},()=>{S.remove(m,k0);m.material.dispose();k0.material.dispose()})}
 
+ // ---------- DOOM, финал: после схлопывания от центра расходится волна — прозрачный красный пузырь и чёрная кромка ----------
+ function doomOut(x,y,z){const mk=(c,o,ad)=>{const m=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:ad?AB:T.NormalBlending,depthWrite:false,fog:false,side:2})));m.position.set(x,y,z);m.userData.o=o;S.add(m);return m},
+   a=mk(0xff2030,.55,1),b=mk(0x0a0002,.6,0),c=mk(0xffd0d0,.35,1),L=[a,b,c];star(x,y,z,0xffffff,90,.3);star(x,y,z,0xff2030,150,.7);sparks(x,y,z,lo()?30:70,110,40,0xff3040,.9);gflash(x,z,80,0xff2030,1);let t=0;
+  fx.push(dt=>{t+=dt;const k=Math.min(1,t/.75),e=1-(1-k)*(1-k);a.scale.setScalar(4+66*e);b.scale.setScalar(3+58*e);c.scale.setScalar(5+72*e);for(const m of L)m.material.opacity=m.userData.o*(1-k)*(1-k*.5);return k<1},()=>{for(const m of L){S.remove(m);m.material.dispose()}})}
+
  // ---------- ниндзя: у каждого умения свой вид ----------
  const skWrap=(c,name,fn)=>{try{const sp=CLS[c].sp,k=sp.findIndex(f=>f&&(f.name===name||(f._ufx&&f._ufx.name===name)));if(k<0){console.warn('fx3: нет умения',name);return}const o0=sp[k];sp[k]=function(){try{fn()}catch(e){console.error('fx3 '+name,e)}return o0.apply(this,arguments)};sp[k]._ufx=o0._ufx||o0}catch(e){}};
  const BLT=(a,b,c,l,j)=>{try{BLK.H.bolt(a,b,c,l,j)}catch(e){}};
@@ -313,5 +318,5 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn,kunai,kunaiEnd}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn,doomOut,kunai,kunaiEnd}})();
 // ===== FX3-END =====

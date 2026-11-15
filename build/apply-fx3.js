@@ -82,6 +82,22 @@ R('fx.push(dt=>{const st=85*dt,n=Math.ceil(st/2),h=st/n;','fx.push(dt=>{km.posit
 R('if(hit){if(tr<=55){killIn(x,z,2.4);','if(hit){if(tr<=55){FX3.star(x,2.2,z,0xc080ff,11,.2);killIn(x,z,2.4);','кунаи вспышка');
 R('0xc080ff,1.3,-10)}return false}}return true})}}','0xc080ff,1.3,-10)}return false}}return true},()=>FX3.kunaiEnd(km))}}','кунаи конец');
 
+// --- 6л. DOOM: пока затягивает — урон по игроку ~1% здоровья 4 раза в секунду; после схлопывания — волна ---
+R('p.x+=qx/qd*sp;p.z+=qz/qd*sp}}','p.x+=qx/qd*sp;p.z+=qz/qd*sp}H.dk=(H.dk||0)+dt;if(qd<100&&H.dk>.25){H.dk=0;pHurt(ME,ME.maxhp*.0099,O4)}}','doom урон затягивания');
+R('else if(t>=5.4&&!x){x=1;AT.on=0;','else if(t>=5.4&&!x){x=1;AT.on=0;try{FX3.doomOut(T.x,T.y,T.z)}catch(e){}','doom волна-пузырь');
+// --- 6м. Мировой разрез: метки и линии следуют за целями до самого удара (шаг в сторону не спасает), полоса шире ---
+R("\n for(const q of players)if(q!==o&&q.dead<=0&&q.g.visible&&!coopM)cand.push({x:q.g.position.x,z:q.g.position.z,p:1});","\n for(const q of players)if(q!==o&&q.dead<=0&&q.g.visible&&!coopM)cand.push({x:q.g.position.x,z:q.g.position.z,p:1,q});",'разрез ссылка на игрока');
+R("if(t<WT.stop){const q=t/WT.stop;wcFil(","if(t<WT.stop){chain.forEach(c=>{if(c.q&&c.q.dead<=0){c.x=c.q.g.position.x;c.z=c.q.g.position.z}});marks.forEach(m=>m.r.position.set(m.c.x,.3,m.c.z));const q=t/WT.stop;wcFil(",'разрез слежение');
+R("if(!cut){cut=1;wcFil('');","if(!cut){cut=1;{let pv2=O;lines.forEach((ln,i)=>{const c=chain[i];if(c.q&&c.q.dead<=0){c.x=c.q.g.position.x;c.z=c.q.g.position.z}const dx=c.x-pv2.x,dz=c.z-pv2.z,l=Math.hypot(dx,dz);if(l>=3){ln.D.x=dx/l;ln.D.z=dz/l}ln.P.x=(c.x+pv2.x)/2;ln.P.z=(c.z+pv2.z)/2;const an=Math.atan2(ln.D.x,ln.D.z);[ln.sheet,ln.glow,ln.glow2,ln.crack,ln.edge].forEach(m=>{m.position.x=ln.P.x;m.position.z=ln.P.z;m.rotation.y=an});pv2=c})}wcFil('');",'разрез наводка');
+R("else fKill(i)}});plT(q=>lines.some(ln=>onLine(ln,q.x,q.z,6)),8,O.x,O.z,.01);","else fKill(i)}});plT(q=>lines.some(ln=>onLine(ln,q.x,q.z,13)),8,O.x,O.z,.01);",'разрез ширина по игрокам');
+R("ln.sheet.scale.set(.4,160*e,L);","ln.sheet.scale.set(1.4,160*e,L);",'разрез лист');
+R("ln.glow.scale.set(4+q*6,160*e,L);","ln.glow.scale.set(13+q*8,160*e,L);",'разрез свечение');
+R("ln.glow2.scale.set(14+q*10,40,L);","ln.glow2.scale.set(28+q*10,40,L);",'разрез свечение 2');
+R("ln.crack.scale.set(1.4+q*2.5,.1,L);","ln.crack.scale.set(5+q*3,.1,L);",'разрез трещина');
+R("ln.edge.scale.set(2.6+q*3.5,.11,L);","ln.edge.scale.set(8+q*4,.11,L);",'разрез кромка');
+// --- 6н. урон: маг +40% по игрокам, Расенсюрикен ниндзя 0.45 от прежнего ---
+R("o.cl===2?1:o.cl===3?.5:1)","o.cl===2?(i===0?.45:1):o.cl===3?.5:o.cl===0?1.4:1)",'урон классов');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
