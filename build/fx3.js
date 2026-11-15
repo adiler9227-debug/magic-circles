@@ -252,6 +252,33 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
      sparks(x,y,z,lo()?5:10,60,30,0xff3040,.35)}}
    return t<.6},()=>{S.remove(m,k0);m.material.dispose();k0.material.dispose()})}
 
+ // ---------- ниндзя: у каждого умения свой вид ----------
+ const skWrap=(c,name,fn)=>{try{const sp=CLS[c].sp,k=sp.findIndex(f=>f&&(f.name===name||(f._ufx&&f._ufx.name===name)));if(k<0){console.warn('fx3: нет умения',name);return}const o0=sp[k];sp[k]=function(){try{fn()}catch(e){console.error('fx3 '+name,e)}return o0.apply(this,arguments)};sp[k]._ufx=o0._ufx||o0}catch(e){}};
+ const BLT=(a,b,c,l,j)=>{try{BLK.H.bolt(a,b,c,l,j)}catch(e){}};
+ // Теневые кунаи: настоящие клинки со свечением, вспышка и печать при броске
+ const KG=new T.ConeGeometry(.32,3,4).rotateX(Math.PI/2),KM=new T.MeshBasicMaterial({color:0x1c0a3a,fog:false}),KGl=new T.MeshBasicMaterial({map:glowT,color:0xb070ff,transparent:true,blending:AB,depthWrite:false,fog:false});
+ function kunai(a){const m=noSh(new T.Mesh(KG,KM)),gl=noSh(new T.Mesh(QG,KGl));gl.scale.set(2.2,5,1);gl.rotation.x=-Math.PI/2;gl.position.z=-1;m.add(gl);m.rotation.y=a;m.position.y=-99;S.add(m);return m}
+ function kunaiEnd(m){S.remove(m)}
+ skWrap(2,'nKunai',()=>{const p=CP().position,f=fwd(),x=p.x+f.x*2,z=p.z+f.z*2;star(x,2.4,z,0xc080ff,30,.22);star(x,2.4,z,0xffffff,14,.14);seal(p.x,.2,p.z,8,0x9060ff,.7);sparks(x,2.2,z,lo()?10:22,55,10,0xc080ff,.4);gflash(p.x,p.z,16,0x9060ff,.4)});
+ // Вихрь теней: видимый смерч из двух воронок
+ const torT=(()=>{const c=cvs(128),x=c.getContext('2d');for(let i=0;i<30;i++){x.strokeStyle='rgba(255,255,255,'+(.15+rnd()*.65)+')';x.lineWidth=1+rnd()*5;const y=rnd()*128;x.beginPath();x.moveTo(-4,y);x.lineTo(132,y+(rnd()-.5)*26);x.stroke()}const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;return t})();
+ const TG1=new T.CylinderGeometry(12,2.4,14,28,1,true).translate(0,7,0),TG2=new T.CylinderGeometry(6.5,1.2,18,24,1,true).translate(0,9,0);
+ skWrap(2,'nVortex',()=>{const p=CP().position,mk=(g,c,o)=>{const m=noSh(new T.Mesh(g,new T.MeshBasicMaterial({map:torT,color:c,transparent:true,opacity:o,blending:AB,depthWrite:false,fog:false,side:2})));m.userData.o=o;S.add(m);return m},a=mk(TG1,0x7a40ff,.55),b=mk(TG2,0xd0b0ff,.7),P=new T.Vector3(),Q=new T.Vector3();let t=0,bt=0;
+  seal(p.x,.2,p.z,13,0xa040ff,2.2);gflash(p.x,p.z,26,0x7a40ff,.6);
+  fx.push(dt=>{t+=dt;const k=Math.min(1,t/.25),f=Math.min(1,Math.max(0,(2.2-t)/.3)),w=1+.06*Math.sin(t*14);for(const m of[a,b]){m.position.set(p.x,0,p.z);m.scale.set(k*w,.3+.7*k,k*w);m.material.opacity=m.userData.o*f}a.rotation.y+=dt*9;b.rotation.y-=dt*14;
+   bt+=dt;if(bt>.12&&t<2){bt=0;const an=rnd()*PI2;P.set(p.x,12+rnd()*5,p.z);Q.set(p.x+Math.cos(an)*11,.4,p.z+Math.sin(an)*11);BLT(P,Q,0xc8a0ff,.1,1.4);sparks(Q.x,.6,Q.z,3,18,14,0xa070ff,.3)}return t<2.2},()=>{for(const m of[a,b]){S.remove(m);m.material.dispose()}})});
+ // Рывок-молния: молнии по всему пути, вспышки на старте и в конце
+ skWrap(2,'nDash',()=>{const p=CP().position,f=fwd(),A=new T.Vector3(p.x,2.4,p.z),B=new T.Vector3(p.x+f.x*30,2.4,p.z+f.z*30);star(A.x,2.4,A.z,0xffe060,30,.25);gflash(A.x,A.z,14,0xffe060,.4);let t=0,n=0,e=0;
+  fx.push(dt=>{t+=dt;while(n<6&&t>n*.045){BLT(A,B,n&1?0xffffff:0xffe060,.14,2.2+n*.5);n++}if(!e&&t>=.22){e=1;star(B.x,2.4,B.z,0xffffff,40,.25);star(B.x,2.4,B.z,0xffe060,60,.4);sparks(B.x,2,B.z,lo()?14:30,60,22,0xffe060,.5);gflash(B.x,B.z,22,0xffe060,.6);seal(B.x,.2,B.z,9,0xffd060,.8)}
+   if(t<.25){const k=t/.25;sparks(A.x+(B.x-A.x)*k,1.5,A.z+(B.z-A.z)*k,2,14,10,0xffe060,.3)}return t<.5})});
+ // Удар Пустоты: тёмная сфера падает сверху, при ударе раскрывается пустота и по земле бьют молнии
+ skWrap(2,'nSlam',()=>{const p=CP().position,f=fwd(),tx=p.x+f.x*22,tz=p.z+f.z*22,ob=gorb(2,4.5),P=new T.Vector3(),Q=new T.Vector3();let t=0,d=0,sh=null,gl=null;seal(tx,.2,tz,16,0xa040ff,1.5);
+  fx.push(dt=>{t+=dt;if(t<1){const k=t,y=20-16.5*k*k*k;ob.position.set(tx,y,tz);ob.userData.set(.25+.75*k,dt,tt);if(rnd()<.5){const an=rnd()*PI2;P.set(tx,y,tz);Q.set(tx+Math.cos(an)*14,.3,tz+Math.sin(an)*14);BLT(P,Q,0xc080ff,.08,1.2)}return true}
+   if(!d){d=1;ob.userData.kill();star(tx,3,tz,0xffffff,70,.3);star(tx,3,tz,0xa040ff,110,.6);sparks(tx,1.5,tz,lo()?26:55,80,34,0xc080ff,.7);gflash(tx,tz,40,0xa040ff,.9);seal(tx,.2,tz,22,0xa040ff,1.1);
+    for(let i=0;i<10;i++){const an=i/10*PI2+rnd()*.4,r=18+rnd()*8;P.set(tx,.8,tz);Q.set(tx+Math.cos(an)*r,.5,tz+Math.sin(an)*r);BLT(P,Q,i&1?0xffffff:0xc080ff,.25,1.8)}
+    sh=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0x06000c,transparent:true,opacity:.95,depthWrite:false,fog:false})));gl=noSh(new T.Mesh(GSG,new T.MeshBasicMaterial({color:0xb060ff,transparent:true,opacity:.8,blending:AB,depthWrite:false,fog:false,side:2})));sh.position.set(tx,2,tz);gl.position.set(tx,2,tz);S.add(sh,gl)}
+   const k=Math.min(1,(t-1)/.4),e=Math.sqrt(k);sh.scale.setScalar(3+12*e);sh.material.opacity=.95*(1-k*k);gl.scale.setScalar(4+15*e);gl.material.opacity=.8*(1-k);return k<1},()=>{ob.userData.kill();if(sh){S.remove(sh,gl);sh.material.dispose();gl.material.dispose()}})});
+
  // ---------- против фризов: шейдеры эффектов собираются заранее (в меню) и больше никогда не пересобираются ----------
  let pinT=0,warmG=null,warmT=4;
  const pin=()=>{try{const ps=R.info.programs;if(ps)for(const p of ps)if(!p._pin){p._pin=1;p.usedTimes++}}catch(e){}};
@@ -286,5 +313,5 @@ void main(){vec3 N=normalize(vN),V=normalize(vV),p=normalize(vP);float f=1.-abs(
   for(const q of players){if(!q||!q.g||!q.g.visible||q.dead>0||!q.g.parent)continue;const a=aura(q),c=CCOL[(q===ME?cls:q.cl)||0],p=q.g.position;a.m.visible=a.g.visible=true;
    a.m.position.set(p.x,.07,p.z);a.g.position.set(p.x,.06,p.z);a.m.rotation.z=tt*.5;a.m.material.color.setHex(c);a.g.material.color.setHex(c);a.m.material.opacity=.26+.08*Math.sin(tt*2.3)}}
  {const _t=UFX.tick;UFX.tick=dt=>{_t(dt);try{tick(dt)}catch(e){console.error('fx3 tick',e)}}}
- return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn}})();
+ return{star,tick,hand,seal,sparks,gflash,gorb,merge,doomIn,kunai,kunaiEnd}})();
 // ===== FX3-END =====

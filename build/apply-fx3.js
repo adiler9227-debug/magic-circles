@@ -74,6 +74,14 @@ R('if(qd<75&&qd>2){const sp=Math.min(qd-2,16*dt*(1+(1-qd/75)*1.5))','if(qd<100&&
 R('H.g.scale.setScalar(Math.max(.01,t<5?Math.min(t/1.2,1)*7+Math.sin(t*3)*.3:Math.max(0,7*(1-(t-5)/.5))));','{const g0=Math.min(1,Math.max(0,(t-.6)/.28));H.g.scale.setScalar(Math.max(.01,t<5?g0*(10+2.5*Math.sin(g0*Math.PI))+Math.sin(t*3)*.3:Math.max(0,10*(1-(t-5)/.4))))}','doom размер');
 R('else if(!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xc01020,90,1.4);shock(T.x,T.z,0x500008,70,1.8);curtain(T.x,T.z,30,60,0x8a0010,2);scorch(T.x,T.z,38,38,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,48)}','else if(t>=5.4&&!x){x=1;AT.on=0;sBoom(2);sThunder();shake(3);flash(1);lite(T.x,T.y,T.z,0xff2030,4);shock(T.x,T.z,0xff3040,125,1.1);shock(T.x,T.z,0xc01020,110,1.5);shock(T.x,T.z,0x500008,85,1.9);curtain(T.x,T.z,36,60,0x8a0010,2);scorch(T.x,T.z,46,46,0,0xa01020,0x050002,6.5);killIn(T.x,T.z,65)}','doom волна');
 
+// --- 6и. Аметистовый клинок: урон по игрокам меньше (было 1.2 от базового, с двух ударов убивал) ---
+R('stn(i,.4)}});plT(q=>hit(q.x,q.z),1.2,p.x,p.z);','stn(i,.4)}});plT(q=>hit(q.x,q.z),.5,p.x,p.z);','клинок урон');
+// --- 6к. Теневые кунаи: 13 клинков вместо 9, разброс шире, у каждого своя модель ---
+R('for(let k=-4;k<=4;k++){const a=y0+k*.115,dx=Math.sin(a),dz=Math.cos(a);let x=p.x+dx*2,z=p.z+dz*2,tr=0;','for(let k=-6;k<=6;k++){const a=y0+k*.13,dx=Math.sin(a),dz=Math.cos(a),km=FX3.kunai(a);let x=p.x+dx*2,z=p.z+dz*2,tr=0;','кунаи разброс');
+R('fx.push(dt=>{const st=85*dt,n=Math.ceil(st/2),h=st/n;','fx.push(dt=>{km.position.set(x,2.2,z);km.rotation.z+=dt*20;const st=85*dt,n=Math.ceil(st/2),h=st/n;','кунаи модель');
+R('if(hit){if(tr<=55){killIn(x,z,2.4);','if(hit){if(tr<=55){FX3.star(x,2.2,z,0xc080ff,11,.2);killIn(x,z,2.4);','кунаи вспышка');
+R('0xc080ff,1.3,-10)}return false}}return true})}}','0xc080ff,1.3,-10)}return false}}return true},()=>FX3.kunaiEnd(km))}}','кунаи конец');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
