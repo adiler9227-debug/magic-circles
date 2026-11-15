@@ -1492,7 +1492,7 @@ function ks(n,v){if(typeof SND==='undefined'||!AC||!SND[n])return false;try{cons
 const ST={red:[4.45,4.3],blue:[6.2,6.0]};
 function spin(dir){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),red=dir>0,[CH,D]=ST[red?'red':'blue'],c1=red?0xff2a2a:0x2a8cff,c2=red?0xff0040:0x1050ff,c3=red?0xffc0a0:0x7fd0ff;
  pose(o,'reach',CH+D+.15);if(!ks(red?'red':'blue',1.6*v)){tone(red?300:180,red?900:700,CH,red?'sawtooth':'sine',.1*v,0,9);nz2(CH+D,.2*v,300,2500,'bandpass')}
- const ob=orb(c1,c2,2.2);let t=0,tk=0,X=0,Z=0,a0=0,st=0;const Y=5;
+ const ob=FX3.gorb(red?1:0,2.2);let t=0,tk=0,X=0,Z=0,a0=0,st=0;const Y=5;
  fx.push(dt=>{t+=dt;const T=TM(),p=g.position;
   if(t<CH){const k=t/CH,h=hand(o),F=fwd();face(o,F);pose(o,'reach',.3);X=h.x+F.x*4.5;Z=h.z+F.z*4.5;ob.position.set(X,h.y+1.8,Z);ob.userData.set(.25+.8*k+.06*Math.sin(T*30),dt,T);
    swirl(ob.position,c1,c3,1.5+2.5*k,4+(k*8|0),dir);lite(X,Y,Z,c1,.8+1.6*k);
@@ -1503,10 +1503,10 @@ function spin(dir){const o=CS(),g=CP(),dm_=DMG(),v=kv(o),red=dir>0,[CH,D]=ST[red
   X=p.x+Math.sin(ang)*r;Z=p.z+Math.cos(ang)*r;ob.position.set(X,Y,Z);ob.userData.set(1.05+.1*Math.sin(T*25),dt,T);o.g.rotation.y=ang;
   swirl(ob.position,c1,c3,3.6,14,dir);lite(X,Y,Z,c1,3);BLK_CAM.sh=Math.max(BLK_CAM.sh,.25);if(rnd()<.4)cubes(X,.3,Z,1,[0x5a9a3a,0x6b4423],5,.3,.5);
   if(q<D){tk+=dt;const tick=tk>.22;if(tick)tk=0;
-   forE((i,x,z)=>{if(red){const dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz)||1;if(d<24&&!isB(i)){stn(i,.2);const sp=(34*(1-d/24)+8)*dt;ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}
+   forE((i,x,z)=>{if(red){const dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz)||1;if(d<24&&!isB(i)){stn(i,.2);const sp=(34*(1-d/24)+8)*dt;ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}if(tick&&d<24)eH(i,dm_*.4);
      const od=Math.hypot(x-X,z-Z);if(od<6){if(!eUp(i,X,Z,1.7))eH(i,dm_)}else if(tick&&od<10)eH(i,dm_*.6)}
     else{const dx=X-x,dz=Z-z,d=Math.hypot(dx,dz)||1;if(d<34&&!isB(i)){stn(i,.2);const sp=Math.min(d,(12+24*(1-d/34))*dt);ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}if(tick&&d<8)eH(i,dm_*.7)}});
-   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8,.5,X,Z,.4);return true}
+   if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8||(red&&Math.hypot(q.x-p.x,q.z-p.z)<24),.5,red?p.x:X,red?p.z:Z,.4);return true}
   flash(.4*v);sBoomB(1*v);BLK_CAM.sh=1.2;shock(X,Z,c1,red?40:26,.6);shock(X,Z,0xffffff,18,.4);lite(X,4,Z,c1,4);pillar(X,Z,c1,red?40:30,5,.6);
   forE((i,x,z)=>{const d=Math.hypot(x-X,z-Z);if(d<(red?24:16)){if(isB(i))eH(i,dm_*3);else if(red&&!eUp(i,X,Z,2.1))eH(i,dm_*2.5);else if(!red)eH(i,dm_*2.4)}});plT(q=>Math.hypot(q.x-X,q.z-Z)<20,2,X,Z,.01);
   for(let n=0;n<140;n++){const a=rnd()*PI*2,e=rnd()-.4;emit(X,Y,Z,Math.cos(a)*45*(red?1:-.2),e*30,Math.sin(a)*45*(red?1:-.2),.8,n&1?c1:0xffffff,2.6,0)}

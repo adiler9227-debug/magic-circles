@@ -62,6 +62,11 @@ R('const PT={red:.5,blue:7.9,','const PT={red:7.9,blue:.5,','порядок сф
 R('const b=orb(0x2a8cff,0x1050ff,3),r=orb(0xff2a2a,0xff0040,3);','const b=FX3.gorb(0,3),r=FX3.gorb(1,3);','сферы');
 R('P=orb(0xa040ff,0x7a20ff,9.2);','P=FX3.gorb(2,9.2);FX3.merge(X,Y,Z);','слияние');
 
+// --- 6ж. «Синий» и «Красный» (отдельные умения): новые сферы; красный бьёт всех, кого отталкивает ---
+R('const ob=orb(c1,c2,2.2);let t=0,tk=0,X=0,Z=0,a0=0,st=0;','const ob=FX3.gorb(red?1:0,2.2);let t=0,tk=0,X=0,Z=0,a0=0,st=0;','сферы синий/красный');
+R('ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}\n     const od=','ex[i]+=dx/d*sp;ez[i]+=dz/d*sp}if(tick&&d<24)eH(i,dm_*.4);\n     const od=','красный урон');
+R('if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8,.5,X,Z,.4);return true}','if(tick)plT(q=>Math.hypot(q.x-X,q.z-Z)<8||(red&&Math.hypot(q.x-p.x,q.z-p.z)<24),.5,red?p.x:X,red?p.z:Z,.4);return true}','красный урон игрокам');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
