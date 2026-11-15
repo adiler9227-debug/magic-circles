@@ -507,7 +507,7 @@ const NSY={tx:new Float32Array(NE),tz:new Float32Array(NE),kt:new Float32Array(N
 function kill(i,rem){if(i===NE-1){const o=CTX&&CTX.o||ME,tn=performance.now()/1000;if(tn-(o.bkT||0)>=.15){o.bkT=tn;bossHit((CTX?CTX.dmg:20)*2.5)}return}if(im[i]&&!dm)return;if(!al[i])return;al[i]=0;sPop();if(!rem&&(!CTX||CTX.o===ME))kills++;if(!rem&&isCli()){netSend({t:'K',i});NSY.kt[i]=performance.now()/1000}D.position.set(0,-9,0);D.scale.setScalar(0);D.updateMatrix();EM.setMatrixAt(i,D.matrix);
  for(let k=0;k<10;k++)emit(ex[i],1,ez[i],(rnd()-.5)*14,rnd()*12,(rnd()-.5)*14,.9,dm?0x999999:0xff6040,.8,-18)}
 function scatterW(x,z,r,R,pw){for(let i=0;i<NE;i++)if(al[i]&&!fl_[i]){const dx=ex[i]-x,dz=ez[i]-z,d=Math.hypot(dx,dz);if(d<r){const sp=(16+26*(1-Math.min(d/R,1)))*pw;evx[i]=(d>.3?dx/d:Math.cos(i))*sp;evz[i]=(d>.3?dz/d:Math.sin(i))*sp;evy[i]=16+rnd()*12;eh[i]=.05;fl_[i]=1}}
- if(!CTX)return;CTX.kb=CTX.kb||new Set();for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.kb.has(q))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z,d=Math.hypot(dx,dz);if(d<r+1.5){CTX.kb.add(q);const sp=(30+30*(1-Math.min(d/R,1)))*pw;q.kx=(d>.3?dx/d:1)*sp;q.kz=(d>.3?dz/d:0)*sp;if(!CTX.hit.has(q)){CTX.hit.add(q);pHurt(q,CTX.dmg,CTX.o,x,z)}}}}
+ if(!CTX)return;CTX.kb=CTX.kb||new Set();for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.kb.has(q))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z,d=Math.hypot(dx,dz);if(d<r+1.5){CTX.kb.add(q);const sp=(30+30*(1-Math.min(d/R,1)))*pw;q.kx=(d>.3?dx/d:1)*sp;q.kz=(d>.3?dz/d:0)*sp;if(!CTX.hit.has(q)){CTX.hit.add(q);pHurt(q,CTX.g99?Math.max(0,q.hp-q.maxhp*.01):CTX.dmg,CTX.o,x,z)}}}}
 function killIn(x,z,r){const r2=r*r,rb=(r+4)*(r+4);for(let i=0;i<NE;i++)if(al[i]){const dx=ex[i]-x,dz=ez[i]-z;if(dx*dx+dz*dz<(i===NE-1?rb:r2))kill(i)}hitPl(x,z,r)}
 // particles
 const N=isTouch?20000:40000,pp=new Float32Array(N*3),pc=new Float32Array(N*3),ps=new Float32Array(N),pv=new Float32Array(N*3),pl=new Float32Array(N),pm=new Float32Array(N).fill(1),pb=new Float32Array(N*3),pg=new Float32Array(N),pz=new Float32Array(N);let pi=0;
@@ -677,7 +677,7 @@ function goal(){const O=CP().position,F0=fwd();pL=1;play('goal',2.08);
   if(t<TE){for(let k=0;k<5;k++)emit(O.x+(rnd()-.5)*2,rnd()*3,O.z+(rnd()-.5)*2,(rnd()-.5)*2,4+rnd()*4,(rnd()-.5)*2,1,GC[k%3],1.3,0);
    if(t>TE-3){shake((t-(TE-3))*.12);if(rnd()<dt*8)rim(10,0xff5060,14)}
    if(t>T0&&Math.floor(u/STP)>last){last=Math.floor(u/STP);shake(.2+t/30);lite(O.x,14,O.z,0x7cff9a,1.2);shock(O.x,O.z,0x7cff9a,10+last*2,.8);rim(40,0xbff7ff,10)}}
-  else{if(!w){w=1;X=O.x;Z=O.z;dm=true;if(CTX)CTX.dmg=GOAL_DMG+DMG_PER_LVL*(CTX.o.lvl||0);tsc=.08;shake(3.4);flash(1);tint=6;lite(X,15,Z,0xffffff,4);rim(320,0xbff7ff,26);
+  else{if(!w){w=1;X=O.x;Z=O.z;dm=true;if(CTX){CTX.dmg=GOAL_DMG+DMG_PER_LVL*(CTX.o.lvl||0);CTX.g99=1}tsc=.08;shake(3.4);flash(1);tint=6;lite(X,15,Z,0xffffff,4);rim(320,0xbff7ff,26);
     shock(X,Z,0xffffff,150,1.4);shock(X,Z,0x7cff9a,120,1.8);shock(X,Z,0x555555,90,2.2);scorch(X,Z,130,130,0,0,0x808080,8,true)}
    if(t>TE+1)pL=0;
    const e=t-TE,Rr=Math.min(e/1.3,1)*150;
@@ -826,7 +826,7 @@ const hb=new THREE.Group(),hbg=new THREE.Mesh(new THREE.PlaneGeometry(6,.5),new 
 hbg.renderOrder=10;hbf.renderOrder=11;hbf.position.z=.01;hb.add(hbg,hbf);S.add(hb);const HB=[{hb,hbf}];[1,2].forEach(()=>{const h2=hb.clone(true);S.add(h2);HB.push({hb:h2,hbf:h2.children[1]})});
 const GOAL_DMG=60,BASE_DMG=20,DMG_PER_LVL=10,HP_PER_LVL=20,CD_PER_LVL=.01,STEAL_HEAL=.4,RESPAWN=5,SHIELD_T=2.5;
 const dmgOf=q=>BASE_DMG+DMG_PER_LVL*q.lvl,cdk=q=>Math.max(.3,1-CD_PER_LVL*q.lvl);
-function hitPl(x,z,r){if(!CTX)return;for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.hit.has(q))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z;if(dx*dx+dz*dz<(r+1.5)*(r+1.5)){CTX.hit.add(q);pHurt(q,CTX.dmg,CTX.o,x,z)}}}
+function hitPl(x,z,r){if(!CTX)return;for(const q of players){if(q===CTX.o||COOPM()||q.dead>0||CTX.hit.has(q))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z;if(dx*dx+dz*dz<(r+1.5)*(r+1.5)){CTX.hit.add(q);pHurt(q,CTX.g99?Math.max(0,q.hp-q.maxhp*.01):CTX.dmg,CTX.o,x,z)}}}
 function pHurt(q,d,src,x,z){if(q.wcI&&q.wcI>performance.now()/1000)return;if(q.bd_&&q.bd_.e>performance.now()/1000&&Math.hypot(q.g.position.x-q.bd_.x,q.g.position.z-q.bd_.z)<q.bd_.r)return;if(q.dead>0||q.dash||domeCov(q))return;if(q===ME&&(mode==='test'||mode==='menu'))return;if(q!==ME&&net.on)return;if(COOPM()&&src&&players.includes(src))return;
  if(q.wall>0&&x!==undefined&&wallBlocks(q,x,z)){wallHit(q,x,z);return}
  q.hp-=d;if(d>=1){const p=q.g.position;for(let k=0;k<14;k++)emit(p.x,3,p.z,(rnd()-.5)*10,rnd()*8,(rnd()-.5)*10,.6,0xff3040,1.6,-10);if(q===ME)shake(.6)}
@@ -1700,7 +1700,7 @@ function nSlam(){const o=CS(),f=fwd(),p=CP().position,tx=p.x+f.x*22,tz=p.z+f.z*2
   if(t>=1&&!done){done=1;pillar(tx,tz,0xffffff,60,6,.5);pillar(tx,tz,0xa050ff,50,14,.9);shock(tx,tz,0xffffff,20,.6);shock(tx,tz,0xa050ff,28,.9);lite(tx,10,tz,0xa070ff,3);
    for(let j=0;j<80;j++)emit(tx,.5,tz,(rnd()-.5)*40,rnd()*18,(rnd()-.5)*40,.9,j&1?0xffffff:0xa050ff,2,-12);killIn(tx,tz,16);bhit(tx,tz,16,CTX.dmg*3)}
   return t<1.3})}
-CLS.push({sp:[rasen,rifle('mosin'),rifle('kar'),rifle('m14'),nKunai,nVortex,nDash,nSlam,()=>{},wallSh,domeSh],cdm:[15,1.4,1,.16,3,8,6,12,0,6,5.2],dur:[5,1.4,1,.16,1.2,2.2,.4,1.6,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<8?['🌀','🔫','🎯','⚡','🥷','🌪️','🌩️','🌑'][i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<8?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<8?['1 · Расенсюрикен','2 · Мосин 91/30','3 · Kar98k','4 · M14','5 · Теневые кунаи','6 · Вихрь теней','7 · Рывок-молния','8 · Удар Пустоты'][i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<8?['🌀 Расенсюрикен','🔫 Мосин 91/30','🎯 Kar98k','⚡ M14','🥷 Теневые кунаи','🌪️ Вихрь теней','🌩️ Рывок-молния','🌑 Удар Пустоты'][i]:i>8?x:'')});
+CLS.push({sp:[rasen,rifle('mosin'),rifle('kar'),rifle('m14'),nKunai,nVortex,nDash,nSlam,()=>{},wallSh,domeSh],cdm:[19,1.4,1,.16,3,8,6,12,0,6,5.2],dur:[5,1.4,1,.16,1.2,2.2,.4,1.6,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<8?['🌀','🔫','🎯','⚡','🥷','🌪️','🌩️','🌑'][i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<8?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<8?['1 · Расенсюрикен','2 · Мосин 91/30','3 · Kar98k','4 · M14','5 · Теневые кунаи','6 · Вихрь теней','7 · Рывок-молния','8 · Удар Пустоты'][i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<8?['🌀 Расенсюрикен','🔫 Мосин 91/30','🎯 Kar98k','⚡ M14','🥷 Теневые кунаи','🌪️ Вихрь теней','🌩️ Рывок-молния','🌑 Удар Пустоты'][i]:i>8?x:'')});
 CLS.push({sp:[...KOR.sp,()=>{},()=>{},wallSh,domeSh],cdm:[...KOR.cdm,0,0,6,5.2],dur:[...KOR.dur,0,0,3.4,2.5],ic:CLS[0].ic.map((x,i)=>i<7?KOR.IC[i]:i>8?x:''),nu:CLS[0].nu.map((x,i)=>i<7?String(i+1):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+KOR.NM[i]:i>8?x:''),nm:CLS[0].nm.map((x,i)=>i<7?KOR.IC[i]+' '+KOR.NM[i]:i>8?x:'')});
 CLS.push({sp:[...BLK.sp,BLK.ult,()=>{},()=>{},BLK.wall,BLK.domeB],cdm:[...BLK.cdm,180,0,0,7,12],dur:[...BLK.dur,12,0,0,7,5],ic:CLS[0].ic.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]:i>8?['🧱','🛡️'][i-9]:''),nu:CLS[0].nu.map((x,i)=>i<7?(i==6?'7/R':String(i+1)):i>8?x:''),tx:CLS[0].tx.map((x,i)=>i<7?(i+1)+' · '+[...BLK.NM,'АТОМНЫЙ'][i]:i==9?'Q · Блок-стена':i==10?'E · Блок-купол':''),nm:CLS[0].nm.map((x,i)=>i<7?[...BLK.IC,'☢️'][i]+' '+[...BLK.NM,'АТОМНЫЙ (ульта)'][i]:i==9?'🧱 Блок-стена':i==10?'🛡️ Блок-купол':'')});
 // ===== НОВЫЕ ТЕХНИКИ: Ниндзя (Расенган ×3, Чидори) и Мечник (Ладонь Будды, Огненный Лотос, Кольца Души, Пожиратель Звёзд) =====
@@ -1928,7 +1928,7 @@ return{rasengan,odama,planet,chidori,palm,lotus,rings,devour,worldCut,shinra}})(
 {const G=CLS[0];G.sp=G.sp.slice();G.sp[6]=NSK.worldCut;G.ic=G.ic.slice();G.tx=G.tx.slice();G.nm=G.nm.slice();G.cdm=G.cdm.slice();G.dur=G.dur.slice();G.ic[6]='🈹';G.tx[6]='7 · Мировой разрез';G.nm[6]='🈹 Мировой разрез';G.cdm[6]=180;G.dur[6]=6.3;
  spells=G.sp;cdm=G.cdm;TDUR=G.dur;btn.forEach((b,i)=>{b.querySelector('.ic').textContent=G.ic[i];b.querySelector('.tx').textContent=G.tx[i]})}
 {const N=CLS[2];N.sp=N.sp.slice();N.sp[8]=NSK.shinra;N.ic[8]='🌀';N.nu[8]='9';N.tx[8]='9 · Шинра Тенсей';N.nm[8]='🌀 Шинра Тенсей';N.cdm[8]=180;N.dur[8]=12;N.sp[1]=NSK.rasengan;N.sp[2]=NSK.odama;N.sp[3]=NSK.planet;N.sp[6]=NSK.chidori;
- [[1,'🔵','Расенган',3,1.2],[2,'🌕','Одама Расенган',9,2.2],[3,'🪐','Планетарный Расенган',16,4.3],[6,'⚡','Чидори',6,.8]].forEach(([i,ic,nm,cd,du])=>{N.ic[i]=ic;N.tx[i]=(i+1)+' · '+nm;N.nm[i]=ic+' '+nm;N.cdm[i]=cd;N.dur[i]=du});
+ [[1,'🔵','Расенган',5,1.2],[2,'🌕','Одама Расенган',11,2.2],[3,'🪐','Планетарный Расенган',18,4.3],[6,'⚡','Чидори',6,.8]].forEach(([i,ic,nm,cd,du])=>{N.ic[i]=ic;N.tx[i]=(i+1)+' · '+nm;N.nm[i]=ic+' '+nm;N.cdm[i]=cd;N.dur[i]=du});
  const W=CLS[1];W.sp=W.sp.slice();W.ic=W.ic.slice();W.tx=W.tx.slice();W.nm=W.nm.slice();W.cdm=W.cdm.slice();W.dur=W.dur.slice();
  [[4,NSK.palm,'🙏','Ладонь Будды',30,3],[5,NSK.lotus,'🪷','Огненный Лотос',40,6],[6,NSK.rings,'💫','Кольца Души',22,4.2],[7,NSK.devour,'🌌','Удар Млечного Пути',180,7.8]].forEach(([i,f,ic,nm,cd,du])=>{W.sp[i]=f;W.ic[i]=ic;W.tx[i]=(i+1)+' · '+nm;W.nm[i]=ic+' '+nm;W.cdm[i]=cd;W.dur[i]=du})}
 // ===== КАРАБАС · 8 · Суйтон: Дайкодан но дзюцу — гигантская водяная акула (по размеру карты) =====
@@ -2069,7 +2069,7 @@ document.getElementById('kb').onclick=korSwap;
 const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
-function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?(i===0?.45:1):o.cl===3?.5:o.cl===0?1.4:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
+function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?(i===0?.45:i<4?.85:1):o.cl===3?.5:o.cl===0?1.75:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
 const ULTS=[6,7,8,7,6],PK_NEED=3;let ulkS='';
 function pvpOn(){return mode==='duel'&&!!PVP}
 function ulkMsg(t){toastE.textContent=t;toastE.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toastE.style.opacity=0,1800)}
