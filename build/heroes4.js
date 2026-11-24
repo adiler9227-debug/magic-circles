@@ -123,3 +123,20 @@ function makeSaint(){const T=THREE,{std,glow,clothTex,cloth,flame,ringTex,ad,Me}
   halo.rotation.z=t*.12;fl.forEach((m,i)=>{const s=.8+.35*Math.sin(t*5+i*1.7);m.scale.set(s,s,1)});hg.material.opacity=.08+.05*Math.sin(t*2.5);
   lot.position.set(-.98,2.42+Math.sin(t*2.2)*.06,1.05);lot.rotation.y=t*1.6;lg.scale.setScalar(1+.15*Math.sin(t*6));bl.material.opacity=.55+.25*Math.sin(t*4);
   em+=dt*(mv?14:5);while(em>1){em--;const p=g.getWorldPosition(_hzv);emit(p.x+(rnd()-.5)*2,p.y+rnd()*3.5,p.z+(rnd()-.5)*2,(rnd()-.5)*1.5,2+rnd()*3,(rnd()-.5)*1.5,.9,rnd()<.5?0xff7030:0xffc060,.9,1)}}}}
+
+// ---------- 3D-модель мага из Hi3D (mage.glb: скелет + анимации cast_hand / cast_staff) поверх процедурной ----------
+// Файл качается один раз; каждый экземпляр мага разбирает свою копию (у каждого свой скелет). Пока грузится или если не загрузился — виден старый маг.
+const MAGE_GLB=(()=>{let buf=null,q=[];try{fetch('mage.glb').then(r=>r.ok?r.arrayBuffer():null).then(b=>{buf=b;q.splice(0).forEach(f=>{try{b&&f(b)}catch(e){}})}).catch(()=>{})}catch(e){}
+ return f=>{if(buf)f(buf);else q.push(f)}})();
+const _makeArchmageProc=makeArchmage;
+makeArchmage=function(){const o=_makeArchmageProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let M=null,mixer=null,acts={},lt=0,alt=0;
+ MAGE_GLB(buf=>{if(!T.GLTFLoader)return;new T.GLTFLoader().parse(buf.slice(0),'',gl=>{M=gl.scene;
+  const b=new T.Box3().setFromObject(M),s=6.2/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
+  M.traverse(m=>{if(!m.isMesh)return;m.frustumCulled=false;m.castShadow=true;const mt=m.material;if(mt){if(mt.map)mt.map.encoding=T.LinearEncoding;mt.metalness=Math.min(mt.metalness,.35);mt.needsUpdate=true}});
+  W.add(M);g.add(W);B.visible=false;
+  mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})},()=>{})});
+ const c0=o.cast,u0=o.u;
+ o.cast=function(v){c0.apply(o,arguments);if(!mixer)return;const a=acts[(alt++%2)?'cast_staff':'cast_hand'];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.1);a.reset().fadeIn(.06).play()};
+ o.u=function(t,mv){u0.apply(o,arguments);if(!M)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;mixer.update(dt);
+  W.position.y=.3+Math.sin(t*1.8)*.14;W.rotation.x=mv?.12:0};   // левитация и наклон при движении — кодом
+ return o};
