@@ -119,6 +119,7 @@ R('const ULTS=[6,7,8,7,6]','const ULTS=[6,7,8,7,6,6]','предок: ульта'
 R("'🧱 Блочный воин'],box=","'🧱 Блочный воин','👊 Предок'],box=",'предок: лобби');
 R("if(e.code==='KeyR'&&cls===4)cast(6);","if(e.code==='KeyR'&&(cls===4||cls===5))cast(6);",'предок: R');
 
+R("if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)","if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0);if(cls===5&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)",'предок: ЛКМ');
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
