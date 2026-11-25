@@ -255,8 +255,8 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
  const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);FX3.star(X,4,Z,0xff1030,R*.6,.6);
   hakiWave(X,Z,R*.7,18,1.1);later(.25,()=>hakiWave(X,Z,R,26,1.4));for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
   areaK(c,X,Z,R,.3,{st:1});push(c,X,Z,R,1.4,55)};
- later(TF+.3,()=>{S.add(ring);const unB=blacken(o);
-  UFX.run(DS-TF-.3,(t,dt)=>{const T=TF+.3+t,X=g.position.x,Z=g.position.z,f=Math.min(1,t*3,(DS-T)*2);
+ later(TF+2,()=>{S.add(ring);const unB=blacken(o);
+  UFX.run(DS-TF-2,(t,dt)=>{const T=TF+2+t,X=g.position.x,Z=g.position.z,f=Math.min(1,t*3,(DS-T)*2);
    ring.position.set(X,.8,Z);ring.scale.setScalar(HR*(.92+Math.sin(t*9)*.04));ring.material.opacity=.45*f;
    if((lt+=dt)>.07){lt=0;for(let i=0;i<K(6);i++){const a=rnd()*PI*2,r=25+rnd()*(HR-20),s=new V3(X+Math.cos(a)*1.5,2.5+rnd()*3,Z+Math.sin(a)*1.5);
      hbolt(s,new V3(X+Math.cos(a)*r,.5,Z+Math.sin(a)*r),i&1?0xff1030:0xff3a50,.7,.16,{gr:1,n:12,br:3,j:3.5});                                      // по земле от героя
