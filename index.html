@@ -1916,8 +1916,8 @@ function mkSnd(url,vol){let raw=null,buf=null,busy=0;
  try{fetch(url).then(r=>r.ok?r.arrayBuffer():null).then(b=>{raw=b}).catch(()=>{})}catch(e){}
  const dec=()=>{if(buf||busy||!raw||!AC)return;busy=1;try{AC.decodeAudioData(raw.slice(0),b=>{buf=b},()=>{busy=0})}catch(e){busy=0}};
  const iv=setInterval(()=>{dec();if(buf)clearInterval(iv)},1000);
- return v=>{dec();if(!AC||!buf)return;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=buf;g.gain.value=vol*v;s.connect(g);g.connect(AC.mg);s.start()}catch(e){}}}
-const ULT_SND=mkSnd('jajanken.mp3',1.3);
+ return v=>{dec();if(!AC||!buf)return;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=buf;g.gain.value=vol*v;s.connect(g);g.connect(AC.destination);s.start()}catch(e){}}}
+const ULT_SND=mkSnd('jajanken.mp3',1);
 function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
  o.wcI=Math.max(o.wcI||0,now()+TC+2.2);if(mine)ME.hold=Math.max(ME.hold||0,TC+.3);
  if(vis(o))ULT_SND(Math.max(.25,v));
@@ -1941,12 +1941,12 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
   ()=>{core.kill();ci.kill();sh.kill();
    // ---- УДАР-ХЛОПОК ----
    if(vis(o))caption('ROCK!!','#ff6a10');if(mine)filt('saturate(1.6) contrast(1.25) brightness(1.15)');
-   flash(.85);sBoomB(1.5*v);later(.09,()=>sBoomB(1.2*v));FX3.star(x,BC.y,z,0xffffff,120,.6);FX3.star(x,BC.y,z,0xffa030,200,1);FX3.gflash(x,z,160,0xff7a10,1.4);
+   flash(.85);FX3.star(x,BC.y,z,0xffffff,120,.6);FX3.star(x,BC.y,z,0xffa030,200,1);FX3.gflash(x,z,160,0xff7a10,1.4);
    UFX.release(lv,140,70,5);UFX.burst(x,z,100,140,80,1.2,5.5);UFX.dustRing(x,z,44,150,16,0x8a6a48,4.5,2);
    const big=UFX.cracks(x,z,RZ,0xffa030,{dark:0x140a04});
    // две волны: первая поменьше (до 150), вторая больше (почти на всю карту)
    const wave=(R,d,col)=>later(d,()=>{const s0=UFX.shell(x,3,z,0xffffff),s1=UFX.shell(x,0,z,col),dome=new T3.Mesh(HEMI,gm(col,.85)),ring=new T3.Mesh(RNG,gm(0xffd080,.95)),wv=new T3.Mesh(RNG,gm(0xffffff,.9));
-     dome.position.set(x,0,z);ring.rotation.x=wv.rotation.x=-PI/2;ring.position.set(x,1,z);wv.position.set(x,1.4,z);flash(.6);sBoomB(1.3*v);FX3.star(x,8,z,0xffffff,R*.6,.5);
+     dome.position.set(x,0,z);ring.rotation.x=wv.rotation.x=-PI/2;ring.position.set(x,1,z);wv.position.set(x,1.4,z);flash(.6);FX3.star(x,8,z,0xffffff,R*.6,.5);
      fxo(dome,2.6,k=>{const s=1+R*(1-Math.pow(1-k,2.2));dome.scale.set(s,s*.42,s);dome.material.opacity=.8*(1-k)});
      fxo(ring,2.6,k=>{ring.scale.setScalar(1+(R+5)*(1-Math.pow(1-k,2)));ring.material.opacity=.95*(1-k)});
      fxo(wv,.8,k=>{wv.scale.setScalar(2+R*k);wv.material.opacity=.9*(1-k)});
@@ -1968,7 +1968,7 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
 // 8 · Молот Глейпнир — под дорожку gleipnir.mp3 (12.6 с). Молот медленно падает, удар усиленной Королевской волей,
 //     потом, пока играет дорожка, из героя во все стороны бьют чёрно-красные молнии воли: всем в зоне −5% здоровья каждую секунду.
 //     На пиках музыки (6.4 и 10.7 с) — мощные выбросы воли.
-const GLP_SND=mkSnd('gleipnir.mp3',1.2);
+const GLP_SND=mkSnd('gleipnir.mp3',1);
 function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T3.Group(),TF=.95,DS=12.6,HR=85;heavy(CS());
  if(vis(o))GLP_SND(Math.max(.25,v));
  const hm=sm(0x1c0608,1,0x2a0004),hd=new T3.Mesh(shg(new T3.BoxGeometry(10,7,14)),hm),hl=new T3.Mesh(shg(new T3.CylinderGeometry(.9,1.1,18,10)),sm(0x141010,1));hl.position.y=12.5;
@@ -1982,7 +1982,7 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
      hbolt(new V3(x+Math.cos(a)*4,.6,z+Math.sin(a)*4),new V3(x+Math.cos(a)*r,.5,z+Math.sin(a)*r),0xff1030,.95,.2,{gr:1,n:14,br:5,j:4});
      if(i<5)hbolt(new V3(x+(rnd()-.5)*10,8+rnd()*8,z+(rnd()-.5)*10),new V3(x+Math.cos(a)*r*.7,6+rnd()*30,z+Math.sin(a)*r*.7),0xff2040,.75,.18,{n:11,br:3,j:4});
      if(i<2){const sx=x+Math.cos(a)*r*.8,sz=z+Math.sin(a)*r*.8;hbolt(new V3(sx+(rnd()-.5)*20,70,sz+(rnd()-.5)*20),new V3(sx,.5,sz),0xff3050,1.2,.22,{n:14,br:4,j:5});FX3.star(sx,1,sz,0xff1030,10,.2)}}}}});
- function impact(){FX3.star(x,4,z,0xffffff,40,.45);FX3.star(x,4,z,0xff1030,80,.9);FX3.gflash(x,z,80,0xff0020,1.1);flash(.5);sBoomB(1.4*v);later(.08,()=>sBoomB(1.1*v));lite(x,6,z,0xff0022,4);
+ function impact(){FX3.star(x,4,z,0xffffff,40,.45);FX3.star(x,4,z,0xff1030,80,.9);FX3.gflash(x,z,80,0xff0020,1.1);flash(.5);lite(x,6,z,0xff0022,4);
   const cl=new T3.Mesh(RNG,gm(0xffffff,.95));cl.position.set(x,6,z);cl.lookAt(x+F.x,6,z+F.z);fxo(cl,.35,k=>{cl.scale.setScalar(3+k*40);cl.material.opacity=.95*(1-k)});
   orb(x,0,z,0xff1030,4,80,1.1);orb(x,0,z,0x400008,2,56,1.4,.05);orb(x,3,z,0xffffff,2,30,.35);
   const w=new T3.Mesh(RNG,gm(0xff1030,.95)),w2=new T3.Mesh(RNG,dk(0x0a0000,.8));w.rotation.x=w2.rotation.x=-PI/2;w.position.set(x,1.2,z);w2.position.set(x,1.1,z);
@@ -1994,7 +1994,7 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
  // ---- Королевская воля из героя, пока играет музыка ----
  const g=o.g,ring=new T3.Mesh(RNG,gm(0xff1030,.5)),aura=new T3.Mesh(SPH,gm(0xff0022,.18));ring.rotation.x=-PI/2;
  let lt=0,tk=0,b1=0,b2=0;
- const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);sBoomB(1*v);FX3.star(X,4,Z,0xff1030,R*.6,.6);
+ const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);FX3.star(X,4,Z,0xff1030,R*.6,.6);
   const w=new T3.Mesh(RNG,gm(0xff1030,.95));w.rotation.x=-PI/2;w.position.set(X,1,Z);fxo(w,1,k=>{w.scale.setScalar(2+k*R);w.material.opacity=.95*(1-k)});
   orb(X,0,Z,0xff1030,3,R*.7,1);for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
   areaK(c,X,Z,R,.6,{st:1});push(c,X,Z,R,1.4,55)};
