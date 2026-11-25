@@ -433,6 +433,24 @@ function makeAncestor(){const T=THREE,g=new T.Group(),W=new T.Group(),B=new T.Gr
   u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;const y=.3+Math.sin(t*1.8)*.14,rx=mv?.12:0;
    if(mixer)mixer.update(dt);W.position.y=y;W.rotation.x=rx;B.position.y=y;B.rotation.x=rx}};
 }
+
+// ---------- Мечник: модель из swordsman.glb (скелет 20 костей + меч на кисти, клипы cast_slash / cast_thrust) ----------
+const SW_GLB=(()=>{let tpl=null,q=[];const T=THREE;
+ const ready=gl=>{gl.scene.traverse(m=>{if(!m.isMesh)return;m.frustumCulled=false;m.castShadow=true;const mt=m.material;if(mt){if(mt.map)mt.map.encoding=T.LinearEncoding;mt.metalness=Math.min(mt.metalness,.45);mt.needsUpdate=true}});
+  tpl=gl;q.splice(0).forEach(f=>{try{f(gl)}catch(e){}});setTimeout(()=>{try{R.compile(S,C)}catch(e){}},0)};
+ try{fetch("swordsman.glb").then(r=>r.ok?r.arrayBuffer():null).then(b=>{if(b&&T.GLTFLoader)new T.GLTFLoader().parse(b,"",ready,()=>{})}).catch(()=>{})}catch(e){}
+ return f=>{if(tpl)f(tpl);else q.push(f)}})();
+const _makeSaintProc=makeSaint;
+makeSaint=function(){const o=_makeSaintProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let M=null,mixer=null,acts={},lt=0,alt=0;
+ SW_GLB(gl=>{M=cloneSkinned(gl.scene);const b=new T.Box3().setFromObject(M),s=6.4/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
+  W.add(M);g.add(W);B.visible=false;mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})});
+ const play=n=>{const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()};
+ const c0=o.cast,h0=o.hit,u0=o.u;
+ o.cast=function(){c0.apply(o,arguments);if(mixer)play((alt++%2)?"cast_thrust":"cast_slash")};
+ o.hit=function(){h0.apply(o,arguments);if(mixer)play("cast_slash")};
+ o.play=play;
+ o.u=function(t,mv){u0.apply(o,arguments);if(!M)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;mixer.update(dt);W.position.y=.3+Math.sin(t*1.6)*.12;W.rotation.x=mv?.12:0};
+ return o};
 const _hzv=new THREE.Vector3();
 
 // ---------- Легендарный шиноби (тёмный боевой костюм, лакированная броня, маска, шарф, катана) ----------
