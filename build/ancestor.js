@@ -214,8 +214,11 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
     ()=>{big.kill();cr.kill();caption('');if(mine){filt('');camReset()}})})}
 
 // 8 · Молот Глейпнир — под дорожку gleipnir.mp3 (12.6 с). Молот медленно падает, удар усиленной Королевской волей,
-//     потом, пока играет дорожка, из героя во все стороны бьют чёрно-красные молнии воли: всем в зоне −5% здоровья каждую секунду.
+//     потом, пока играет дорожка, из героя во все стороны бьют чёрно-красные молнии воли: всем в зоне −1.5% здоровья каждую секунду, герой полностью чёрный.
 //     На пиках музыки (6.4 и 10.7 с) — мощные выбросы воли.
+function blacken(o){const m=MO(o),saved=[];if(!m||!m.g)return()=>{};
+ m.g.traverse(q=>{if(q.isMesh&&q.material){saved.push([q,q.material]);q.material=new T3.MeshBasicMaterial({color:0x060002,skinning:!!q.isSkinnedMesh})}});
+ return()=>saved.forEach(([q,mt])=>{if(q.material!==mt){q.material.dispose();q.material=mt}})}
 const GLP_SND=mkSnd('gleipnir.mp3',1);
 function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T3.Group(),TF=.95,DS=12.6,HR=85;heavy(CS());
  if(vis(o))GLP_SND(Math.max(.25,v));
@@ -245,8 +248,8 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
  const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);FX3.star(X,4,Z,0xff1030,R*.6,.6);
   const w=new T3.Mesh(RNG,gm(0xff1030,.95));w.rotation.x=-PI/2;w.position.set(X,1,Z);fxo(w,1,k=>{w.scale.setScalar(2+k*R);w.material.opacity=.95*(1-k)});
   orb(X,0,Z,0xff1030,3,R*.7,1);for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
-  areaK(c,X,Z,R,.6,{st:1});push(c,X,Z,R,1.4,55)};
- later(TF+.3,()=>{S.add(ring);S.add(aura);
+  areaK(c,X,Z,R,.3,{st:1});push(c,X,Z,R,1.4,55)};
+ later(TF+.3,()=>{S.add(ring);S.add(aura);const unB=blacken(o);
   UFX.run(DS-TF-.3,(t,dt)=>{const T=TF+.3+t,X=g.position.x,Z=g.position.z,f=Math.min(1,t*3,(DS-T)*2);
    ring.position.set(X,.8,Z);ring.scale.setScalar(HR*(.92+Math.sin(t*9)*.04));ring.material.opacity=.45*f;aura.position.set(X,3.5,Z);aura.scale.setScalar(5+Math.sin(t*14)*.4);aura.material.opacity=.2*f;
    if((lt+=dt)>.07){lt=0;for(let i=0;i<K(6);i++){const a=rnd()*PI*2,r=25+rnd()*(HR-20),s=new V3(X+Math.cos(a)*1.5,2.5+rnd()*3,Z+Math.sin(a)*1.5);
@@ -254,10 +257,10 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
      if(i<2)hbolt(s,new V3(X+Math.cos(a)*r*.5,6+rnd()*24,Z+Math.sin(a)*r*.5),0xff2040,.55,.14,{n:10,br:2,j:3})}                                 // в воздух
     for(let n=0;n<6;n++){const a=rnd()*PI*2,sp=30+rnd()*40;emit(X,3+rnd()*2,Z,Math.cos(a)*sp,(rnd()-.3)*12,Math.sin(a)*sp,.6,n&1?0xff1030:0x200004,1.8,0)}}   // искры воли
    lite(X,5,Z,0xff0022,2+Math.sin(t*20));
-   if((tk+=dt)>=1){tk=0;if(c){const sv=dm;dm=true;try{forE((i,qx,qz)=>{if(Math.hypot(qx-X,qz-Z)<HR)eH(i,isB(i)?c.dmg*.5:Math.max(1.5,hpv[i]*.05+c.dmg*.15))})}finally{dm=sv}   // −5% каждую секунду
-     for(const q of players){if(q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const d=Math.hypot(q.g.position.x-X,q.g.position.z-Z);if(d<HR)pHurt(q,q.maxhp*.05,c.o,X,Z)}}}
+   if((tk+=dt)>=1){tk=0;if(c){const sv=dm;dm=true;try{forE((i,qx,qz)=>{if(Math.hypot(qx-X,qz-Z)<HR)eH(i,isB(i)?c.dmg*.15:Math.max(.5,hpv[i]*.015+c.dmg*.05))})}finally{dm=sv}   // −5% каждую секунду
+     for(const q of players){if(q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const d=Math.hypot(q.g.position.x-X,q.g.position.z-Z);if(d<HR)pHurt(q,q.maxhp*.015,c.o,X,Z)}}}
    if(!b1&&T>=6.4){b1=1;burstW(70,20)}if(!b2&&T>=10.7){b2=1;burstW(95,28)}},
-   ()=>{S.remove(ring);S.remove(aura);ring.material.dispose();aura.material.dispose()})})}
+   ()=>{unB();S.remove(ring);S.remove(aura);ring.material.dispose();aura.material.dispose()})})}
 
 // 9 · Рывок: вспышка и рывок на 24 вперёд, задевает по пути
 function soru(){const{c,p,F}=cx(),g=CS().g,b=new V3(CL(p.x+F.x*24),0,CL(p.z+F.z*24));
