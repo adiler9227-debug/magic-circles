@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#fff;font:10px sans-serif}#w{position:relative;width:1000px;height:1000px}canvas{position:absolute;left:0;top:0}</style></head><body><div id="w"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+// ортогональный вид модели в её собственных единицах: окно x/z -0.55..0.55, y -0.55..0.55
+const q=new URLSearchParams(location.search),side=q.get('side')==='1',f=q.get('f')||'mage_game.glb',bones=q.get('bones');
+const CX=+(q.get("cx")||0),CY=+(q.get("cy")||0),HS=+(q.get("hs")||.55);const T=THREE,W=1000,R=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.setSize(W,W);R.setClearColor(0xffffff);document.getElementById('w').appendChild(R.domElement);
+const S=new T.Scene(),C=new T.OrthographicCamera(CX-HS,CX+HS,CY+HS,CY-HS,-10,10);
+if(side){C.position.set(5,0,0);C.lookAt(0,0,0)}else{C.position.set(0,0,5);C.lookAt(0,0,0)}
+S.add(new T.HemisphereLight(0xffffff,0x888888,1.4));
+const ov=document.createElement('canvas');ov.width=ov.height=W;document.getElementById('w').appendChild(ov);const x=ov.getContext('2d');
+const toPx=(h,v)=>[(h-CX+HS)/(2*HS)*W,(CY+HS-v)/(2*HS)*W];
+function grid(){x.strokeStyle='rgba(255,0,0,.35)';x.fillStyle='red';for(let v=-.6;v<=.601;v+=.025){const [a,b]=toPx(v,v);x.lineWidth=Math.abs(Math.round(v*40))%4==0?1.4:.4;x.beginPath();x.moveTo(a,0);x.lineTo(a,W);x.stroke();x.beginPath();x.moveTo(0,b);x.lineTo(W,b);x.stroke();x.font="bold 16px sans-serif";x.fillText(v.toFixed(3),a+2,16);x.fillText(v.toFixed(3),2,b-2)}
+ x.fillText(side?'SIDE: horizontal = Z (left=-Z back? right=+Z)':'FRONT: horizontal = X',300,20)}
+new T.GLTFLoader().load(f,g=>{S.add(g.scene);R.render(S,C);grid();
+ if(bones){const B=JSON.parse(decodeURIComponent(bones));x.strokeStyle='#00a';x.fillStyle='#00f';x.lineWidth=3;
+  for(const k in B){const b=B[k],[a,c]=toPx(side?b.p[2]:b.p[0],b.p[1]);x.beginPath();x.arc(a,c,5,0,7);x.fill();x.fillText(k,a+6,c);if(b.parent&&B[b.parent]){const pp=B[b.parent].p,[a2,c2]=toPx(side?pp[2]:pp[0],pp[1]);x.beginPath();x.moveTo(a,c);x.lineTo(a2,c2);x.stroke()}}}
+ window.done=true});
+</script></body></html>

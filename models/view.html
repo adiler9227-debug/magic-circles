@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#222}</style></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+const T=THREE,R=new T.WebGLRenderer({antialias:true});R.setSize(innerWidth,innerHeight);R.outputEncoding=T.sRGBEncoding;document.body.appendChild(R.domElement);
+const S=new T.Scene(),C=new T.PerspectiveCamera(35,innerWidth/innerHeight,.1,100);
+S.add(new T.HemisphereLight(0xffffff,0x444466,1.2));const d=new T.DirectionalLight(0xffffff,1.2);d.position.set(2,4,3);S.add(d);
+const f=new URLSearchParams(location.search).get('f')||'mage_game.glb',side=+(new URLSearchParams(location.search).get('a')||0);
+new T.GLTFLoader().load(f,g=>{const m=g.scene,b=new T.Box3().setFromObject(m),s=6/b.getSize(new T.Vector3()).y;m.scale.setScalar(s);m.position.y=-b.min.y*s;m.rotation.y=side;S.add(m);
+C.position.set(0,3.2,11);C.lookAt(0,3,0);window.done=true;window.info=[b.min.toArray(),b.max.toArray(),s]});
+(function L(){requestAnimationFrame(L);R.render(S,C)})();
+</script></body></html>

@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#2a2a33;color:#fff;font:14px sans-serif}#ui{position:fixed;left:8px;top:8px}button{font-size:16px;margin:2px}</style></head><body>
+<div id="ui"><button onclick="play('cast_punch')">cast_punch</button><button onclick="play('cast_heavy')">cast_heavy</button> <span id="s"></span></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+// ?clip=cast_punch&t=0.3 — застыть на кадре; ?yaw=0.6 — поворот камеры; ?dbg=1 — раскраска весов
+const q=new URLSearchParams(location.search),T=THREE,R=new T.WebGLRenderer({antialias:true});R.setPixelRatio(1);R.setSize(1000,1000);R.outputEncoding=T.sRGBEncoding;document.body.appendChild(R.domElement);
+const S=new T.Scene(),C=new T.PerspectiveCamera(32,1,.1,100);S.add(new T.HemisphereLight(0xffffff,0x555566,1.3));const dl=new T.DirectionalLight(0xffffff,1);dl.position.set(2,4,5);S.add(dl);
+const yaw=+(q.get('yaw')||0);C.position.set(Math.sin(yaw)*13,3.3,Math.cos(yaw)*13);C.lookAt(0,3,0);
+let mixer,acts={},model,lev=0,clk=new T.Clock();
+window.play=n=>{for(const k in acts)acts[k].stop();const a=acts[n];a.reset();a.setLoop(T.LoopOnce);a.clampWhenFinished=false;a.play();document.getElementById('s').textContent=n};
+new T.GLTFLoader().load(q.get('f')||'mage_rigged.glb',gl=>{model=gl.scene;const b=new T.Box3().setFromObject(model),s=6/b.getSize(new T.Vector3()).y;model.scale.setScalar(s);model.position.y=-b.min.y*s;S.add(model);
+ if(q.get('dbg')){const cols=[0x888888,0x444444,0x0088ff,0x00ffff,0xffff00,0xff8800,0x660000,0xff0000,0xff66aa,0xff00ff,0x006600,0x00ff00,0x88ff88,0x8800ff,0x996633,0xcc9966,0xffeecc,0x336699,0x6699cc,0xccddff];
+  model.traverse(o=>{if(o.isSkinnedMesh){const g=o.geometry,J=g.attributes.skinIndex,W=g.attributes.skinWeight,c=new Float32Array(J.count*3),cc=new T.Color();for(let i=0;i<J.count;i++){let r=0,gg=0,bb=0;const gj=['getX','getY','getZ','getW'];for(let k=0;k<4;k++){cc.setHex(cols[J[gj[k]](i)]);const w=W[gj[k]](i);r+=cc.r*w;gg+=cc.g*w;bb+=cc.b*w}c.set([r,gg,bb],i*3)}g.setAttribute('color',new T.BufferAttribute(c,3));o.material=new T.MeshBasicMaterial({vertexColors:true,skinning:true})}})}
+ mixer=new T.AnimationMixer(model);gl.animations.forEach(a=>acts[a.name]=mixer.clipAction(a));
+ const clip=q.get('clip');if(clip){const a=acts[clip];a.play();a.paused=true;a.time=+(q.get('t')||0);mixer.update(0)}
+ window.done=Object.keys(acts)});
+(function L(){requestAnimationFrame(L);const dt=clk.getDelta();if(mixer&&!q.get('clip'))mixer.update(dt);R.render(S,C)})();
+</script></body></html>

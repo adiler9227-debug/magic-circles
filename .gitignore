@@ -1,0 +1,6 @@
+# модели: в git только исходники для пересборки (упрощённые .glb, скрипты, картинки); оригиналы Hi3D и промежуточные файлы — нет
+models/*_hi3d.glb
+models/_*
+models/*_rigged*.glb
+node_modules/
+index-clean.html
