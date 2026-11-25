@@ -198,7 +198,7 @@ void main(){float a=atan(vD.z,vD.x),y=vD.y/9.;float h1=.05+.26*pow(rg(a,3.,1.7),
  try{const real=BLK.CAM,dummy=Object.assign({},real),other=()=>!!(CTX&&CTX.o&&CTX.o!==ME);
   Object.defineProperty(BLK,'CAM',{configurable:true,get(){return other()?dummy:real},set(v){}});
   const _f=BLK.setFrz;BLK.setFrz=function(s){if(other())return;return _f.apply(this,arguments)}}catch(e){console.error('fx3 ultcam',e)}
- const UD=[6.5,8,19.8,16,13.5];
+ const UD=[6.5,8,19.8,16,13.5,4.2];
 
  // ---------- модуль VFX (разломы пространства): один на всю игру, без тряски камеры, текстуры разломов готовятся заранее ----------
  let VX=null,lastRift=-9;try{if(typeof VFX!=='undefined'){VX=new VFX(S,C);VX.shake=()=>{};try{if(window.VFX_SKINS)VX.loadSkins(window.VFX_SKINS)}catch(e){}
