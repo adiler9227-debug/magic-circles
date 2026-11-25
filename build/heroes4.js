@@ -136,12 +136,13 @@ function cloneSkinned(src){const c=src.clone(true),bones={};c.traverse(o=>{if(o.
  c.traverse(o=>{if(o.isSkinnedMesh){const sk=o.skeleton;o.bind(new THREE.Skeleton(sk.bones.map(b=>bones[b.name]),sk.boneInverses),o.bindMatrix)}});return c}
 // ---------- общее для героев из .glb: вписать модель, анимации (удары — разово, ходьба — по кругу, пока идёт) ----------
 function fitGlb(gl,h){const M=cloneSkinned(gl.scene),b=new THREE.Box3().setFromObject(M),s=h/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;return M}
-function glbRig(gl,M){const T=THREE,mixer=new T.AnimationMixer(M),acts={};let walk=null,ww=0;
- gl.animations.forEach(a=>{const ac=mixer.clipAction(a);if(a.name==='walk'){ac.setLoop(T.LoopRepeat,Infinity);ac.timeScale=1.25;walk=ac}else{ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac}});
+function glbRig(gl,M){const T=THREE,mixer=new T.AnimationMixer(M),acts={};let walk=null,idle=null,ww=0,iw=0;
+ gl.animations.forEach(a=>{const ac=mixer.clipAction(a);if(a.name==='walk'){ac.setLoop(T.LoopRepeat,Infinity);ac.timeScale=1.25;walk=ac}else if(a.name==='idle'){ac.setLoop(T.LoopRepeat,Infinity);idle=ac}else{ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac}});
  const busy=()=>{for(const k in acts)if(acts[k].isRunning())return true;return false};
  return{acts,play(n){const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()},
   update(dt,mv){if(walk){const tw=mv?(busy()?.3:1):0;ww+=(tw-ww)*Math.min(1,dt*8);
     if(ww>.02){if(!walk.isRunning())walk.play();walk.setEffectiveWeight(ww)}else if(walk.isRunning())walk.stop()}
+   if(idle){const ti=(!mv&&!busy())?1:0;iw+=(ti-iw)*Math.min(1,dt*(ti?4:14));if(iw>.02){if(!idle.isRunning())idle.play();idle.setEffectiveWeight(iw)}else if(idle.isRunning())idle.stop()}
    mixer.update(dt);return walk&&ww>.02?(walk.time%walk.getClip().duration)/walk.getClip().duration:-1}}}
 const stepW=(W,ph)=>{W.position.y=ph>=0?Math.abs(Math.sin(ph*Math.PI*2))*.12:0;W.rotation.x=0};   // идёт по земле, лёгкое покачивание на шаге
 const _makeArchmageProc=makeArchmage;

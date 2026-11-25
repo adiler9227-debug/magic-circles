@@ -399,12 +399,13 @@ function cloneSkinned(src){const c=src.clone(true),bones={};c.traverse(o=>{if(o.
  c.traverse(o=>{if(o.isSkinnedMesh){const sk=o.skeleton;o.bind(new THREE.Skeleton(sk.bones.map(b=>bones[b.name]),sk.boneInverses),o.bindMatrix)}});return c}
 // ---------- общее для героев из .glb: вписать модель, анимации (удары — разово, ходьба — по кругу, пока идёт) ----------
 function fitGlb(gl,h){const M=cloneSkinned(gl.scene),b=new THREE.Box3().setFromObject(M),s=h/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;return M}
-function glbRig(gl,M){const T=THREE,mixer=new T.AnimationMixer(M),acts={};let walk=null,ww=0;
- gl.animations.forEach(a=>{const ac=mixer.clipAction(a);if(a.name==='walk'){ac.setLoop(T.LoopRepeat,Infinity);ac.timeScale=1.25;walk=ac}else{ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac}});
+function glbRig(gl,M){const T=THREE,mixer=new T.AnimationMixer(M),acts={};let walk=null,idle=null,ww=0,iw=0;
+ gl.animations.forEach(a=>{const ac=mixer.clipAction(a);if(a.name==='walk'){ac.setLoop(T.LoopRepeat,Infinity);ac.timeScale=1.25;walk=ac}else if(a.name==='idle'){ac.setLoop(T.LoopRepeat,Infinity);idle=ac}else{ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac}});
  const busy=()=>{for(const k in acts)if(acts[k].isRunning())return true;return false};
  return{acts,play(n){const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()},
   update(dt,mv){if(walk){const tw=mv?(busy()?.3:1):0;ww+=(tw-ww)*Math.min(1,dt*8);
     if(ww>.02){if(!walk.isRunning())walk.play();walk.setEffectiveWeight(ww)}else if(walk.isRunning())walk.stop()}
+   if(idle){const ti=(!mv&&!busy())?1:0;iw+=(ti-iw)*Math.min(1,dt*(ti?4:14));if(iw>.02){if(!idle.isRunning())idle.play();idle.setEffectiveWeight(iw)}else if(idle.isRunning())idle.stop()}
    mixer.update(dt);return walk&&ww>.02?(walk.time%walk.getClip().duration)/walk.getClip().duration:-1}}}
 const stepW=(W,ph)=>{W.position.y=ph>=0?Math.abs(Math.sin(ph*Math.PI*2))*.12:0;W.rotation.x=0};   // идёт по земле, лёгкое покачивание на шаге
 const _makeArchmageProc=makeArchmage;
@@ -1825,7 +1826,7 @@ function hbolt(a,b,glow,w,life,o){o=o||{};const pts=zig(a,b,o.n||10,o.j||Math.ma
  fxo(G,life,k=>{const f=(1-k)*(rnd()<.25?.4:1);cm.opacity=.95*f;gl.opacity=.75*f})}
 // ---------- надпись техники (как «I AM ATOMIC») ----------
 let capE=null,capT=0;
-function caption(txt,col){if(!capE){capE=document.createElement('div');capE.style.cssText='position:fixed;left:0;right:0;top:30%;text-align:center;font:900 clamp(30px,8vw,86px) system-ui,sans-serif;letter-spacing:.1em;pointer-events:none;z-index:30;opacity:0;transition:opacity .25s,transform 1.4s ease-out;transform:scale(.8)';document.body.appendChild(capE)}
+function caption(txt,col){if(!capE){capE=document.createElement('div');capE.style.cssText='position:fixed;left:0;right:0;top:30%;text-align:center;font:900 clamp(34px,9vw,96px) "Yu Gothic","Hiragino Sans","Noto Sans JP","Noto Sans CJK JP","Meiryo",system-ui,sans-serif;letter-spacing:.1em;pointer-events:none;z-index:30;opacity:0;transition:opacity .25s,transform 1.4s ease-out;transform:scale(.8)';document.body.appendChild(capE)}
  clearTimeout(capT);if(!txt){capE.style.opacity=0;capE.style.transform='scale(.8)';return}
  capE.textContent=txt;capE.style.color='#fff6d8';capE.style.textShadow='0 0 16px '+col+',0 0 40px '+col+',0 0 90px '+col;capE.style.opacity=1;capE.style.transform='scale(1.08)'}
 const vis=o=>o===ME||kv(o)>.45;
@@ -1838,6 +1839,8 @@ function areaK(c,x,z,r,mul,op){withDM(()=>area(c,x,z,r,mul,op))}
 function push(c,x,z,r,up,sp){forE((i,qx,qz)=>{if(!isB(i)&&Math.hypot(qx-x,qz-z)<r)eUp(i,x,z,up)});
  for(const q of players){if(!c||q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z,d=Math.hypot(dx,dz);if(d<r){const s=sp*(1-d/r*.5);q.kx=(d>.3?dx/d:1)*s;q.kz=(d>.3?dz/d:0)*s}}}
 function swirl(x,z,r,w,ring,dt){forE((i,qx,qz)=>{if(isB(i))return;const dx=qx-x,dz=qz-z,d=Math.hypot(dx,dz);if(d>r||d<.1)return;const a=Math.atan2(dz,dx)+w*dt,nd=d+(ring-d)*Math.min(1,dt*2.5);ex[i]=x+Math.cos(a)*nd;ez[i]=z+Math.sin(a)*nd})}
+// при дальней камере туман реже, а прорисовка дальше — иначе всё тонет в синем; fogK(1) — вернуть как было
+let FOG0=null;const fogK=r=>{try{if(FOG0==null)FOG0={d:S.fog.density,f:C.far};const k=r?1:Math.max(1,BLK.CAM.z/2.5);S.fog.density=FOG0.d/k;const nf=FOG0.f*Math.max(1,k*.9);if(Math.abs(C.far-nf)>1){C.far=nf;C.updateProjectionMatrix()}}catch(e){}};
 const camTo=(zz,yy,dt)=>{try{const C=BLK.CAM,k=Math.min(1,dt*2.5);C.z+=(zz-C.z)*k;C.y+=(yy-C.y)*k}catch(e){}},camReset=()=>{try{BLK.CAM.z=1;BLK.CAM.y=0}catch(e){}};
 // волна-полумесяц, летит вперёд (как удар мечника / аметистовый клинок)
 function crescent(p,F,y,len,sc,col,life,d){const G=new T3.Group(),m=new T3.Mesh(CRES,gm(col,.95));m.rotation.set(-PI/2,0,-2.749);G.add(m);G.rotation.y=Math.atan2(F.x,F.z);
@@ -1941,7 +1944,7 @@ const ULT_SND=mkSnd('jajanken.mp3',1);
 function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
  o.wcI=Math.max(o.wcI||0,now()+TC+2.2);if(mine)ME.hold=Math.max(ME.hold||0,TC+.3);
  if(vis(o))ULT_SND(Math.max(.25,v));
- if(vis(o))caption('JAJANKEN…','#ffb020');if(mine)filt('saturate(1.35) contrast(1.12)');
+ if(vis(o))caption('ジャジャン拳…','#ffb020');if(mine)filt('saturate(1.35) contrast(1.12)');
  const ci=UFX.circles(x,z,40,[0xffcc33,0xff7a10,0xfff0b0],3),cr=UFX.cracks(x,z,60,0xffa020,{dark:0x1a0e04}),sh=UFX.shafts(x,z,14,200,0xffc030,10),lv=UFX.levitate(x,z,60,40,80,4,40,1.2);
  FX3.seal(x,.15,z,30,0xffd060,TC,0,3);
  const ease=q=>1-Math.pow(1-q,1.8),BR=q=>.8+35.2*ease(q),BY=q=>4.5+BR(q)*.45;     // радиус шара до 36, центр поднимается вместе с ним
@@ -1949,7 +1952,7 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
  fxo(ball,TC,(k,dt,t)=>{const r=BR(k)*(1+Math.sin(t*(8+k*30))*.02*k);BC.y=BY(k);ball.position.copy(BC);bg.position.copy(BC);ball.scale.setScalar(r);bg.scale.setScalar(r*1.07);bg.material.opacity=.35+.3*k+Math.sin(t*25)*.08});fxo(bg,TC,()=>{});
  let bt=0,em=0,hv=0;
  UFX.run(TC,(t,dt)=>{const q=t/TC,br=BR(q);ci.set(Math.min(1,q*2),t,4*q);cr.set(q,.4+q,1);sh.set(Math.min(.8,q*1.2));sh.spin(dt);
-  if(mine)camTo(5,32,dt*2.2);                                      // медленное отъезжание камеры
+  if(mine){camTo(20,128,dt*2.2);fogK()}                                      // медленное отъезжание камеры
   core.m.position.copy(BC);core.set(br*1.16,.8+q*1.4);core.m.material.uniforms.col.value.setHex(q<.35?0xffcc33:0xff6010);
   if((em+=dt)>.03){em=0;
    for(let n=0;n<3;n++){const a=rnd()*PI*2,sp=30+q*50;UFX.puff(x+Math.cos(a)*(br*.8),2+rnd()*4,z+Math.sin(a)*(br*.8),Math.cos(a)*sp,2+rnd()*4,Math.sin(a)*sp,4+q*5,.6,n?0xffd040:0xfff0a0,4,1,1.6)}  // аура бьёт в стороны
@@ -1960,7 +1963,7 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
   if(!hv&&t>TC-.55){hv=1;heavy(o)}},
   ()=>{core.kill();ci.kill();sh.kill();
    // ---- УДАР-ХЛОПОК ----
-   if(vis(o))caption('ROCK!!','#ff6a10');if(mine)filt('saturate(1.6) contrast(1.25) brightness(1.15)');
+   if(vis(o))caption('グー!!','#ff6a10');if(mine)filt('saturate(1.6) contrast(1.25) brightness(1.15)');
    flash(.85);FX3.star(x,BC.y,z,0xffffff,120,.6);FX3.star(x,BC.y,z,0xffa030,200,1);FX3.gflash(x,z,160,0xff7a10,1.4);
    UFX.release(lv,140,70,5);UFX.burst(x,z,100,140,80,1.2,5.5);UFX.dustRing(x,z,44,150,16,0x8a6a48,4.5,2);
    const big=UFX.cracks(x,z,RZ,0xffa030,{dark:0x140a04});
@@ -1976,14 +1979,14 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
    let lb=0;
    UFX.run(6,(t,dt)=>{big.set(Math.min(1,t/.6),Math.max(.25,2-t*.3),t<4.5?1:Math.max(0,1-(t-4.5)/1.5));
     lite(x,12,z,0xff6a10,4*Math.max(0,1-t/2.5));
-    if(mine){if(t<3)camTo(7.5,70,dt*3);else camTo(1,0,dt*.9)}                       // отдаление «как Шинра Тенсей»
+    if(mine){if(t<3)camTo(30,280,dt*3);else camTo(1,0,dt*.9);fogK()}                       // отдаление «как Шинра Тенсей»
     if(t<2.6&&(lb+=dt)>.05){lb=0;for(let n=0;n<K(6);n++){const a=rnd()*PI*2,r0=rnd()*Math.min(RZ,40+t*200),r1=r0+25+rnd()*50,a1=a+(rnd()-.5)*.5;   // молнии по всей области
       hbolt(new V3(x+Math.cos(a)*r0,.5,z+Math.sin(a)*r0),new V3(x+Math.cos(a1)*r1,.4,z+Math.sin(a1)*r1),n&1?0xff7a10:0xffd040,.8,.22,{gr:1,n:10,br:3,j:4})}
      if(rnd()<.6){const a=rnd()*PI*2,r=rnd()*160;hbolt(new V3(x+Math.cos(a)*r,50+rnd()*40,z+Math.sin(a)*r),new V3(x+Math.cos(a)*r+(rnd()-.5)*14,.5,z+Math.sin(a)*r+(rnd()-.5)*14),0xffa030,1,.2,{n:12,br:4,j:5})}}
     if(t<3.2&&rnd()<.85){for(let n=0;n<K(6);n++){const a=rnd()*PI*2,r=8+rnd()*Math.min(RZ,30+t*160);UFX.rock(x+Math.cos(a)*r,.5,z+Math.sin(a)*r,(rnd()-.5)*4,7+rnd()*14,(rnd()-.5)*4,.4+rnd()*.9,1.4)}       // землетрясение
      if(rnd()<.4){const a=rnd()*PI*2,r=20+rnd()*Math.min(RZ,40+t*150);UFX.puff(x+Math.cos(a)*r,1,z+Math.sin(a)*r,Math.cos(a)*12,3,Math.sin(a)*12,8,1.4,0x7a6450,8,.4,1)}}
     if(t>2.4&&t-dt<=2.4){caption('');if(mine)filt('')}},
-    ()=>{big.kill();cr.kill();caption('');if(mine){filt('');camReset()}})})}
+    ()=>{big.kill();cr.kill();caption('');if(mine){filt('');camReset();fogK(1)}})})}
 
 // 8 · Молот Глейпнир — под дорожку gleipnir.mp3 (12.6 с). Молот медленно падает, удар усиленной Королевской волей,
 //     потом, пока играет дорожка, из героя во все стороны бьют чёрно-красные молнии воли: всем в зоне −1.5% здоровья каждую секунду, герой полностью чёрный.
