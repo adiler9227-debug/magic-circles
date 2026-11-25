@@ -174,17 +174,17 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
  if(vis(o))caption('ジャジャン拳…','#ffb020');if(mine)filt('saturate(1.35) contrast(1.12)');
  const ci=UFX.circles(x,z,40,[0xffcc33,0xff7a10,0xfff0b0],3),cr=UFX.cracks(x,z,60,0xffa020,{dark:0x1a0e04}),sh=UFX.shafts(x,z,14,200,0xffc030,10),lv=UFX.levitate(x,z,60,40,80,4,40,1.2);
  FX3.seal(x,.15,z,30,0xffd060,TC,0,3);
- const ease=q=>1-Math.pow(1-q,1.8),BR=q=>.8+35.2*ease(q),BY=q=>4.5+BR(q)*.45;     // радиус шара до 36, центр поднимается вместе с ним
+ const ease=q=>1-Math.pow(1-q,1.8),BR=q=>.8+104*ease(q),BY=q=>4.5+BR(q)*.45;     // радиус шара до 36, центр поднимается вместе с ним
  const BC=new V3(x,4.5,z),core=UFX.shell(x,4.5,z,0xffcc33),ball=new T3.Mesh(SPH,dk(0x1c0700,.97)),bg=new T3.Mesh(SPH,gm(0xff7a10,.55));ball.renderOrder=3;
  fxo(ball,TC,(k,dt,t)=>{const r=BR(k)*(1+Math.sin(t*(8+k*30))*.02*k);BC.y=BY(k);ball.position.copy(BC);bg.position.copy(BC);ball.scale.setScalar(r);bg.scale.setScalar(r*1.07);bg.material.opacity=.35+.3*k+Math.sin(t*25)*.08});fxo(bg,TC,()=>{});
  let bt=0,em=0,hv=0;
  UFX.run(TC,(t,dt)=>{const q=t/TC,br=BR(q);ci.set(Math.min(1,q*2),t,4*q);cr.set(q,.4+q,1);sh.set(Math.min(.8,q*1.2));sh.spin(dt);
-  if(mine){camTo(20,128,dt*2.2);fogK()}                                      // медленное отъезжание камеры
+  if(mine){camTo(16,102,dt*2.2);fogK()}                                      // медленное отъезжание камеры
   core.m.position.copy(BC);core.set(br*1.16,.8+q*1.4);core.m.material.uniforms.col.value.setHex(q<.35?0xffcc33:0xff6010);
   if((em+=dt)>.03){em=0;
    for(let n=0;n<3;n++){const a=rnd()*PI*2,sp=30+q*50;UFX.puff(x+Math.cos(a)*(br*.8),2+rnd()*4,z+Math.sin(a)*(br*.8),Math.cos(a)*sp,2+rnd()*4,Math.sin(a)*sp,4+q*5,.6,n?0xffd040:0xfff0a0,4,1,1.6)}  // аура бьёт в стороны
    for(let n=0;n<8;n++){const a=rnd()*PI*2,e=rnd()*PI*.55,dx=Math.cos(a)*Math.sin(e),dy=Math.cos(e),dz=Math.sin(a)*Math.sin(e),sp=40+rnd()*60;emit(BC.x+dx*br,BC.y+dy*br,BC.z+dz*br,dx*sp,dy*sp*.7,dz*sp,.7,n&1?0xffe040:0xff7020,2.2+q*2,-8)}}  // искры с поверхности
-  if(q>.1&&(bt+=dt)>.05){bt=0;for(let n=0;n<K(5);n++){const a=rnd()*PI*2,e=rnd()*PI*.6,d=new V3(Math.cos(a)*Math.sin(e),Math.cos(e),Math.sin(a)*Math.sin(e)),s0=BC.clone().addScaledVector(d,br*.97),L=20+rnd()*40+q*60,e1=s0.clone().addScaledVector(d,L);e1.y=Math.max(.3,e1.y);
+  if(q>.1&&(bt+=dt)>.04){bt=0;for(let n=0;n<K(12);n++){const a=rnd()*PI*2,e=rnd()*PI*.6,d=new V3(Math.cos(a)*Math.sin(e),Math.cos(e),Math.sin(a)*Math.sin(e)),s0=BC.clone().addScaledVector(d,br*.97),L=30+rnd()*70+q*120,e1=s0.clone().addScaledVector(d,L);e1.y=Math.max(.3,e1.y);
     hbolt(s0,e1,n%3?0xff7a10:0xffd040,.35+q*.8,.14,{n:10,br:3,j:3+q*3})}}               // молнии во все стороны
   lite(BC.x,BC.y+br,BC.z,q<.5?0xffdd00:0xff6010,2+q*3);
   if(!hv&&t>TC-.55){hv=1;heavy(o)}},
@@ -206,10 +206,10 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
    let lb=0;
    UFX.run(6,(t,dt)=>{big.set(Math.min(1,t/.6),Math.max(.25,2-t*.3),t<4.5?1:Math.max(0,1-(t-4.5)/1.5));
     lite(x,12,z,0xff6a10,4*Math.max(0,1-t/2.5));
-    if(mine){if(t<3)camTo(30,280,dt*3);else camTo(1,0,dt*.9);fogK()}                       // отдаление «как Шинра Тенсей»
-    if(t<2.6&&(lb+=dt)>.05){lb=0;for(let n=0;n<K(6);n++){const a=rnd()*PI*2,r0=rnd()*Math.min(RZ,40+t*200),r1=r0+25+rnd()*50,a1=a+(rnd()-.5)*.5;   // молнии по всей области
+    if(mine){if(t<3)camTo(24,224,dt*3);else camTo(1,0,dt*.9);fogK()}                       // отдаление «как Шинра Тенсей»
+    if(t<3&&(lb+=dt)>.04){lb=0;for(let n=0;n<K(14);n++){const a=rnd()*PI*2,r0=rnd()*Math.min(RZ,40+t*200),r1=r0+25+rnd()*50,a1=a+(rnd()-.5)*.5;   // молнии по всей области
       hbolt(new V3(x+Math.cos(a)*r0,.5,z+Math.sin(a)*r0),new V3(x+Math.cos(a1)*r1,.4,z+Math.sin(a1)*r1),n&1?0xff7a10:0xffd040,.8,.22,{gr:1,n:10,br:3,j:4})}
-     if(rnd()<.6){const a=rnd()*PI*2,r=rnd()*160;hbolt(new V3(x+Math.cos(a)*r,50+rnd()*40,z+Math.sin(a)*r),new V3(x+Math.cos(a)*r+(rnd()-.5)*14,.5,z+Math.sin(a)*r+(rnd()-.5)*14),0xffa030,1,.2,{n:12,br:4,j:5})}}
+     for(let m=0;m<3;m++){const a=rnd()*PI*2,r=rnd()*240;hbolt(new V3(x+Math.cos(a)*r,50+rnd()*40,z+Math.sin(a)*r),new V3(x+Math.cos(a)*r+(rnd()-.5)*14,.5,z+Math.sin(a)*r+(rnd()-.5)*14),0xffa030,1,.2,{n:12,br:4,j:5})}}
     if(t<3.2&&rnd()<.85){for(let n=0;n<K(6);n++){const a=rnd()*PI*2,r=8+rnd()*Math.min(RZ,30+t*160);UFX.rock(x+Math.cos(a)*r,.5,z+Math.sin(a)*r,(rnd()-.5)*4,7+rnd()*14,(rnd()-.5)*4,.4+rnd()*.9,1.4)}       // землетрясение
      if(rnd()<.4){const a=rnd()*PI*2,r=20+rnd()*Math.min(RZ,40+t*150);UFX.puff(x+Math.cos(a)*r,1,z+Math.sin(a)*r,Math.cos(a)*12,3,Math.sin(a)*12,8,1.4,0x7a6450,8,.4,1)}}
     if(t>2.4&&t-dt<=2.4){caption('');if(mine)filt('')}},
@@ -221,6 +221,11 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
 function blacken(o){const m=MO(o),saved=[];if(!m||!m.g)return()=>{};
  m.g.traverse(q=>{if(q.isMesh&&q.material){saved.push([q,q.material]);q.material=new T3.MeshBasicMaterial({color:0x060002,skinning:!!q.isSkinnedMesh})}});
  return()=>saved.forEach(([q,mt])=>{if(q.material!==mt){q.material.dispose();q.material=mt}})}
+const WALL=shg(new T3.CylinderGeometry(1,1.06,1,72,1,true).translate(0,.5,0));
+function hakiWave(X,Z,R,H,life){const G=new T3.Group(),gl=new T3.Mesh(WALL,gm(0xff1030,.7)),cr=new T3.Mesh(WALL,dk(0x0a0002,.85));cr.scale.set(.97,1,.97);G.add(gl,cr);G.position.set(X,0,Z);
+ shock(X,Z,0x550010,R,life*.8);
+ fxo(G,life,k=>{const r=2+R*(1-Math.pow(1-k,2)),h=H*(1-k)*Math.min(1,k*6);G.scale.set(r,Math.max(.01,h),r);gl.material.opacity=.7*(1-k);cr.material.opacity=.85*(1-k);
+  for(let n=0;n<K(14);n++){const a=rnd()*PI*2;emit(X+Math.cos(a)*r,1+rnd()*h,Z+Math.sin(a)*r,Math.cos(a)*30,6+rnd()*14,Math.sin(a)*30,.6,n%3?0xff1030:0x1a0004,1.6,-20)}})}
 const GLP_SND=mkSnd('gleipnir.mp3',1);
 function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T3.Group(),TF=.95,DS=12.6,HR=85;heavy(CS());
  if(vis(o))GLP_SND(Math.max(.25,v));
@@ -241,19 +246,18 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
   const w=new T3.Mesh(RNG,gm(0xff1030,.95)),w2=new T3.Mesh(RNG,dk(0x0a0000,.8));w.rotation.x=w2.rotation.x=-PI/2;w.position.set(x,1.2,z);w2.position.set(x,1.1,z);
   fxo(w,1.2,k=>{w.scale.setScalar(2+k*90);w.material.opacity=.95*(1-k)});fxo(w2,1.2,k=>{w2.scale.setScalar(1.6+k*86);w2.material.opacity=.8*(1-k)});
   const cr=UFX.cracks(x,z,85,0xff1030,{dark:0x0c0204});UFX.run(3.4,t=>cr.set(Math.min(1,t*2.5),Math.max(0,1.6-t*.5),Math.max(0,1-(t-2.4))),()=>cr.kill());
-  UFX.burst(x,z,50,50,36,1,3);UFX.dustRing(x,z,34,60,8,0x3a2a2a,2.4,1.5);
+  UFX.burst(x,z,50,50,36,1,3);UFX.dustRing(x,z,34,60,8,0x3a2a2a,2.4,1.5);hakiWave(x,z,85,22,1.3);
   for(let n=0;n<K(24);n++){const a=n/24*PI*2;hbolt(new V3(x,4,z),new V3(x+Math.cos(a)*(50+rnd()*40),.5,z+Math.sin(a)*(50+rnd()*40)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
   areaK(c,x,z,32,2.5,{st:1.5});areaK(c,x,z,85,.5,{st:1});push(c,x,z,85,1.5,60)}
  // ---- Королевская воля из героя, пока играет музыка ----
- const g=o.g,ring=new T3.Mesh(RNG,gm(0xff1030,.5)),aura=new T3.Mesh(SPH,gm(0xff0022,.18));ring.rotation.x=-PI/2;
+ const g=o.g,ring=new T3.Mesh(RNG,gm(0xff1030,.5));ring.rotation.x=-PI/2;
  let lt=0,tk=0,b1=0,b2=0,wt=0,pt=0;
  const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);FX3.star(X,4,Z,0xff1030,R*.6,.6);
-  const w=new T3.Mesh(RNG,gm(0xff1030,.95));w.rotation.x=-PI/2;w.position.set(X,1,Z);fxo(w,1,k=>{w.scale.setScalar(2+k*R);w.material.opacity=.95*(1-k)});
-  orb(X,0,Z,0xff1030,3,R*.7,1);for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
+  hakiWave(X,Z,R*.7,18,1.1);later(.25,()=>hakiWave(X,Z,R,26,1.4));for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
   areaK(c,X,Z,R,.3,{st:1});push(c,X,Z,R,1.4,55)};
- later(TF+.3,()=>{S.add(ring);S.add(aura);const unB=blacken(o);
+ later(TF+.3,()=>{S.add(ring);const unB=blacken(o);
   UFX.run(DS-TF-.3,(t,dt)=>{const T=TF+.3+t,X=g.position.x,Z=g.position.z,f=Math.min(1,t*3,(DS-T)*2);
-   ring.position.set(X,.8,Z);ring.scale.setScalar(HR*(.92+Math.sin(t*9)*.04));ring.material.opacity=.45*f;aura.position.set(X,3.5,Z);aura.scale.setScalar(5+Math.sin(t*14)*.4);aura.material.opacity=.2*f;
+   ring.position.set(X,.8,Z);ring.scale.setScalar(HR*(.92+Math.sin(t*9)*.04));ring.material.opacity=.45*f;
    if((lt+=dt)>.07){lt=0;for(let i=0;i<K(6);i++){const a=rnd()*PI*2,r=25+rnd()*(HR-20),s=new V3(X+Math.cos(a)*1.5,2.5+rnd()*3,Z+Math.sin(a)*1.5);
      hbolt(s,new V3(X+Math.cos(a)*r,.5,Z+Math.sin(a)*r),i&1?0xff1030:0xff3a50,.7,.16,{gr:1,n:12,br:3,j:3.5});                                      // по земле от героя
      if(i<2)hbolt(s,new V3(X+Math.cos(a)*r*.5,6+rnd()*24,Z+Math.sin(a)*r*.5),0xff2040,.55,.14,{n:10,br:2,j:3})}                                 // в воздух
@@ -263,12 +267,12 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
    if((wt+=dt)>.03){wt=0;for(let n=0;n<K(5);n++){const a=rnd()*PI*2,r=3+rnd()*22,sp=70+rnd()*60;emit(X+Math.cos(a)*r,.5+rnd()*3,Z+Math.sin(a)*r,Math.cos(a)*sp,(rnd()-.3)*4,Math.sin(a)*sp,.4,n%3?0xffffff:0xff3050,1.1,0)}
     if(rnd()<.55){const a=rnd()*PI*2,r=6+rnd()*35;UFX.puff(X+Math.cos(a)*r,1,Z+Math.sin(a)*r,Math.cos(a)*40,2,Math.sin(a)*40,4,1.1,0x3a2a30,5,.3,.35)}}
    // давление воли: каждые 0.75 с тёмная волна и искажение воздуха, врагов слегка отжимает от героя
-   if((pt+=dt)>.75){pt=0;shock(X,Z,0x550010,HR,.7);const rg=new T3.Mesh(RNG,dk(0x120004,.55));rg.rotation.x=-PI/2;rg.position.set(X,.5,Z);fxo(rg,.7,k=>{rg.scale.setScalar(4+k*HR);rg.material.opacity=.55*(1-k)});
+   if((pt+=dt)>.75){pt=0;hakiWave(X,Z,HR,6,.8);
     forE((i,qx,qz)=>{if(isB(i))return;const dx=qx-X,dz=qz-Z,d=Math.hypot(dx,dz);if(d<HR&&d>.1){ex[i]+=dx/d*2.5;ez[i]+=dz/d*2.5}})}
    if((tk+=dt)>=1){tk=0;if(c){const sv=dm;dm=true;try{forE((i,qx,qz)=>{if(Math.hypot(qx-X,qz-Z)<HR)eH(i,isB(i)?c.dmg*.15:Math.max(.5,hpv[i]*.015+c.dmg*.05))})}finally{dm=sv}   // −5% каждую секунду
      for(const q of players){if(q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const d=Math.hypot(q.g.position.x-X,q.g.position.z-Z);if(d<HR)pHurt(q,q.maxhp*.015,c.o,X,Z)}}}
    if(!b1&&T>=6.4){b1=1;burstW(70,20)}if(!b2&&T>=10.7){b2=1;burstW(95,28)}},
-   ()=>{unB();S.remove(ring);S.remove(aura);ring.material.dispose();aura.material.dispose()})})}
+   ()=>{unB();S.remove(ring);ring.material.dispose()})})}
 
 // 9 · Рывок: вспышка и рывок на 24 вперёд, задевает по пути
 function soru(){const{c,p,F}=cx(),g=CS().g,b=new V3(CL(p.x+F.x*24),0,CL(p.z+F.z*24));
