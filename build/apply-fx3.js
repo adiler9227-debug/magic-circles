@@ -104,6 +104,21 @@ R("dm=true;if(CTX)CTX.dmg=GOAL_DMG+DMG_PER_LVL*(CTX.o.lvl||0);","dm=true;if(CTX)
 R("cdm:[15,1.4,1,.16,3,8,6,12,0,6,5.2]","cdm:[19,1.4,1,.16,3,8,6,12,0,6,5.2]",'откат расенсюрикена');
 R("'Расенган',3,1.2],[2,'🌕','Одама Расенган',9,2.2],[3,'🪐','Планетарный Расенган',16,4.3]","'Расенган',5,1.2],[2,'🌕','Одама Расенган',11,2.2],[3,'🪐','Планетарный Расенган',18,4.3]",'откат расенганов');
 
+// --- 6ш. ШЕСТОЙ ГЕРОЙ «Предок» (класс 5): модель makeAncestor (heroes4.js) + умения (ancestor.js) ---
+R('// ===== НОВЫЕ ТЕХНИКИ: Ниндзя',rd('ancestor.js')+'\n// ===== НОВЫЕ ТЕХНИКИ: Ниндзя','предок: умения');
+R('const BLKM=BLK.model();','const BLKM=BLK.model(),ANCM=makeAncestor();','предок: модель');
+R('<button id="cb" class="chip">🧱 Блочный воин</button>','<button id="cb" class="chip">🧱 Блочный воин</button><button id="ca" class="chip">👊 Предок</button>','предок: кнопка');
+R('E — блок-купол<br>Золотые','E — блок-купол<br>👊 Предок: 1–9 — удары, 7 или R — ульта «Джаджанкен» (раз в 3 мин), 6 — корни, 8 — молот, Q — стена, E — купол<br>Золотые','предок: справка');
+R("document.getElementById('cb')];","document.getElementById('cb'),document.getElementById('ca')];",'предок: cN');
+R('mage=c==4?BLKM:','mage=c==5?ANCM:c==4?BLKM:','предок: setClass');
+R("document.body.classList.toggle('cls4',c===4);","document.body.classList.toggle('cls4',c===4);document.body.classList.toggle('cls5',c===5);",'предок: cls5');
+R('D.cm=c==4?BLK.model():','D.cm=c==5?makeAncestor():c==4?BLK.model():','предок: setDUCls');
+R('cN[4].onclick=()=>setClass(4);','cN[4].onclick=()=>setClass(4);cN[5].onclick=()=>setClass(5);','предок: клик');
+R('const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff];','const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];','предок: цвет');
+R('const ULTS=[6,7,8,7,6]','const ULTS=[6,7,8,7,6,6]','предок: ульта');
+R("'🧱 Блочный воин'],box=","'🧱 Блочный воин','👊 Предок'],box=",'предок: лобби');
+R("if(e.code==='KeyR'&&cls===4)cast(6);","if(e.code==='KeyR'&&(cls===4||cls===5))cast(6);",'предок: R');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 

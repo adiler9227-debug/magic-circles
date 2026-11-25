@@ -145,3 +145,28 @@ makeArchmage=function(){const o=_makeArchmageProc(),T=THREE,g=o.g,B=g.children[0
  o.u=function(t,mv){u0.apply(o,arguments);if(!M)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;mixer.update(dt);
   W.position.y=.3+Math.sin(t*1.8)*.14;W.rotation.x=mv?.12:0};   // левитация и наклон при движении — кодом
  return o};
+
+// ---------- 6-й герой «Предок»: модель из ancestor.glb (скелет, клипы cast_punch / cast_heavy) ----------
+const ANC_GLB=(()=>{let tpl=null,q=[];const T=THREE;
+ const ready=gl=>{gl.scene.traverse(m=>{if(!m.isMesh)return;m.frustumCulled=false;m.castShadow=true;const mt=m.material;if(mt){if(mt.map)mt.map.encoding=T.LinearEncoding;mt.metalness=Math.min(mt.metalness,.3);mt.needsUpdate=true}});
+  tpl=gl;q.splice(0).forEach(f=>{try{f(gl)}catch(e){}});setTimeout(()=>{try{R.compile(S,C)}catch(e){}},0)};
+ try{fetch("ancestor.glb").then(r=>r.ok?r.arrayBuffer():null).then(b=>{if(b&&T.GLTFLoader)new T.GLTFLoader().parse(b,"",ready,()=>{})}).catch(()=>{})}catch(e){}
+ return f=>{if(tpl)f(tpl);else q.push(f)}})();
+function makeAncestor(){const T=THREE,g=new T.Group(),W=new T.Group(),B=new T.Group();g.add(B);
+ // запасной облик, пока грузится .glb
+ const lm=c=>new T.MeshLambertMaterial({color:c});
+ const body=new T.Mesh(new T.CylinderGeometry(.9,.7,2.6,10),lm(0x6a1420));body.position.y=3.6;B.add(body);
+ const legs=new T.Mesh(new T.CylinderGeometry(.75,.6,2.4,10),lm(0x1a1a1a));legs.position.y=1.2;B.add(legs);
+ const sash=new T.Mesh(new T.CylinderGeometry(.85,.85,.45,10),lm(0x1f8a4a));sash.position.y=2.45;B.add(sash);
+ const head=new T.Mesh(new T.SphereGeometry(.55,12,10),lm(0xe0b090));head.position.y=5.4;B.add(head);
+ const hair=new T.Mesh(new T.ConeGeometry(.6,.9,8),lm(0x1f8a4a));hair.position.y=6;B.add(hair);
+ let M=null,mixer=null,acts={},lt=0;
+ const play=n=>{const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()};
+ ANC_GLB(gl=>{M=cloneSkinned(gl.scene);const b=new T.Box3().setFromObject(M),s=6.2/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
+  W.add(M);g.add(W);B.visible=false;mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})});
+ return{g,
+  cast(){play('cast_punch')},
+  play,                                   // умение может само выбрать клип: MO(o).play('cast_heavy')
+  u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;const y=.3+Math.sin(t*1.8)*.14,rx=mv?.12:0;
+   if(mixer)mixer.update(dt);W.position.y=y;W.rotation.x=rx;B.position.y=y;B.rotation.x=rx}};
+}
