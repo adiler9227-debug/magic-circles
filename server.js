@@ -14,7 +14,7 @@ const server=http.createServer((q,r)=>{const f=FILES[(q.url||'/').split('?')[0]]
 ['index.html','sw.js','manifest.json'].forEach(n=>getFile(n,()=>{}));
 const wss=new WebSocketServer({server,maxPayload:65536});
 const send=(ws,o)=>{if(ws.readyState===1)ws.send(JSON.stringify(o))},mem=R=>R.p.filter(Boolean);
-const freeC=(R,c,ws)=>{c=(c|0);if(c<0||c>5)c=0;const used=new Set(mem(R).filter(w=>w!==ws).map(w=>w.cls));if(!used.has(c))return c;for(let k=0;k<6;k++)if(!used.has(k))return k;return c};
+const freeC=(R,c,ws)=>{c=(c|0);if(c<0||c>6)c=0;const used=new Set(mem(R).filter(w=>w!==ws).map(w=>w.cls));if(!used.has(c))return c;for(let k=0;k<7;k++)if(!used.has(k))return k;return c};
 const st=w=>!w.R?'lobby':w.R.started?'battle':'room';
 // список онлайн + открытые комнаты — всем в лобби
 function bcast(){

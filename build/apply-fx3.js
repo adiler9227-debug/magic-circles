@@ -132,6 +132,29 @@ R("if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)","if(cls=
  R(',W:{value:W4}});',',W:{value:W4},px:{value:new T.Vector2()}});','ультра: px');
  R('mComp.uniforms.asp.value=w/h}','mComp.uniforms.asp.value=w/h;mComp.uniforms.px.value.set(1/w,1/h)}','ультра: px размер');}
 
+// --- 6ю. СЕДЬМОЙ ГЕРОЙ «Ультимейт» (класс 6): все умения всех героев по стойкам (build/omni.js) ---
+R("// ===== НОВЫЕ ТЕХНИКИ: Ниндзя",rd('omni.js')+'\n'+"// ===== НОВЫЕ ТЕХНИКИ: Ниндзя","ультимейт: модуль");
+R("const BLKM=BLK.model(),ANCM=makeAncestor();","const BLKM=BLK.model(),ANCM=makeAncestor();let OMM=null;","ультимейт: модель");
+R("<button id=\"ca\" class=\"chip\">👊 Предок</button>","<button id=\"ca\" class=\"chip\">👊 Предок</button><button id=\"cu\" class=\"chip\">🌈 Ультимейт</button>","ультимейт: кнопка");
+R("<button id=\"kb\" title=\"Скин Коробаса (T)\">🎨</button>","<button id=\"kb\" title=\"Скин Коробаса (T)\">🎨</button><button id=\"ub\" title=\"Стойка Ультимейта (T)\">🔄</button>","ультимейт: кнопка стойки");
+R("#tb #kb{display:none}body.cls3 #tb #kb{display:flex}","#tb #kb{display:none}body.cls3 #tb #kb{display:flex}#tb #ub{display:none}body.cls6 #tb #ub{display:flex}","ультимейт: css");
+R("document.getElementById('ca')];","document.getElementById('ca'),document.getElementById('cu')];","ультимейт: cN");
+R("mage=c==5?ANCM:","mage=c==6?(OMM||(OMM=OMNI.model())):c==5?ANCM:","ультимейт: setClass");
+R("cN.forEach((e,i)=>e.classList.toggle('sel',i===c))}","cN.forEach((e,i)=>e.classList.toggle('sel',i===c));OMNI.onClass(c)}","ультимейт: onClass");
+R("D.cm=c==5?makeAncestor():","D.cm=c==6?OMNI.model():c==5?makeAncestor():","ультимейт: setDUCls");
+R("cN[5].onclick=()=>setClass(5);","cN[5].onclick=()=>setClass(5);cN[6].onclick=()=>setClass(6);","ультимейт: клик");
+R("const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];","const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84,0xff8aff];","ультимейт: цвет");
+R("const ULTS=[6,7,8,7,6,6]","const ULTS=[6,7,8,7,6,6,-1]","ультимейт: ульта");
+R("'👊 Предок'],box=","'👊 Предок','🌈 Ультимейт'],box=","ультимейт: лобби");
+R("if(e.code==='KeyT'&&cls===3)korSwap();","if(e.code==='KeyT'&&cls===3)korSwap();if(e.code==='KeyT'&&cls===6)OMNI.next();","ультимейт: T");
+R("o.cl===0?1.75:1","o.cl===0?1.75:o.cl===6?.45:1","ультимейт: урон");
+R("netSend({t:'c',c:cls,k:korSk,i,","netSend({t:'c',c:cls,k:cls===6?OMNI.st():korSk,i,","ультимейт: сеть каст");
+R("c:cls,k:korSk,ds:ME.dash?1:0})}if(isHost()","c:cls,k:cls===6?OMNI.st():korSk,ds:ME.dash?1:0})}if(isHost()","ультимейт: сеть состояние");
+R("else if(m.t==='c'){if(m.c!==D.cl||(m.c===3&&(m.k?1:0)!==D.ks))setDUCls(m.c,D,m.k);","else if(m.t==='c'){if(m.c!==D.cl||(m.c===3&&(m.k?1:0)!==D.ks))setDUCls(m.c,D,m.k);D.st=m.k|0;","ультимейт: приём каст");
+R("D.dash=m.ds;if(m.c!==D.cl||(m.c===3&&(m.k?1:0)!==D.ks))setDUCls(m.c,D,m.k);","D.dash=m.ds;if(m.c!==D.cl||(m.c===3&&(m.k?1:0)!==D.ks))setDUCls(m.c,D,m.k);D.st=m.k|0;","ультимейт: приём состояние");
+R("if(cls===5&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)","if(cls===5&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0);if(cls===6&&e.button===0&&e.target===R.domElement&&!isTouch)cast(OMNI.st()===1?10:0)","ультимейт: ЛКМ");
+R("E — купол<br>Золотые","E — купол<br>🌈 Ультимейт: все умения всех героев по стойкам (T или 🔄 — сменить стойку), эффекты меньше, урон ниже, ульты раз в минуту<br>Золотые","ультимейт: справка");
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 
