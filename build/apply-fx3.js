@@ -120,6 +120,18 @@ R("'🧱 Блочный воин'],box=","'🧱 Блочный воин','👊 �
 R("if(e.code==='KeyR'&&cls===4)cast(6);","if(e.code==='KeyR'&&(cls===4||cls===5))cast(6);",'предок: R');
 
 R("if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)","if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0);if(cls===5&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)",'предок: ЛКМ');
+// --- 6щ. «Ультра»: чёрные пунктирные полоски в ультах. При MSAA шейдер на краю тонкой плоскости получает координату за краем → pow(<0) = NaN → чёрный пиксель, bloom тянет его в пунктир.
+//         Чиним источник (столбы света UFX.shafts) и чистим NaN в постобработке (яркость и итоговая сборка). ---
+{const BAD='\nbool bad(vec3 v){\n#if __VERSION__>=300\nreturn any(isnan(v))||any(isinf(v));\n#else\nreturn !(v.r==v.r&&v.g==v.g&&v.b==v.b)||max(v.r,max(v.g,v.b))>6e4;\n#endif\n}\n';
+ R('float x=1.-abs(vU.x-.5)*2.,y=vU.y;','float x=max(0.,1.-abs(vU.x-.5)*2.),y=clamp(vU.y,0.,1.);','ультра: столбы света');
+ R('uniform sampler2D t;uniform vec2 px;uniform float th,kn;varying vec2 vUv;','uniform sampler2D t;uniform vec2 px;uniform float th,kn;varying vec2 vUv;'+BAD,'ультра: яркость bad');
+ R('void main(){vec3 c=(texture2D(t,vUv+vec2(-px.x,-px.y)).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv+vec2(-px.x,px.y)).rgb+texture2D(t,vUv+vec2(px.x,px.y)).rgb)*.25;',
+   'void main(){vec3 c=(texture2D(t,vUv+vec2(-px.x,-px.y)).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv+vec2(-px.x,px.y)).rgb+texture2D(t,vUv+vec2(px.x,px.y)).rgb)*.25;if(bad(c))c=vec3(0.);','ультра: яркость NaN');
+ R('uniform sampler2D tS,tB;uniform float bs,gr,asp;uniform vec4 W[4];varying vec2 vUv;','uniform sampler2D tS,tB;uniform float bs,gr,asp;uniform vec4 W[4];uniform vec2 px;varying vec2 vUv;'+BAD,'ультра: сборка bad');
+ R(' vec3 bl=texture2D(tB,uv).rgb;',' if(bad(c)){vec3 s=vec3(0.);float k=0.;vec3 n=texture2D(tS,uv+vec2(px.x,0.)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv-vec2(px.x,0.)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv+vec2(0.,px.y)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv-vec2(0.,px.y)).rgb;if(!bad(n)){s+=n;k+=1.;}c=s/max(k,1.);}\n vec3 bl=texture2D(tB,uv).rgb;if(bad(bl))bl=vec3(0.);','ультра: сборка NaN');
+ R(',W:{value:W4}});',',W:{value:W4},px:{value:new T.Vector2()}});','ультра: px');
+ R('mComp.uniforms.asp.value=w/h}','mComp.uniforms.asp.value=w/h;mComp.uniforms.px.value.set(1/w,1/h)}','ультра: px размер');}
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 

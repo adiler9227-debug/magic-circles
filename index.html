@@ -2618,24 +2618,41 @@ void main(){vec3 Z=vec3(150.,24.,150.),b=position*Z;float sp=.35+sd.y*.7;
  const fsM=new T.Mesh(fsG);fsM.frustumCulled=false;fsS.add(fsM);
  const VS='varying vec2 vUv;void main(){vUv=position.xy*.5+.5;gl_Position=vec4(position.xy,0.,1.);}',SM=(fs,u)=>new T.ShaderMaterial({uniforms:u,vertexShader:VS,fragmentShader:fs,depthTest:false,depthWrite:false});
  const mBright=SM(`uniform sampler2D t;uniform vec2 px;uniform float th,kn;varying vec2 vUv;
-void main(){vec3 c=(texture2D(t,vUv+vec2(-px.x,-px.y)).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv+vec2(-px.x,px.y)).rgb+texture2D(t,vUv+vec2(px.x,px.y)).rgb)*.25;
+bool bad(vec3 v){
+#if __VERSION__>=300
+return any(isnan(v))||any(isinf(v));
+#else
+return !(v.r==v.r&&v.g==v.g&&v.b==v.b)||max(v.r,max(v.g,v.b))>6e4;
+#endif
+}
+
+void main(){vec3 c=(texture2D(t,vUv+vec2(-px.x,-px.y)).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv+vec2(-px.x,px.y)).rgb+texture2D(t,vUv+vec2(px.x,px.y)).rgb)*.25;if(bad(c))c=vec3(0.);
  float br=max(c.r,max(c.g,c.b)),s=clamp(br-th+kn,0.,2.*kn);s=s*s/(4.*kn+1e-4);gl_FragColor=vec4(min(c*max(s,br-th)/max(br,1e-4),vec3(8.)),1.);}`,{t:{value:null},px:{value:new T.Vector2()},th:{value:.8},kn:{value:.22}});
  const mDown=SM(`uniform sampler2D t;uniform vec2 px;varying vec2 vUv;
 void main(){vec3 s=texture2D(t,vUv).rgb*4.+texture2D(t,vUv-px).rgb+texture2D(t,vUv+px).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv-vec2(px.x,-px.y)).rgb;gl_FragColor=vec4(s/8.,1.);}`,{t:{value:null},px:{value:new T.Vector2()}});
  const mUp=SM(`uniform sampler2D t,b;uniform vec2 px;varying vec2 vUv;
 void main(){vec3 s=texture2D(t,vUv+vec2(-2.*px.x,0.)).rgb+texture2D(t,vUv+vec2(2.*px.x,0.)).rgb+texture2D(t,vUv+vec2(0.,2.*px.y)).rgb+texture2D(t,vUv+vec2(0.,-2.*px.y)).rgb
  +2.*(texture2D(t,vUv+px).rgb+texture2D(t,vUv-px).rgb+texture2D(t,vUv+vec2(px.x,-px.y)).rgb+texture2D(t,vUv+vec2(-px.x,px.y)).rgb);gl_FragColor=vec4(s/12.+texture2D(b,vUv).rgb,1.);}`,{t:{value:null},b:{value:null},px:{value:new T.Vector2()}});
- const mComp=SM(`uniform sampler2D tS,tB;uniform float bs,gr,asp;uniform vec4 W[4];varying vec2 vUv;
+ const mComp=SM(`uniform sampler2D tS,tB;uniform float bs,gr,asp;uniform vec4 W[4];uniform vec2 px;varying vec2 vUv;
+bool bad(vec3 v){
+#if __VERSION__>=300
+return any(isnan(v))||any(isinf(v));
+#else
+return !(v.r==v.r&&v.g==v.g&&v.b==v.b)||max(v.r,max(v.g,v.b))>6e4;
+#endif
+}
+
 float hs(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 void main(){vec2 uv=vUv;float ca=0.;
  for(int i=0;i<4;i++){vec4 w=W[i];if(w.w>0.){vec2 d=uv-w.xy;d.x*=asp;float L=length(d),e=(L-w.z)/max(w.z*.22,.01),r=exp(-e*e);vec2 dr=d/max(L,1e-4);dr.x/=asp;uv-=dr*r*w.w;ca+=r*w.w;}}
  vec3 c;if(ca>.0004){vec2 o=(uv-.5)*min(ca,.03)*.8;c=vec3(texture2D(tS,uv+o).r,texture2D(tS,uv).g,texture2D(tS,uv-o).b);}else c=texture2D(tS,uv).rgb;
- vec3 bl=texture2D(tB,uv).rgb;vec3 ba=texture2D(tB,vec2(.5)).rgb+texture2D(tB,vec2(.25,.3)).rgb+texture2D(tB,vec2(.75,.3)).rgb+texture2D(tB,vec2(.25,.7)).rgb+texture2D(tB,vec2(.75,.7)).rgb;
+ if(bad(c)){vec3 s=vec3(0.);float k=0.;vec3 n=texture2D(tS,uv+vec2(px.x,0.)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv-vec2(px.x,0.)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv+vec2(0.,px.y)).rgb;if(!bad(n)){s+=n;k+=1.;}n=texture2D(tS,uv-vec2(0.,px.y)).rgb;if(!bad(n)){s+=n;k+=1.;}c=s/max(k,1.);}
+ vec3 bl=texture2D(tB,uv).rgb;if(bad(bl))bl=vec3(0.);vec3 ba=texture2D(tB,vec2(.5)).rgb+texture2D(tB,vec2(.25,.3)).rgb+texture2D(tB,vec2(.75,.3)).rgb+texture2D(tB,vec2(.25,.7)).rgb+texture2D(tB,vec2(.75,.7)).rgb;
  float L=dot(ba,vec3(.3,.5,.2))*.2;c+=bl*bs/(1.+L*3.);
  float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,1.+.12*gr);c=mix(c,(c-.5)*1.06+.5,gr);
  c=mix(c,.86+.14*(1.-exp(-(c-.86)/.14)),step(vec3(.86),c));
  vec2 q=vUv-.5;c*=1.-gr*.34*smoothstep(.12,.62,dot(q,q)*2.);
- c+=(hs(gl_FragCoord.xy)-.5)/255.;gl_FragColor=vec4(max(c,0.),1.);}`,{tS:{value:null},tB:{value:null},bs:{value:.72},gr:{value:1},asp:{value:1},W:{value:W4}});
+ c+=(hs(gl_FragCoord.xy)-.5)/255.;gl_FragColor=vec4(max(c,0.),1.);}`,{tS:{value:null},tB:{value:null},bs:{value:.72},gr:{value:1},asp:{value:1},W:{value:W4},px:{value:new T.Vector2()}});
  const RTO={minFilter:T.LinearFilter,magFilter:T.LinearFilter,format:T.RGBAFormat,depthBuffer:false,stencilBuffer:false,type:hf?T.HalfFloatType:T.UnsignedByteType};
  let main=null,mainMS=false,dn=[],up=[],W=0,H=0,lv=0;const db=new T.Vector2();
  const pass=(m,rt)=>{fsM.material=m;R.setRenderTarget(rt);R.render(fsS,fsC)};
@@ -2645,7 +2662,7 @@ void main(){vec2 uv=vUv;float ca=0.;
    const o={minFilter:T.LinearFilter,magFilter:T.LinearFilter,format:T.RGBAFormat,depthBuffer:true,stencilBuffer:false,type:RTO.type};
    main=ms?new T.WebGLMultisampleRenderTarget(w,h,o):new T.WebGLRenderTarget(w,h,o);if(ms)main.samples=4;
    const base=isTouch?4:2;lv=isTouch?4:5;for(let i=0;i<lv;i++){const s=base<<i;dn.push(new T.WebGLRenderTarget(Math.max(1,w/s|0),Math.max(1,h/s|0),RTO));if(i<lv-1)up.push(new T.WebGLRenderTarget(Math.max(1,w/s|0),Math.max(1,h/s|0),RTO))}}
-  mComp.uniforms.asp.value=w/h}
+  mComp.uniforms.asp.value=w/h;mComp.uniforms.px.value.set(1/w,1/h)}
  function draw(){if(tier===0||!main){R.setRenderTarget(null);R.render(S,C);return}
   R.setRenderTarget(main);R.render(S,C);
   mBright.uniforms.t.value=main.texture;mBright.uniforms.px.value.set(1/W,1/H);pass(mBright,dn[0]);
@@ -2733,7 +2750,7 @@ void main(){vec2 q=vU*2.-1.;float rr,e,inside;
   [ms,mg].forEach(m=>{m.position.set(x,.09+(o.y||0),z);if(o.ang!=null)m.rotation.y=o.ang;m.renderOrder=-3;m.userData.noShadow=true;S.add(m)});
   return{set(rr,hot,al){u.r.value=rr;u.hot.value=hot;if(al!=null)u.a.value=al},kill(){[ms,mg].forEach(m=>{S.remove(m);m.material.dispose()});G.dispose()}}}
  // ---------- столбы света (объёмные лучи) ----------
- const SF=NZ+'uniform float t,a;uniform vec3 col;varying vec2 vU;void main(){float x=1.-abs(vU.x-.5)*2.,y=vU.y;float q=n(vec2(vU.x*8.,y*3.-t*1.5))*.6+n(vec2(vU.x*19.,y*7.-t*2.6))*.4;float c=pow(x,2.2)*pow(1.-y,1.4)*(.55+.7*q)*a;gl_FragColor=vec4(col*c,1.);}';
+ const SF=NZ+'uniform float t,a;uniform vec3 col;varying vec2 vU;void main(){float x=max(0.,1.-abs(vU.x-.5)*2.),y=clamp(vU.y,0.,1.);float q=n(vec2(vU.x*8.,y*3.-t*1.5))*.6+n(vec2(vU.x*19.,y*7.-t*2.6))*.4;float c=pow(x,2.2)*pow(1.-y,1.4)*(.55+.7*q)*a;gl_FragColor=vec4(col*c,1.);}';
  function shafts(x,z,R,H,col,n){const g=new T.Group();g.position.set(x,0,z);const u={t:TU,a:{value:0},col:{value:new T.Color(col)}},m=new T.ShaderMaterial({uniforms:u,vertexShader:V,fragmentShader:SF,transparent:true,depthWrite:false,blending:AB,side:2});
   const geo=new T.PlaneGeometry(1,1);geo.translate(0,.5,0);n=n||7;for(let i=0;i<n;i++){const a=i/n*PI2+rnd()*.4,r=R*(.25+rnd()*.75),w=R*(.15+rnd()*.3),me=new T.Mesh(geo,m);me.position.set(Math.cos(a)*r,0,Math.sin(a)*r);me.scale.set(w,H*(.6+rnd()*.5),1);me.rotation.y=rnd()*3;me.rotation.z=(rnd()-.5)*.12;me.userData.noShadow=true;g.add(me)}
   const core=new T.Mesh(geo,m);core.scale.set(R*.5,H*1.1,1);g.add(core);const core2=core.clone();core2.rotation.y=Math.PI/2;g.add(core2);S.add(g);
