@@ -2006,13 +2006,18 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
  const eg=new T3.LineSegments(new T3.EdgesGeometry(new T3.BoxGeometry(10.2,7.2,14.2)),new T3.LineBasicMaterial({color:0xff1030,transparent:true,blending:AB,depthWrite:false}));
  const gw=new T3.Mesh(shg(new T3.BoxGeometry(11,8,15)),gm(0xff0022,.1));H.add(hd,hl,eg,gw);H.position.set(x,72,z);H.rotation.y=Math.atan2(F.x,F.z);
  FX3.seal(x,.15,z,24,0xff2040,TF+1.6,0,3);
- let hit=0,bt=0;
+ let hit=0,bt=0,shat=0;
  fxo(H,TF+2,(k,dt,t)=>{if(t<TF){const s=t/TF;H.position.y=72-68.5*s*s;H.rotation.z=Math.sin(t*3)*.05;if(rnd()<.7)hbolt(new V3(x+(rnd()-.5)*10,H.position.y+4,z+(rnd()-.5)*10),new V3(x+(rnd()-.5)*16,H.position.y+20,z+(rnd()-.5)*16),0xff1030,.3,.1,{n:6})}
-  else{H.position.y=3.5;H.rotation.z=0;if(!hit){hit=1;impact()}if(t>TF+1.4){const f=(TF+2-t)/.6;hm.opacity=f;hl.material.opacity=f;eg.material.opacity=f;gw.material.opacity=.1*f}
+  else{H.position.y=3.5;H.rotation.z=0;if(!hit){hit=1;impact()}if(t>TF+1.85){if(!shat){shat=1;shatter()}hm.opacity=0;hl.material.opacity=0;eg.material.opacity=0;gw.material.opacity=0}
    if(t<TF+1.8&&(bt+=dt)>.06){bt=0;const n=K(14);for(let i=0;i<n;i++){const a=rnd()*PI*2,r=20+rnd()*80;
      hbolt(new V3(x+Math.cos(a)*4,.6,z+Math.sin(a)*4),new V3(x+Math.cos(a)*r,.5,z+Math.sin(a)*r),0xff1030,.95,.2,{gr:1,n:14,br:5,j:4});
      if(i<5)hbolt(new V3(x+(rnd()-.5)*10,8+rnd()*8,z+(rnd()-.5)*10),new V3(x+Math.cos(a)*r*.7,6+rnd()*30,z+Math.sin(a)*r*.7),0xff2040,.75,.18,{n:11,br:3,j:4});
      if(i<2){const sx=x+Math.cos(a)*r*.8,sz=z+Math.sin(a)*r*.8;hbolt(new V3(sx+(rnd()-.5)*20,70,sz+(rnd()-.5)*20),new V3(sx,.5,sz),0xff3050,1.2,.22,{n:14,br:4,j:5});FX3.star(sx,1,sz,0xff1030,10,.2)}}}}});
+ function shatter(){FX3.star(x,8,z,0xffffff,30,.3);FX3.star(x,8,z,0xff1030,55,.5);flash(.3);sBoomB(.9*v);
+  UFX.burst(x,z,40,40,30,1.2,2.4,0x2a0408);for(let n=0;n<40;n++){const a=rnd()*PI*2,e=rnd()*PI*.5,sp=30+rnd()*40;emit(x,6+rnd()*6,z,Math.cos(a)*Math.cos(e)*sp,Math.sin(e)*sp,Math.sin(a)*Math.cos(e)*sp,.6,n&1?0xff1030:0x1a0004,1.8,-20)}
+  const hx=o.g.position.x,hz=o.g.position.z,dx=hx-x,dz=hz-z,L=Math.hypot(dx,dz)||1,an=Math.atan2(dx,dz),fis=UFX.cracks((x+hx)/2,(z+hz)/2,0,0xff1030,{line:1,L:L+8,w:10,ang:an-Math.PI/2,dark:0x0a0002});
+  UFX.run(3.2,t=>fis.set(Math.min(1,t*6),Math.max(.3,1.8-t*.5),t<2.4?1:Math.max(0,1-(t-2.4)/.8)),()=>fis.kill());
+  for(let n=0;n<10;n++){const u=n/9;later(u*.15,()=>{const px=x+dx*u,pz=z+dz*u;FX3.star(px,1,pz,0xff1030,6,.2);UFX.rock(px,.5,pz,(rnd()-.5)*6,8+rnd()*8,(rnd()-.5)*6,.4+rnd()*.5,1.4,0x2a0408)})}}
  function impact(){FX3.star(x,4,z,0xffffff,40,.45);FX3.star(x,4,z,0xff1030,80,.9);FX3.gflash(x,z,80,0xff0020,1.1);flash(.5);lite(x,6,z,0xff0022,4);
   const cl=new T3.Mesh(RNG,gm(0xffffff,.95));cl.position.set(x,6,z);cl.lookAt(x+F.x,6,z+F.z);fxo(cl,.35,k=>{cl.scale.setScalar(3+k*40);cl.material.opacity=.95*(1-k)});
   orb(x,0,z,0xff1030,4,80,1.1);orb(x,0,z,0x400008,2,56,1.4,.05);orb(x,3,z,0xffffff,2,30,.35);
@@ -2029,6 +2034,11 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
   hakiWave(X,Z,R*.7,18,1.1);later(.25,()=>hakiWave(X,Z,R,26,1.4));for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
   areaK(c,X,Z,R,.3,{st:1});push(c,X,Z,R,1.4,55)};
  later(TF+2,()=>{S.add(ring);const unB=blacken(o);
+  {const X=g.position.x,Z=g.position.z;flash(.6);sBoomB(1.4*v);later(.07,()=>sBoomB(1.1*v));FX3.star(X,4,Z,0xffffff,60,.4);FX3.star(X,4,Z,0xff1030,110,.8);FX3.gflash(X,Z,90,0xff0020,.9);
+   const cl=new T3.Mesh(RNG,gm(0xffffff,.95));cl.position.set(X,4,Z);cl.rotation.x=-PI/2;fxo(cl,.4,k=>{cl.scale.setScalar(3+k*70);cl.material.opacity=.95*(1-k)});
+   const cl2=new T3.Mesh(RNG,gm(0xff1030,.9));cl2.position.set(X,4,Z);cl2.lookAt(X+F.x,4,Z+F.z);fxo(cl2,.35,k=>{cl2.scale.setScalar(2+k*40);cl2.material.opacity=.9*(1-k)});
+   hakiWave(X,Z,HR*1.3,30,1.2);for(let n=0;n<K(20);n++){const a=n/20*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(40+rnd()*50),.5,Z+Math.sin(a)*(40+rnd()*50)),0xff1030,1.2,.3,{gr:1,n:14,br:4,j:5})}
+   push(c,X,Z,HR,1.6,60)}
   UFX.run(DS-TF-2,(t,dt)=>{const T=TF+2+t,X=g.position.x,Z=g.position.z,f=Math.min(1,t*3,(DS-T)*2);
    ring.position.set(X,.8,Z);ring.scale.setScalar(HR*(.92+Math.sin(t*9)*.04));ring.material.opacity=.45*f;
    if((lt+=dt)>.07){lt=0;for(let i=0;i<K(6);i++){const a=rnd()*PI*2,r=25+rnd()*(HR-20),s=new V3(X+Math.cos(a)*1.5,2.5+rnd()*3,Z+Math.sin(a)*1.5);
