@@ -1947,7 +1947,7 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
  if(vis(o))caption('ジャジャン拳…','#ffb020');if(mine)filt('saturate(1.35) contrast(1.12)');
  const ci=UFX.circles(x,z,40,[0xffcc33,0xff7a10,0xfff0b0],3),cr=UFX.cracks(x,z,60,0xffa020,{dark:0x1a0e04}),sh=UFX.shafts(x,z,14,200,0xffc030,10),lv=UFX.levitate(x,z,60,40,80,4,40,1.2);
  FX3.seal(x,.15,z,30,0xffd060,TC,0,3);
- const ease=q=>1-Math.pow(1-q,1.8),BR=q=>.8+104*ease(q),BY=q=>4.5+BR(q)*.45;     // радиус шара до 36, центр поднимается вместе с ним
+ const ease=q=>1-Math.pow(1-q,1.8),BR=q=>.8+60*ease(q),BY=q=>4.5+BR(q)*.45;     // радиус шара до 36, центр поднимается вместе с ним
  const BC=new V3(x,4.5,z),core=UFX.shell(x,4.5,z,0xffcc33),ball=new T3.Mesh(SPH,dk(0x1c0700,.97)),bg=new T3.Mesh(SPH,gm(0xff7a10,.55));ball.renderOrder=3;
  fxo(ball,TC,(k,dt,t)=>{const r=BR(k)*(1+Math.sin(t*(8+k*30))*.02*k);BC.y=BY(k);ball.position.copy(BC);bg.position.copy(BC);ball.scale.setScalar(r);bg.scale.setScalar(r*1.07);bg.material.opacity=.35+.3*k+Math.sin(t*25)*.08});fxo(bg,TC,()=>{});
  let bt=0,em=0,hv=0;
@@ -1957,8 +1957,8 @@ function jajan(){const{c,o,p,F,v}=cx(),mine=o===ME,TC=8.9,x=p.x,z=p.z,RZ=285;
   if((em+=dt)>.03){em=0;
    for(let n=0;n<3;n++){const a=rnd()*PI*2,sp=30+q*50;UFX.puff(x+Math.cos(a)*(br*.8),2+rnd()*4,z+Math.sin(a)*(br*.8),Math.cos(a)*sp,2+rnd()*4,Math.sin(a)*sp,4+q*5,.6,n?0xffd040:0xfff0a0,4,1,1.6)}  // аура бьёт в стороны
    for(let n=0;n<8;n++){const a=rnd()*PI*2,e=rnd()*PI*.55,dx=Math.cos(a)*Math.sin(e),dy=Math.cos(e),dz=Math.sin(a)*Math.sin(e),sp=40+rnd()*60;emit(BC.x+dx*br,BC.y+dy*br,BC.z+dz*br,dx*sp,dy*sp*.7,dz*sp,.7,n&1?0xffe040:0xff7020,2.2+q*2,-8)}}  // искры с поверхности
-  if(q>.1&&(bt+=dt)>.04){bt=0;for(let n=0;n<K(12);n++){const a=rnd()*PI*2,e=rnd()*PI*.6,d=new V3(Math.cos(a)*Math.sin(e),Math.cos(e),Math.sin(a)*Math.sin(e)),s0=BC.clone().addScaledVector(d,br*.97),L=30+rnd()*70+q*120,e1=s0.clone().addScaledVector(d,L);e1.y=Math.max(.3,e1.y);
-    hbolt(s0,e1,n%3?0xff7a10:0xffd040,.35+q*.8,.14,{n:10,br:3,j:3+q*3})}}               // молнии во все стороны
+  if(q>.1&&(bt+=dt)>.04){bt=0;for(let n=0;n<K(15);n++){const a=rnd()*PI*2,e=rnd()*PI*.6,d=new V3(Math.cos(a)*Math.sin(e),Math.cos(e),Math.sin(a)*Math.sin(e)),s0=BC.clone().addScaledVector(d,br*.97),L=30+rnd()*70+q*120,e1=s0.clone().addScaledVector(d,L);e1.y=Math.max(.3,e1.y);
+    hbolt(s0,e1,n%3?0xff7a10:0xffd040,1.1+q*2.2,.16,{n:10,br:3,j:3+q*3})}}               // молнии во все стороны
   lite(BC.x,BC.y+br,BC.z,q<.5?0xffdd00:0xff6010,2+q*3);
   if(!hv&&t>TC-.55){hv=1;heavy(o)}},
   ()=>{core.kill();ci.kill();sh.kill();
