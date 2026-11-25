@@ -67,7 +67,7 @@ function push(c,x,z,r,up,sp){forE((i,qx,qz)=>{if(!isB(i)&&Math.hypot(qx-x,qz-z)<
  for(const q of players){if(!c||q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const dx=q.g.position.x-x,dz=q.g.position.z-z,d=Math.hypot(dx,dz);if(d<r){const s=sp*(1-d/r*.5);q.kx=(d>.3?dx/d:1)*s;q.kz=(d>.3?dz/d:0)*s}}}
 function swirl(x,z,r,w,ring,dt){forE((i,qx,qz)=>{if(isB(i))return;const dx=qx-x,dz=qz-z,d=Math.hypot(dx,dz);if(d>r||d<.1)return;const a=Math.atan2(dz,dx)+w*dt,nd=d+(ring-d)*Math.min(1,dt*2.5);ex[i]=x+Math.cos(a)*nd;ez[i]=z+Math.sin(a)*nd})}
 // при дальней камере туман реже, а прорисовка дальше — иначе всё тонет в синем; fogK(1) — вернуть как было
-let FOG0=null;const fogK=r=>{try{if(FOG0==null)FOG0={d:S.fog.density,f:C.far};const k=r?1:Math.max(1,BLK.CAM.z/2.5);S.fog.density=FOG0.d/k;const nf=FOG0.f*Math.max(1,k*.9);if(Math.abs(C.far-nf)>1){C.far=nf;C.updateProjectionMatrix()}}catch(e){}};
+const fogK=r=>{try{window.FOGK=r?1:Math.max(1,BLK.CAM.z/2.5)}catch(e){}};   // движок камеры сам делит плотность тумана на FOGK и отодвигает прорисовку
 const camTo=(zz,yy,dt)=>{try{const C=BLK.CAM,k=Math.min(1,dt*2.5);C.z+=(zz-C.z)*k;C.y+=(yy-C.y)*k}catch(e){}},camReset=()=>{try{BLK.CAM.z=1;BLK.CAM.y=0}catch(e){}};
 // волна-полумесяц, летит вперёд (как удар мечника / аметистовый клинок)
 function crescent(p,F,y,len,sc,col,life,d){const G=new T3.Group(),m=new T3.Mesh(CRES,gm(col,.95));m.rotation.set(-PI/2,0,-2.749);G.add(m);G.rotation.y=Math.atan2(F.x,F.z);
@@ -246,7 +246,7 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
   areaK(c,x,z,32,2.5,{st:1.5});areaK(c,x,z,85,.5,{st:1});push(c,x,z,85,1.5,60)}
  // ---- Королевская воля из героя, пока играет музыка ----
  const g=o.g,ring=new T3.Mesh(RNG,gm(0xff1030,.5)),aura=new T3.Mesh(SPH,gm(0xff0022,.18));ring.rotation.x=-PI/2;
- let lt=0,tk=0,b1=0,b2=0;
+ let lt=0,tk=0,b1=0,b2=0,wt=0,pt=0;
  const burstW=(R,n)=>{const X=g.position.x,Z=g.position.z;flash(.35);FX3.star(X,4,Z,0xff1030,R*.6,.6);
   const w=new T3.Mesh(RNG,gm(0xff1030,.95));w.rotation.x=-PI/2;w.position.set(X,1,Z);fxo(w,1,k=>{w.scale.setScalar(2+k*R);w.material.opacity=.95*(1-k)});
   orb(X,0,Z,0xff1030,3,R*.7,1);for(let i=0;i<K(n);i++){const a=i/n*PI*2;hbolt(new V3(X,4,Z),new V3(X+Math.cos(a)*(R*.6+rnd()*R*.4),.5,Z+Math.sin(a)*(R*.6+rnd()*R*.4)),0xff1030,1.3,.35,{gr:1,n:16,br:5,j:5})}
@@ -259,6 +259,12 @@ function gleip(){const{c,o,p,F,v}=cx(),x=CL(p.x+F.x*22),z=CL(p.z+F.z*22),H=new T
      if(i<2)hbolt(s,new V3(X+Math.cos(a)*r*.5,6+rnd()*24,Z+Math.sin(a)*r*.5),0xff2040,.55,.14,{n:10,br:2,j:3})}                                 // в воздух
     for(let n=0;n<6;n++){const a=rnd()*PI*2,sp=30+rnd()*40;emit(X,3+rnd()*2,Z,Math.cos(a)*sp,(rnd()-.3)*12,Math.sin(a)*sp,.6,n&1?0xff1030:0x200004,1.8,0)}}   // искры воли
    lite(X,5,Z,0xff0022,2+Math.sin(t*20));
+   // ветер воли: быстрые струи от героя во все стороны, пыль сдувает к краю зоны
+   if((wt+=dt)>.03){wt=0;for(let n=0;n<K(5);n++){const a=rnd()*PI*2,r=3+rnd()*22,sp=70+rnd()*60;emit(X+Math.cos(a)*r,.5+rnd()*3,Z+Math.sin(a)*r,Math.cos(a)*sp,(rnd()-.3)*4,Math.sin(a)*sp,.4,n%3?0xffffff:0xff3050,1.1,0)}
+    if(rnd()<.55){const a=rnd()*PI*2,r=6+rnd()*35;UFX.puff(X+Math.cos(a)*r,1,Z+Math.sin(a)*r,Math.cos(a)*40,2,Math.sin(a)*40,4,1.1,0x3a2a30,5,.3,.35)}}
+   // давление воли: каждые 0.75 с тёмная волна и искажение воздуха, врагов слегка отжимает от героя
+   if((pt+=dt)>.75){pt=0;shock(X,Z,0x550010,HR,.7);const rg=new T3.Mesh(RNG,dk(0x120004,.55));rg.rotation.x=-PI/2;rg.position.set(X,.5,Z);fxo(rg,.7,k=>{rg.scale.setScalar(4+k*HR);rg.material.opacity=.55*(1-k)});
+    forE((i,qx,qz)=>{if(isB(i))return;const dx=qx-X,dz=qz-Z,d=Math.hypot(dx,dz);if(d<HR&&d>.1){ex[i]+=dx/d*2.5;ez[i]+=dz/d*2.5}})}
    if((tk+=dt)>=1){tk=0;if(c){const sv=dm;dm=true;try{forE((i,qx,qz)=>{if(Math.hypot(qx-X,qz-Z)<HR)eH(i,isB(i)?c.dmg*.15:Math.max(.5,hpv[i]*.015+c.dmg*.05))})}finally{dm=sv}   // −5% каждую секунду
      for(const q of players){if(q===c.o||q.dead>0||(typeof COOPM==='function'&&COOPM()))continue;const d=Math.hypot(q.g.position.x-X,q.g.position.z-Z);if(d<HR)pHurt(q,q.maxhp*.015,c.o,X,Z)}}}
    if(!b1&&T>=6.4){b1=1;burstW(70,20)}if(!b2&&T>=10.7){b2=1;burstW(95,28)}},
