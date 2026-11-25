@@ -135,7 +135,7 @@ R("if(cls===3&&e.button===0&&e.target===R.domElement&&!isTouch)cast(0)","if(cls=
 // --- 6ю. СЕДЬМОЙ ГЕРОЙ «Ультимейт» (класс 6): 6 ульт всех героев + стена/купол (build/omni.js) ---
 R("// ===== НОВЫЕ ТЕХНИКИ: Ниндзя",rd('omni.js')+'\n'+"// ===== НОВЫЕ ТЕХНИКИ: Ниндзя","ультимейт: модуль");
 R("const BLKM=BLK.model(),ANCM=makeAncestor();","const BLKM=BLK.model(),ANCM=makeAncestor();let OMM=null;","ультимейт: модель");
-R("<button id=\"ca\" class=\"chip\">👊 Предок</button>","<button id=\"ca\" class=\"chip\">👊 Предок</button><button id=\"cu\" class=\"chip\">🌈 Ультимейт</button>","ультимейт: кнопка");
+R("<button id=\"ca\" class=\"chip\">👊 Предок</button>","<button id=\"ca\" class=\"chip\">👊 Предок</button><button id=\"cu\" class=\"chip\" style=\"display:none\">🌈 Ультимейт</button>","ультимейт: кнопка");
 R("document.getElementById('ca')];","document.getElementById('ca'),document.getElementById('cu')];","ультимейт: cN");
 R("mage=c==5?ANCM:","mage=c==6?(OMM||(OMM=OMNI.model())):c==5?ANCM:","ультимейт: setClass");
 R("cN.forEach((e,i)=>e.classList.toggle('sel',i===c))}","cN.forEach((e,i)=>e.classList.toggle('sel',i===c));OMNI.onClass(c)}","ультимейт: onClass");
@@ -143,12 +143,12 @@ R("D.cm=c==5?makeAncestor():","D.cm=c==6?OMNI.model():c==5?makeAncestor():","у�
 R("cN[5].onclick=()=>setClass(5);","cN[5].onclick=()=>setClass(5);cN[6].onclick=()=>setClass(6);","ультимейт: клик");
 R("const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];","const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84,0xff8aff];","ультимейт: цвет");
 R("const ULTS=[6,7,8,7,6,6]","const ULTS=[6,7,8,7,6,6,-1]","ультимейт: ульта");
-R("'👊 Предок'],box=","'👊 Предок','🌈 Ультимейт'],box=","ультимейт: лобби");
+// R("'👊 Предок'],box=","'👊 Предок','🌈 Ультимейт'],box=","ультимейт: лобби");   // Ультимейт временно скрыт (доработка)
 R("if(cls===4&&(i===7||i===8))return;","if(cls===4&&(i===7||i===8))return;if(cls===6&&i>5&&i<9)return;","ультимейт: пустые слоты");
 R("if(!pvpOn()||i!==ULTS[cls]||","if(!pvpOn()||(cls===6?i>5:i!==ULTS[cls])||","ультимейт: ульты в PvP");
 R("q.hp-=d;if(d>=1){","if(CTX&&CTX.om){if(CTX.om.has(q))return;CTX.om.add(q);d=q.hp*.26}q.hp-=d;if(d>=1){","ультимейт: 26% от текущего HP");
 R("o.cl===0?1.75:1","o.cl===0?1.75:o.cl===6?.45:1","ультимейт: урон");
-R("E — купол<br>Золотые","E — купол<br>🌈 Ультимейт: 1–6 — ульты всех героев (меньше, откат 29 с, по героям −26% текущего HP), Q/E — стена/купол<br>Золотые","ультимейт: справка");
+// R("E — купол<br>Золотые","E — купол<br>🌈 Ультимейт: 1–6 — ульты всех героев (меньше, откат 29 с, по героям −26% текущего HP), Q/E — стена/купол<br>Золотые","ультимейт: справка");
 
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
