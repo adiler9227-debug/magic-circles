@@ -1,12 +1,15 @@
-// ===== 7-Й ГЕРОЙ «УЛЬТИМЕЙТ» (класс 6): все умения всех героев, по стойкам =====
-// Стойка = набор умений одного героя (Маг, Мечник, Ниндзя, Коробас, Блочный, Предок), переключение — T или кнопка 🔄.
-// Эффекты Ультимейта: масштаб 0.45 от оригинала (вокруг героя), оттенок чуть сдвинут, урон ×0.45, ульты — откат 60 с.
+// ===== 7-Й ГЕРОЙ «УЛЬТИМЕЙТ» (класс 6): 6 ульт — по одной от каждого героя + Q·Стена и E·Купол =====
+// Кнопки 1..6 — ульты героев (Маг, Мечник, Ниндзя, Коробас, Блочный, Предок), Q/E — обычные стена и купол.
+// Ульты Ультимейта: масштаб 0.45 от оригинала (вокруг героя), оттенок чуть сдвинут, откат 29 с.
+// Урон: мобам ×0.45 (множитель в doCast); героям — 26% от ТЕКУЩЕГО здоровья, один раз за ульту (CTX.om, правка pHurt).
 // Как работает масштаб: на время каста в CTX кладётся os={s,px,pz,G}; движок восстанавливает CTX и в отложенных
 // эффектах (fx.push), поэтому всё, что эффект добавляет в сцену, попадает в группу G (масштаб вокруг героя),
 // а частицы/дым/камни/вспышки пересчитываются обёртками.
 const OMNI=(function(){
-const T3=THREE,SRC=[0,1,2,3,4,5],NAMES=['Маг','Мечник','Ниндзя','Коробас','Блочный воин','Предок'],SC=.45,HUE=.09,ULTCD=60;
-let ST=0;const CDS=[0,1,2,3,4,5].map(()=>new Array(11).fill(0)),GS=[];
+const T3=THREE,SC=.45,HUE=.09,ULTCD=29;
+// слот → [класс-источник, номер умения]; 9/10 — стена и купол мага в обычном размере
+const SL=[[0,6],[1,7],[2,8],[3,7],[4,6],[5,6],null,null,null,[0,9],[0,10]];
+const UNM=['Маг','Мечник','Ниндзя','Коробас','Блочный','Предок'],GS=[];
 const os=()=>CTX&&CTX.os;
 // ---------- цвет ----------
 const hueC=new Map();
@@ -16,7 +19,7 @@ function tint(o){o.traverse(m=>{for(const mt of mats(m)){const u=mt.userData;if(
   if(mt.color&&mt.color.isColor){sv.push([mt.color,mt.color.getHex()]);mt.color.offsetHSL(HUE,.08,0)}
   if(mt.uniforms)for(const k in mt.uniforms){const v=mt.uniforms[k]&&mt.uniforms[k].value;if(v&&v.isColor){sv.push([v,v.getHex()]);v.offsetHSL(HUE,.08,0)}}}})}
 function untint(o){o.traverse(m=>{for(const mt of mats(m)){const u=mt.userData;if(!u.omN)continue;if(--u.omN<=0){(u.omSv||[]).forEach(([c,h])=>c.setHex(h));delete u.omN;delete u.omSv}}})}
-// ---------- сцена: во время каста Ультимейта всё новое — в уменьшенную группу ----------
+// ---------- сцена: во время каста ульты Ультимейта всё новое — в уменьшенную группу ----------
 const _add=S.add.bind(S),_rem=S.remove.bind(S);
 S.add=function(...a){const c=os();if(!c)return _add(...a);for(const o of a){if(!o)continue;if(o.isLight||o.isCamera){_add(o);continue}tint(o);o.userData.omT=1;c.G.add(o)}return S};
 S.remove=function(...a){for(const o of a){if(!o)continue;if(o.userData&&o.userData.omT){untint(o);delete o.userData.omT}if(o.parent&&o.parent!==S)o.parent.remove(o);else _rem(o)}return S};
@@ -40,29 +43,29 @@ function wrapAll(){if(wrapped)return;wrapped=1;
   W(FX3,'seal',(c,a)=>{const[x,z]=mp(c,a[0],a[2]);return[x,a[1]*c.s,z,a[3]*c.s,hh(a[4]),a[5],a[6],a[7]]});
   W(FX3,'sparks',(c,a)=>{const[x,z]=mp(c,a[0],a[2]);return[x,a[1]*c.s,z,a[3],a[4]*c.s,a[5]*c.s,hh(a[6]),a[7]]});
   W(FX3,'gflash',(c,a)=>{const[x,z]=mp(c,a[0],a[1]);return[x,z,a[2]*c.s,hh(a[3]),a[4]]})}catch(e){}}
-// ---------- каст: умение героя текущей стойки, в уменьшенном масштабе ----------
-function cast(i){const c=CTX;if(!c||!c.o)return;const o=c.o,st=o===ME?ST:(o.st|0),cl=SRC[st]||0,K=CLS[cl],fn=K&&K.sp[i];if(typeof fn!=='function')return;wrapAll();
- const p=o.g.position,G=new T3.Group();G.position.set(p.x*(1-SC),0,p.z*(1-SC));G.scale.setScalar(SC);G.userData.t0=performance.now();_add(G);GS.push(G);
- c.os={s:SC,px:p.x,pz:p.z,G};
- const k0=o.cl,c0=cls,mine=o===ME;o.cl=cl;if(mine)cls=cl;                // умения читают класс кастера
- try{fn()}catch(e){console.error('omni',cl,i,e)}finally{o.cl=k0;if(mine)cls=c0}}
-// ---------- стойки, кнопки, откаты ----------
+// ---------- каст слота: ульта героя-источника в уменьшенном масштабе, либо обычные стена/купол ----------
+function cast(i){const c=CTX;if(!c||!c.o)return;const s=SL[i];if(!s)return;const o=c.o,[cl,k]=s,fn=CLS[cl]&&CLS[cl].sp[k];if(typeof fn!=='function')return;
+ const ult=i<6,k0=o.cl,c0=cls,mine=o===ME;
+ if(ult){wrapAll();const p=o.g.position,G=new T3.Group();G.position.set(p.x*(1-SC),0,p.z*(1-SC));G.scale.setScalar(SC);G.userData.t0=performance.now();_add(G);GS.push(G);
+  c.os={s:SC,px:p.x,pz:p.z,G};c.om=new Set();                     // по героям: 26% от текущего HP, один раз за ульту
+  try{o.wcI=Math.max(o.wcI||0,performance.now()/1000+UD[cl])}catch(e){}}        // неуязвимость, как у ульты героя
+ o.cl=cl;if(mine)cls=cl;                                                          // умения читают класс кастера
+ try{fn()}catch(e){console.error('omni',cl,k,e)}finally{o.cl=k0;if(mine)cls=c0}}
+// ---------- кнопки, откаты ----------
 const U={sp:[...Array(11)].map((_,i)=>()=>cast(i)),cdm:new Array(11).fill(1),dur:new Array(11).fill(1),ic:new Array(11).fill(''),nu:new Array(11).fill(''),tx:new Array(11).fill(''),nm:new Array(11).fill('')};
+function fill(){for(let i=0;i<11;i++){const s=SL[i];if(!s)continue;const[cl,k]=s,K=CLS[cl],ult=i<6,nm=String(K.tx[k]||'').replace(/^\S+\s·\s/,'');
+ U.cdm[i]=ult?ULTCD:K.cdm[k];U.dur[i]=K.dur[k];U.ic[i]=K.ic[k];U.nu[i]=ult?String(i+1):(i===9?'Q':'E');
+ U.tx[i]=ult?(i+1)+' · '+nm:K.tx[k];U.nm[i]=K.nm&&K.nm[k]?K.nm[k]+(ult?' · '+UNM[cl]:''):nm}}
+fill();
 CLS.push(U);   // CLS[6]
-function apply(){const c=SRC[ST],K=CLS[c];for(let i=0;i<11;i++){const ult=i===ULTS[c];U.cdm[i]=ult?ULTCD:K.cdm[i];U.dur[i]=K.dur[i];U.ic[i]=K.ic[i];U.nu[i]=K.nu[i];
-  U.tx[i]=K.tx[i]?K.tx[i]+(ult?' ✦':''):'';U.nm[i]=K.nm[i]}
- if(cls===6)btn.forEach((b,i)=>{b.querySelector('.ic').textContent=U.ic[i];b.querySelector('.nm').textContent=U.nu[i];b.querySelector('.tx').textContent=U.tx[i];b.style.display=U.tx[i]?'':'none'})}
-function onClass(c){document.body.classList.toggle('cls6',c===6);if(c===6){for(let i=0;i<11;i++)cd[i]=CDS[ST][i];apply()}else btn.forEach(b=>b.style.display='')}
-function next(){if(cls!==6)return;for(let i=0;i<11;i++)CDS[ST][i]=cd[i];ST=(ST+1)%6;for(let i=0;i<11;i++)cd[i]=CDS[ST][i];apply();
- try{toastE.textContent='🔄 Стойка: '+NAMES[ST];toastE.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toastE.style.opacity=0,1100)}catch(e){}
- try{netSend({t:'s',x:CP().position.x,z:CP().position.z,y:yaw,r:P.rotation.y,h:ME.hp,m:ME.maxhp,l:ME.lvl,v:0,d:ME.dead>0?1:0,c:cls,k:ST,ds:ME.dash?1:0})}catch(e){}}
-try{const b=document.getElementById('ub');if(b)b.onclick=next}catch(e){}
-// ---------- облик: мечник из .glb в фиолетово-золотом + 6 сфер героев по кругу ----------
-function model(){const o=makeSaint(),T=THREE,g=o.g,orbs=new T.Group(),COL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];let done=0;
+function apply(){if(cls!==6)return;fill();btn.forEach((b,i)=>{b.querySelector('.ic').textContent=U.ic[i];b.querySelector('.nm').textContent=U.nu[i];b.querySelector('.tx').textContent=U.tx[i];b.style.display=U.tx[i]?'':'none'})}
+function onClass(c){document.body.classList.toggle('cls6',c===6);if(c===6)apply();else btn.forEach(b=>b.style.display='')}
+// ---------- облик: модель из omni.glb (если есть), иначе мечник в фиолетово-золотом; 6 сфер героев по кругу ----------
+function model(){const o=typeof makeOmni==='function'?makeOmni():makeSaint(),T=THREE,g=o.g,orbs=new T.Group(),COL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];let done=0;
  const ms=COL.map(c=>{const m=new T.Mesh(new T.SphereGeometry(.28,12,10),new T.MeshBasicMaterial({color:c,transparent:true,opacity:.95,blending:T.AdditiveBlending,depthWrite:false}));orbs.add(m);return m});
  orbs.position.y=3.6;g.add(orbs);const u0=o.u;
  if(!o.hand)o.hand=()=>{g.updateMatrixWorld();return g.localToWorld(new T.Vector3(-1.3,3.4,1.3))};   // точка правой руки (нужна умениям ниндзя)
  o.u=function(t,mv){u0.apply(o,arguments);orbs.rotation.y=t*1.6;ms.forEach((m,i)=>{const a=i/6*Math.PI*2;m.position.set(Math.cos(a)*2.3,Math.sin(t*2+i)*.35,Math.sin(a)*2.3);m.scale.setScalar(1+Math.sin(t*4+i)*.15)});
-  if(!done){let sk=null;g.traverse(m=>{if(m.isSkinnedMesh)sk=m});if(sk){done=1;g.traverse(m=>{if(m.isSkinnedMesh&&m.material){m.material=m.material.clone();m.material.color.setRGB(.82,.72,1.08);if(m.material.emissive)m.material.emissive.setHex(0x160628)}})}}};
+  if(!done&&!o.omni){let sk=null;g.traverse(m=>{if(m.isSkinnedMesh)sk=m});if(sk){done=1;g.traverse(m=>{if(m.isSkinnedMesh&&m.material){m.material=m.material.clone();m.material.color.setRGB(.82,.72,1.08);if(m.material.emissive)m.material.emissive.setHex(0x160628)}})}}};
  return o}
-return{cast,apply,onClass,next,model,st:()=>ST,NAMES}})();
+return{cast,apply,onClass,model}})();
