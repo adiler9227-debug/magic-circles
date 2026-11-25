@@ -134,16 +134,23 @@ const MAGE_GLB=(()=>{let tpl=null,q=[];const T=THREE;
 // копия модели со своим скелетом (то же, что SkeletonUtils.clone, без лишнего файла)
 function cloneSkinned(src){const c=src.clone(true),bones={};c.traverse(o=>{if(o.isBone)bones[o.name]=o});
  c.traverse(o=>{if(o.isSkinnedMesh){const sk=o.skeleton;o.bind(new THREE.Skeleton(sk.bones.map(b=>bones[b.name]),sk.boneInverses),o.bindMatrix)}});return c}
+// ---------- общее для героев из .glb: вписать модель, анимации (удары — разово, ходьба — по кругу, пока идёт) ----------
+function fitGlb(gl,h){const M=cloneSkinned(gl.scene),b=new THREE.Box3().setFromObject(M),s=h/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;return M}
+function glbRig(gl,M){const T=THREE,mixer=new T.AnimationMixer(M),acts={};let walk=null,ww=0;
+ gl.animations.forEach(a=>{const ac=mixer.clipAction(a);if(a.name==='walk'){ac.setLoop(T.LoopRepeat,Infinity);ac.timeScale=1.25;walk=ac}else{ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac}});
+ const busy=()=>{for(const k in acts)if(acts[k].isRunning())return true;return false};
+ return{acts,play(n){const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()},
+  update(dt,mv){if(walk){const tw=mv?(busy()?.3:1):0;ww+=(tw-ww)*Math.min(1,dt*8);
+    if(ww>.02){if(!walk.isRunning())walk.play();walk.setEffectiveWeight(ww)}else if(walk.isRunning())walk.stop()}
+   mixer.update(dt);return walk&&ww>.02?(walk.time%walk.getClip().duration)/walk.getClip().duration:-1}}}
+const stepW=(W,ph)=>{W.position.y=ph>=0?Math.abs(Math.sin(ph*Math.PI*2))*.12:0;W.rotation.x=0};   // идёт по земле, лёгкое покачивание на шаге
 const _makeArchmageProc=makeArchmage;
-makeArchmage=function(){const o=_makeArchmageProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let M=null,mixer=null,acts={},lt=0,alt=0;
- MAGE_GLB(gl=>{M=cloneSkinned(gl.scene);
-  const b=new T.Box3().setFromObject(M),s=6.2/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
-  W.add(M);g.add(W);B.visible=false;
-  mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})});
+makeArchmage=function(){const o=_makeArchmageProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let A=null,lt=0,alt=0;
+ MAGE_GLB(gl=>{const M=fitGlb(gl,6.2);W.add(M);g.add(W);B.visible=false;A=glbRig(gl,M)});
  const c0=o.cast,u0=o.u;
- o.cast=function(v){c0.apply(o,arguments);if(!mixer)return;const a=acts[(alt++%2)?"cast_staff":"cast_hand"];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.1);a.reset().fadeIn(.06).play()};
- o.u=function(t,mv){u0.apply(o,arguments);if(!M)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;mixer.update(dt);
-  W.position.y=.3+Math.sin(t*1.8)*.14;W.rotation.x=mv?.12:0};   // левитация и наклон при движении — кодом
+ o.cast=function(){c0.apply(o,arguments);if(A)A.play((alt++%2)?"cast_staff":"cast_hand")};
+ o.play=n=>{if(A)A.play(n)};
+ o.u=function(t,mv){u0.apply(o,arguments);if(!A)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;stepW(W,A.update(dt,mv))};
  return o};
 
 // ---------- 6-й герой «Предок»: модель из ancestor.glb (скелет, клипы cast_punch / cast_heavy) ----------
@@ -160,15 +167,12 @@ function makeAncestor(){const T=THREE,g=new T.Group(),W=new T.Group(),B=new T.Gr
  const sash=new T.Mesh(new T.CylinderGeometry(.85,.85,.45,10),lm(0x1f8a4a));sash.position.y=2.45;B.add(sash);
  const head=new T.Mesh(new T.SphereGeometry(.55,12,10),lm(0xe0b090));head.position.y=5.4;B.add(head);
  const hair=new T.Mesh(new T.ConeGeometry(.6,.9,8),lm(0x1f8a4a));hair.position.y=6;B.add(hair);
- let M=null,mixer=null,acts={},lt=0;
- const play=n=>{const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()};
- ANC_GLB(gl=>{M=cloneSkinned(gl.scene);const b=new T.Box3().setFromObject(M),s=6.2/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
-  W.add(M);g.add(W);B.visible=false;mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})});
+ let A=null,lt=0;
+ ANC_GLB(gl=>{const M=fitGlb(gl,6.2);W.add(M);g.add(W);B.visible=false;A=glbRig(gl,M)});
  return{g,
-  cast(){play('cast_punch')},
-  play,                                   // умение может само выбрать клип: MO(o).play('cast_heavy')
-  u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;const y=.3+Math.sin(t*1.8)*.14,rx=mv?.12:0;
-   if(mixer)mixer.update(dt);W.position.y=y;W.rotation.x=rx;B.position.y=y;B.rotation.x=rx}};
+  cast(){if(A)A.play('cast_punch')},
+  play(n){if(A)A.play(n)},                // умение может само выбрать клип: MO(o).play('cast_heavy')
+  u(t,mv){const dt=Math.min(.1,Math.max(0,t-lt));lt=t;if(A)stepW(W,A.update(dt,mv));else{B.position.y=.3+Math.sin(t*1.8)*.14}}};
 }
 
 // ---------- Мечник: модель из swordsman.glb (скелет 20 костей + меч на кисти, клипы cast_slash / cast_thrust) ----------
@@ -178,13 +182,11 @@ const SW_GLB=(()=>{let tpl=null,q=[];const T=THREE;
  try{fetch("swordsman.glb").then(r=>r.ok?r.arrayBuffer():null).then(b=>{if(b&&T.GLTFLoader)new T.GLTFLoader().parse(b,"",ready,()=>{})}).catch(()=>{})}catch(e){}
  return f=>{if(tpl)f(tpl);else q.push(f)}})();
 const _makeSaintProc=makeSaint;
-makeSaint=function(){const o=_makeSaintProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let M=null,mixer=null,acts={},lt=0,alt=0;
- SW_GLB(gl=>{M=cloneSkinned(gl.scene);const b=new T.Box3().setFromObject(M),s=6.4/((b.max.y-b.min.y)||1);M.scale.setScalar(s);M.position.y=-b.min.y*s;
-  W.add(M);g.add(W);B.visible=false;mixer=new T.AnimationMixer(M);gl.animations.forEach(a=>{const ac=mixer.clipAction(a);ac.setLoop(T.LoopOnce,1);ac.clampWhenFinished=false;acts[a.name]=ac})});
- const play=n=>{const a=acts[n];if(!a)return;for(const k in acts)if(acts[k]!==a)acts[k].fadeOut(.08);a.reset().fadeIn(.05).play()};
+makeSaint=function(){const o=_makeSaintProc(),T=THREE,g=o.g,B=g.children[0],W=new T.Group();let A=null,lt=0,alt=0;
+ SW_GLB(gl=>{const M=fitGlb(gl,6.4);W.add(M);g.add(W);B.visible=false;A=glbRig(gl,M)});
  const c0=o.cast,h0=o.hit,u0=o.u;
- o.cast=function(){c0.apply(o,arguments);if(mixer)play((alt++%2)?"cast_thrust":"cast_slash")};
- o.hit=function(){h0.apply(o,arguments);if(mixer)play("cast_slash")};
- o.play=play;
- o.u=function(t,mv){u0.apply(o,arguments);if(!M)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;mixer.update(dt);W.position.y=.3+Math.sin(t*1.6)*.12;W.rotation.x=mv?.12:0};
+ o.cast=function(){c0.apply(o,arguments);if(A)A.play((alt++%2)?"cast_thrust":"cast_slash")};
+ o.hit=function(){h0.apply(o,arguments);if(A)A.play("cast_slash")};
+ o.play=n=>{if(A)A.play(n)};
+ o.u=function(t,mv){u0.apply(o,arguments);if(!A)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;stepW(W,A.update(dt,mv))};
  return o};
