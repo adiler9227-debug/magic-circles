@@ -191,3 +191,22 @@ makeSaint=function(){const o=_makeSaintProc(),T=THREE,g=o.g,B=g.children[0],W=ne
  o.play=n=>{if(A)A.play(n)};
  o.u=function(t,mv){u0.apply(o,arguments);if(!A)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;stepW(W,A.update(dt,mv))};
  return o};
+
+// ---------- 7-й герой «Ультимейт»: модель из omni.glb (скелет 20 костей, клипы cast_punch / cast_heavy / walk / idle) ----------
+// Файл качается только при первом выборе Ультимейта (у себя или у другого игрока). Пока грузится — мечник в фиолетовом.
+const OMNI_GLB=(()=>{let tpl=null,q=[],go=0;const T=THREE;
+ const ready=gl=>{gl.scene.traverse(m=>{if(!m.isMesh)return;m.frustumCulled=false;m.castShadow=true;const mt=m.material;if(mt){if(mt.map)mt.map.encoding=T.LinearEncoding;mt.metalness=Math.min(mt.metalness,.35);mt.needsUpdate=true}});
+  tpl=gl;q.splice(0).forEach(f=>{try{f(gl)}catch(e){}});setTimeout(()=>{try{R.compile(S,C)}catch(e){}},0)};
+ const load=()=>{if(go)return;go=1;try{fetch("omni.glb").then(r=>r.ok?r.arrayBuffer():null).then(b=>{if(b&&T.GLTFLoader)new T.GLTFLoader().parse(b,"",ready,()=>{})}).catch(()=>{})}catch(e){}};
+ return f=>{if(tpl)f(tpl);else{q.push(f);load()}}})();
+function makeOmni(){const o=makeSaint(),T=THREE,g=o.g,W=new T.Group();let A=null,lt=0,alt=0,hb=null;o.omni=true;
+ const old=g.children.slice();
+ old.forEach(c=>c.traverse(m=>{if(m.isMesh&&m.material&&m.material.color){m.material=m.material.clone();m.material.color.setRGB(.82,.72,1.08)}}));
+ OMNI_GLB(gl=>{const M=fitGlb(gl,6.3);W.add(M);g.add(W);old.forEach(c=>c.visible=false);A=glbRig(gl,M);M.traverse(b=>{if(b.isBone&&b.name==='hand.R')hb=b})});
+ const c0=o.cast,u0=o.u;
+ o.cast=function(){if(!A)return c0.apply(o,arguments);A.play((alt++%2)?"cast_heavy":"cast_punch")};
+ o.hit=function(){if(A)A.play("cast_punch")};
+ o.play=n=>{if(A)A.play(n)};
+ o.hand=()=>{g.updateMatrixWorld(true);if(hb)return hb.getWorldPosition(new T.Vector3());return g.localToWorld(new T.Vector3(-1.3,3.4,1.3))};
+ o.u=function(t,mv){if(!A)return u0.apply(o,arguments);for(const c of g.children)if(c!==W&&!c.userData.keep)c.visible=false;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;stepW(W,A.update(dt,mv))};
+ return o}

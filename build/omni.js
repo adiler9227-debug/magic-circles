@@ -63,7 +63,7 @@ function onClass(c){document.body.classList.toggle('cls6',c===6);if(c===6)apply(
 // ---------- облик: модель из omni.glb (если есть), иначе мечник в фиолетово-золотом; 6 сфер героев по кругу ----------
 function model(){const o=typeof makeOmni==='function'?makeOmni():makeSaint(),T=THREE,g=o.g,orbs=new T.Group(),COL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84];let done=0;
  const ms=COL.map(c=>{const m=new T.Mesh(new T.SphereGeometry(.28,12,10),new T.MeshBasicMaterial({color:c,transparent:true,opacity:.95,blending:T.AdditiveBlending,depthWrite:false}));orbs.add(m);return m});
- orbs.position.y=3.6;g.add(orbs);const u0=o.u;
+ orbs.position.y=3.6;orbs.userData.keep=1;g.add(orbs);const u0=o.u;
  if(!o.hand)o.hand=()=>{g.updateMatrixWorld();return g.localToWorld(new T.Vector3(-1.3,3.4,1.3))};   // точка правой руки (нужна умениям ниндзя)
  o.u=function(t,mv){u0.apply(o,arguments);orbs.rotation.y=t*1.6;ms.forEach((m,i)=>{const a=i/6*Math.PI*2;m.position.set(Math.cos(a)*2.3,Math.sin(t*2+i)*.35,Math.sin(a)*2.3);m.scale.setScalar(1+Math.sin(t*4+i)*.15)});
   if(!done&&!o.omni){let sk=null;g.traverse(m=>{if(m.isSkinnedMesh)sk=m});if(sk){done=1;g.traverse(m=>{if(m.isSkinnedMesh&&m.material){m.material=m.material.clone();m.material.color.setRGB(.82,.72,1.08);if(m.material.emissive)m.material.emissive.setHex(0x160628)}})}}};
