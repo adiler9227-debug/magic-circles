@@ -17,7 +17,7 @@ function fxo(o,life,fn,d){let t=-(d||0);o.visible=false;S.add(o);
   ()=>{S.remove(o);o.traverse(m=>{if(m.material){if(m.material.map&&m.material.map.userData&&m.material.map.userData.own)m.material.map.dispose();m.material.dispose()}if(m.geometry&&!m.geometry.userData.sh)m.geometry.dispose()})})}
 const later=(d,fn)=>{let t=0;fx.push(dt=>{t+=dt;if(t<d)return true;try{fn()}catch(e){console.error('anc',e)}return false})};
 // ---------- урон (позже момента каста — с сохранённым CTX кастера) ----------
-const withC=(c,fn)=>{if(!c)return;const s=CTX;CTX={o:c.o,dmg:c.dmg,hit:new Set()};try{fn()}finally{CTX=s}};
+const withC=(c,fn)=>{if(!c)return;const s=CTX;CTX={o:c.o,dmg:c.dmg,u:c.u,bs:c.bs,hit:new Set()};try{fn()}finally{CTX=s}};
 function area(c,x,z,r,mul,op){if(!c)return;const d=c.dmg*mul;
  forE((i,qx,qz)=>{if(Math.hypot(qx-x,qz-z)<r+(isB(i)?5:0)){eH(i,d);if(op&&op.st)stn(i,op.st);if(op&&op.up&&!isB(i))eUp(i,x,z,op.up)}});
  withC(c,()=>plT(q=>Math.hypot(q.x-x,q.z-z)<r,mul,x,z))}

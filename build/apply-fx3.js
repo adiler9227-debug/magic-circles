@@ -150,6 +150,11 @@ R("q.hp-=d;if(d>=1){","if(CTX&&CTX.om){if(CTX.om.has(q))return;CTX.om.add(q);d=q
 R("o.cl===0?1.75:1","o.cl===0?1.75:o.cl===6?.45:1","ультимейт: урон");
 // R("E — купол<br>Золотые","E — купол<br>🌈 Ультимейт: 1–6 — ульты всех героев (меньше, откат 29 с, по героям −26% текущего HP), Q/E — стена/купол<br>Золотые","ультимейт: справка");
 
+// --- 6я. БОСС: урон по правилу владельца (26.11.2026) — один раз за каст: ульта −30% от полного HP, обычная способность −15% от остатка ---
+R('CTX={o,hit:new Set(),','CTX={o,u:(o.cl===6?i<6:i===ULTS[o.cl||0]),bs:{},hit:new Set(),','босс: флаг ульты в CTX');
+R('if(!rn&&CTX){CTX.bd=CTX.bd||0;const cap=CTX.dmg*15-CTX.bd;if(cap<=0)return;d=Math.min(d,CTX.dmg*5,cap);CTX.bd+=d}',
+  'if(!rn&&CTX){const bs=CTX.bs||(CTX.bs={});if(bs.b)return;bs.b=1;d=CTX.u?BHP*.3:Math.max(1,hpv[BI]*.15)}','босс: 30% / 15%');
+
 // --- 7. модуль эффектов ---
 {const re=/\r?\nloop\(\);\s*<\/script>\s*<\/body>\s*<\/html>/g,n=(h.match(re)||[]).length;if(n!==1)throw new Error('якорь loop() найден '+n+' раз');h=h.replace(re,m=>'\n'+rd('fx3.js')+'\n'+m)}
 

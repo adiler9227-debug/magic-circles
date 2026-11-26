@@ -1809,7 +1809,7 @@ function fxo(o,life,fn,d){let t=-(d||0);o.visible=false;S.add(o);
   ()=>{S.remove(o);o.traverse(m=>{if(m.material){if(m.material.map&&m.material.map.userData&&m.material.map.userData.own)m.material.map.dispose();m.material.dispose()}if(m.geometry&&!m.geometry.userData.sh)m.geometry.dispose()})})}
 const later=(d,fn)=>{let t=0;fx.push(dt=>{t+=dt;if(t<d)return true;try{fn()}catch(e){console.error('anc',e)}return false})};
 // ---------- урон (позже момента каста — с сохранённым CTX кастера) ----------
-const withC=(c,fn)=>{if(!c)return;const s=CTX;CTX={o:c.o,dmg:c.dmg,hit:new Set()};try{fn()}finally{CTX=s}};
+const withC=(c,fn)=>{if(!c)return;const s=CTX;CTX={o:c.o,dmg:c.dmg,u:c.u,bs:c.bs,hit:new Set()};try{fn()}finally{CTX=s}};
 function area(c,x,z,r,mul,op){if(!c)return;const d=c.dmg*mul;
  forE((i,qx,qz)=>{if(Math.hypot(qx-x,qz-z)<r+(isB(i)?5:0)){eH(i,d);if(op&&op.st)stn(i,op.st);if(op&&op.up&&!isB(i))eUp(i,x,z,op.up)}});
  withC(c,()=>plT(q=>Math.hypot(q.x-x,q.z-z)<r,mul,x,z))}
@@ -2527,7 +2527,7 @@ document.getElementById('kb').onclick=korSwap;
 const SWDM=[1,1.25,1.7,2,1,1.25,1.7,1.7,1.7,1.7,1];
 const CCOL=[0xc080ff,0xffd060,0x66ddff,0xff5ad8,0xa040ff,0x3ddc84,0xff8aff];
 function castFX(o,i){if(i>8)return;const p=o.g.position,c=CCOL[o.cl||0];shock(p.x,p.z,c,7,.45);for(let k=0;k<16;k++){const a=k/16*PI2;emit(p.x+Math.cos(a)*1.5,.4,p.z+Math.sin(a)*1.5,Math.cos(a)*7,3+rnd()*5,Math.sin(a)*7,.5,k&1?c:0xffffff,1.4,-6)}if(o!==ME&&o.cm&&o.cm.cast)o.cm.cast()}
-function doCast(o,i){castFX(o,i);CTX={o,hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?(i===0?.45:i<4?.85:1):o.cl===3?.5:o.cl===0?1.75:o.cl===6?.45:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
+function doCast(o,i){castFX(o,i);CTX={o,u:(o.cl===6?i<6:i===ULTS[o.cl||0]),bs:{},hit:new Set(),dmg:dmgOf(o)*(o.cl===1?(SWDM[i]||1):o.cl===2?(i===0?.45:i<4?.85:1):o.cl===3?.5:o.cl===0?1.75:o.cl===6?.45:1)*((o.buff||0)>performance.now()/1000?1.5:1)};try{if(o.cl===1&&i===9&&o.VC&&o.VC.sealed&&!o.VC.req)o.VC.req=true;else CLS[o.cl||0].sp[i]()}finally{CTX=null}}
 const ULTS=[6,7,8,7,6,6,-1],PK_NEED=3;let ulkS='';
 function pvpOn(){return mode==='duel'&&!!PVP}
 function ulkMsg(t){toastE.textContent=t;toastE.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>toastE.style.opacity=0,1800)}
@@ -2551,7 +2551,7 @@ function coopTick(dt){ulkUpd();if(mode==='duel'&&PVP){const e=$('co');if(e){e.st
   if(CO.t>=240){netSend({t:'E',w:0});endRound(false);return}
   CO.ns-=dt;if(CO.ns<=0){CO.ns=.1;netSend({t:'B',tm:CO.t,on:CO.bossOn,x:ex[BI],z:ez[BI],h:hpv[BI],w:CO.bw>0?1:0,a:CO.ba})}}
  else if(CO.t>=248)endRound(false)}
-function bossHit(d,thr,rn){if(!CO||CO.end||!al[BI])return;if(!rn&&net.on&&CTX&&CTX.o&&CTX.o!==ME)return;if(thr){if(CO.bt>0)return;CO.bt=.2}if(!rn&&CTX){CTX.bd=CTX.bd||0;const cap=CTX.dmg*15-CTX.bd;if(cap<=0)return;d=Math.min(d,CTX.dmg*5,cap);CTX.bd+=d}if(!rn&&net.on&&!auth())netSend({t:'BD',d});hpv[BI]-=d;$('bbi').style.width=Math.max(0,hpv[BI]/BHP*100)+'%';
+function bossHit(d,thr,rn){if(!CO||CO.end||!al[BI])return;if(!rn&&net.on&&CTX&&CTX.o&&CTX.o!==ME)return;if(thr){if(CO.bt>0)return;CO.bt=.2}if(!rn&&CTX){const bs=CTX.bs||(CTX.bs={});if(bs.b)return;bs.b=1;d=CTX.u?BHP*.3:Math.max(1,hpv[BI]*.15)}if(!rn&&net.on&&!auth())netSend({t:'BD',d});hpv[BI]-=d;$('bbi').style.width=Math.max(0,hpv[BI]/BHP*100)+'%';
  if(hpv[BI]<=0){if(auth()){bossGone();netSend({t:'E',w:1});endRound(true)}else hpv[BI]=1}}
 function bossStrike(x,z,a){if(CO)CO.bk=.4;shock(x+Math.sin(a)*4,z+Math.cos(a)*4,0xff2020,10,.5);shock(x,z,0xffa030,14,.7);const q=CP().position,dx=q.x-x,dz=q.z-z,d=Math.hypot(dx,dz)||1;if(ME.dead<=0&&d<8){pHurt(ME,25,undefined,x,z);ME.kx=dx/d*48;ME.kz=dz/d*48}}
 function bossTick(dt){const i=BI;fl_[i]=0;eh[i]=0;if(CO&&!CO.end){
